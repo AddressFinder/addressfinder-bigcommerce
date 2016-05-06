@@ -1,3 +1,9 @@
+/*
+ * The AddressFinder plugin for BigCommerce adds an autocomplete capability to
+ * the billing and shipping address fields of your online store.
+ *
+ * https://github.com/AbleTech/addressfinder-bigcommerce
+ */
 var fieldsForAddressType = {
     billing: { address_1: "FormField_8", address_2: "FormField_9", city: "FormField_10", country: "FormField_11", state: "FormField_12", postcode: "FormField_13" },
     shipping: { address_1: "FormField_18", address_2: "FormField_19", city: "FormField_20", country: "FormField_21", state: "FormField_22", postcode: "FormField_23" }
