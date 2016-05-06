@@ -46,10 +46,10 @@ var fieldsForAddressType = {
     }
 
     if(AddressFinderConfig.key_au){
-       widgets.au = initialiseWidget(elementId, AddressFinderConfig.key_au, "au", selectAustralia);
-       widgets.au.type = type;
+      widgets.au = initialiseWidget(elementId, AddressFinderConfig.key_au, "au", selectAustralia);
+      widgets.au.type = type;
     } else {
-       widgets.au = nullWidget;
+      widgets.au = nullWidget;
     }
 
     var countryChangeHandler = function(clear){
@@ -74,9 +74,6 @@ var fieldsForAddressType = {
 
     var countryField = fieldsForAddressType[type].country;
     jQuery("#" + countryField).change(countryChangeHandler);
-
-    // Run the countryChangeHandler first to enable/disable the currently selected country
-    countryChangeHandler.bind(jQuery("#" + countryField))(false);
  };
 
   var clearFields = function(type) {
@@ -200,27 +197,44 @@ var fieldsForAddressType = {
   /*
    * We expect BC to remove the class "ExpressCheckoutBlockCollapsed" from
    * the selector when the address fields are replaced. Only when we have
-   * observed thid mutation do we bind an AF widget to the "address_1" field.
+   * observed this mutation do we bind an AF widget to the "address_1" field.
    */
-  var bindWidget = function(addressType, selector, oldValue) {
-    var target = document.querySelector(selector),
-        config = { attributes: true, attributeOldValue: true };
+  var bindWidget = function(addressType, elementId, oldValue) {
+    if (window.MutationObserver) {
 
-    var observer = new MutationObserver(function(mutations) {
-      mutations.forEach(function(mutation) {
-        if (mutation.attributeName === "class" && mutation.oldValue.indexOf(oldValue) !== -1) {
-          bindToAddressPanel(addressType, fieldsForAddressType[addressType]["address_1"]);
-          observer.disconnect();
-        }
+      /* for modern browsers */
+      var target = document.querySelector("#" + elementId),
+          config = { attributes: true, attributeOldValue: true };
+      var observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+          if (mutation.attributeName === "class" && mutation.oldValue.indexOf(oldValue) !== -1) {
+            bindToAddressPanel(addressType, fieldsForAddressType[addressType]["address_1"]);
+            observer.disconnect();
+          }
+        });
       });
-    });
+      observer.observe(target, config);
 
-    observer.observe(target, config);
+    } else if (window.addEventListener) {
+
+      /* for IE 9 and 10 */
+      var target = document.getElementById(elementId);
+      var listener = function(event) {
+        if (event.attrName.toLowerCase() === "class" && event.prevValue.indexOf(oldValue) !== -1) {
+          bindToAddressPanel(addressType, fieldsForAddressType[addressType]["address_1"]);
+          target.removeEventListener("DOMAttrModified", listener, false);
+        }
+      }
+      target.addEventListener("DOMAttrModified", listener, false);
+
+    } else {
+      console.log("AddressFinder Error - please use a more modern browser")
+    }
   }
 
   var initialisePlugin = function() {
-    bindWidget("billing", "#CheckoutStepBillingAddress", "ExpressCheckoutBlockCollapsed");
-    bindWidget("shipping", "#CheckoutStepShippingAddress", "ExpressCheckoutBlockCollapsed");
+    bindWidget("billing", "CheckoutStepBillingAddress", "ExpressCheckoutBlockCollapsed");
+    bindWidget("shipping", "CheckoutStepShippingAddress", "ExpressCheckoutBlockCollapsed");
   };
 
   jQuery(document).ready(function(){
