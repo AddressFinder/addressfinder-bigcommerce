@@ -52,29 +52,37 @@ var fieldsForAddressType = {
       widgets.au = nullWidget;
     }
 
-    var countryChangeHandler = function(clear){
-      if(jQuery(this).val() == "New Zealand") {
-        widgets.nz.enable();
-      } else {
-        widgets.nz.disable();
-      }
-
-      if(jQuery(this).val() == "Australia") {
-        widgets.au.enable();
-      } else {
-        widgets.au.disable();
-      }
-
-      clear = clear === undefined ? true : clear;
-
-      if (clear) {
-       clearFields(type);
-      }
-    };
-
     var countryField = fieldsForAddressType[type].country;
-    jQuery("#" + countryField).change(countryChangeHandler);
- };
+
+    var toggleWidgets = function() {
+      var selectedCountry = document.getElementById(countryField).value;
+
+      if (selectedCountry == "New Zealand") {
+
+        widgets.nz.enable();
+        widgets.au.disable();
+        clearFields(type);
+
+      } else if (selectedCountry == "Australia") {
+
+        widgets.au.enable();
+        widgets.nz.disable();
+        clearFields(type);
+
+      } else {
+
+        widgets.au.disable();
+        widgets.nz.disable();
+
+      }
+    }
+
+    /* enable/disable correct widget at start */
+    toggleWidgets();
+
+    /* enable/disable correct widget for subsequent changes in country selected */
+    jQuery("#" + countryField).on("change", toggleWidgets);
+  };
 
   var clearFields = function(type) {
     var fields = fieldsForAddressType[type];
