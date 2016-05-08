@@ -207,7 +207,7 @@ var fieldsForAddressType = {
    * the selector when the address fields are replaced. Only when we have
    * observed this mutation do we bind an AF widget to the "address_1" field.
    */
-  var bindWidget = function(addressType, elementId, oldValue) {
+  var setObserver = function(addressType, elementId, oldValue) {
     if (window.MutationObserver) {
 
       /* for modern browsers */
@@ -237,6 +237,22 @@ var fieldsForAddressType = {
 
     } else {
       console.log("AddressFinder Error - please use a more modern browser")
+    }
+  }
+
+  var bindWidget = function(addressType, elementId, oldValue) {
+    var target = document.getElementById("CheckoutStepBillingAddress");
+
+    if (jQuery(target).hasClass("ExpressCheckoutBlockCollapsed")) {
+      /*
+       * For guest checkout, both billing and shipping addresses are collapsed
+       */
+      setObserver(addressType, elementId, oldValue);
+    } else {
+      /*
+       * When customer is logged in, only shipping address is collapsed
+       */
+      bindToAddressPanel(addressType, fieldsForAddressType[addressType]["address_1"]);
     }
   }
 
