@@ -3,6 +3,8 @@
  * the billing and shipping address fields of your online store.
  *
  * https://github.com/AbleTech/addressfinder-bigcommerce
+ *
+ * Copyright (c) 2016 Abletech
  */
 var fieldsForAddressType = {
     billing: { address_1: "FormField_8", address_2: "FormField_9", city: "FormField_10", country: "FormField_11", state: "FormField_12", postcode: "FormField_13" },
