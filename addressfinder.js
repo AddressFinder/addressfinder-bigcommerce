@@ -244,7 +244,9 @@ var fieldsForAddressType = {
       target.addEventListener("DOMAttrModified", listener, false);
 
     } else {
-      console.log("AddressFinder Error - please use a more modern browser")
+      if (window.console) {
+        console.log("AddressFinder Error - please use a more modern browser");
+      }
     }
   }
 
