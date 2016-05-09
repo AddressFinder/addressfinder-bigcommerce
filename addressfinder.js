@@ -4,6 +4,8 @@
  *
  * https://github.com/AbleTech/addressfinder-bigcommerce
  *
+ * VERSION 1.0.0
+ *
  * Copyright (c) 2016 Abletech
  */
 var fieldsForAddressType = {
