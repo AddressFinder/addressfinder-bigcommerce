@@ -60,7 +60,7 @@ You will need to:
       var AddressFinderConfig = { key_nz: "my_nz_af_key", key_au: "my_au_af_key" };
         jQuery(document).ready(function() {
         var script = document.createElement("script");
-        script.src = "https://cdn.rawgit.com/AbleTech/addressfinder-bigcommerce/master/addressfinder.js";
+        script.src = "https://api.addressfinder.io/assets/bigcommerce/v1/boot.js";
         document.body.appendChild(script);
       });
     </script>
