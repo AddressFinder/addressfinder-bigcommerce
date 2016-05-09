@@ -25,6 +25,16 @@ programming ability.
 * [Australia](https://addressfinder.com.au/)
 * [New Zealand](https://addressfinder.nz/)
 
+### Demonstration Video
+
+Coming soon.
+
+## Installation
+
+### Demonstration Video
+
+Follow the instructions below, or watch the [installation video](http://placeholder.com).
+
 ### Installation instructions
 
 This plugin may be installed wherever an address input is required:
@@ -60,4 +70,31 @@ You will need to:
     * [Free Account for Australia](https://portal.addressfinder.io/signup/au/free)
     * [Free Account for New Zealand](https://portal.addressfinder.io/signup/nz/free)
 
-    Existing users can obtain their API key from the [AddressFinder Portal](https://portal.addressfinder.io/).
+    Existing users can obtain their API key from the
+    [AddressFinder Portal](https://portal.addressfinder.io/).
+
+## Screenshots
+
+Autocomplete billing and shipping address in checkout page.
+
+![addressfinder-bigcommerce plugin demo](assets/demo.gif?raw=true)
+
+---
+
+Find your AddressFinder API key at
+[https://portal.addressfinder.io](https://portal.addressfinder.io).
+
+![installation: find address finder key](assets/key.png?raw=true)
+
+---
+
+Log into the control panel for your site, then navigate to
+Store Setup > Design > Edit HTML/CSS to access your template files.
+
+![installation: access template files](assets/installation_edit.png?raw=true)
+
+---
+
+Insert snippet just before the closing `</body>` tag.
+
+![installation: paste javascript snippet](assets/installation_snippet.png?raw=true)
