@@ -49,10 +49,10 @@ You will need to:
     <script type="text/javascript">
       var AddressFinderConfig = { key_nz: "my_nz_af_key", key_au: "my_au_af_key" };
         jQuery(document).ready(function() {
-          var script = document.createElement("script");
-          script.src = "https://cdn.rawgit.com/AbleTech/addressfinder-bigcommerce/master/addressfinder.js";
-          document.body.appendChild(script);
-        });
+        var script = document.createElement("script");
+        script.src = "https://cdn.rawgit.com/AbleTech/addressfinder-bigcommerce/master/addressfinder.js";
+        document.body.appendChild(script);
+      });
     </script>
     ```
 
