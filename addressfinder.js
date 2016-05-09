@@ -254,7 +254,11 @@ var fieldsForAddressType = {
       setObserver(addressType, elementId, oldValue);
     } else {
       /*
-       * When customer is logged in, only shipping address is collapsed
+       * No collapsed address block when:
+       *   - customer is logged in, only shipping address is collapsed
+       *   - a new account is being created
+       *   - a new address is being added to an account
+       *   - an existing address for an account is being edited
        */
       bindToAddressPanel(addressType, fieldsForAddressType[addressType]["address_1"]);
     }
