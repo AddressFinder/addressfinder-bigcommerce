@@ -29,7 +29,11 @@ var fieldsForAddressType = {
     return widget;
   }
 
-  var bindToAddressPanel = function(type, elementId){
+  var bindToAddressPanel = function(type, elementId) {
+    var addressPanel = document.getElementById(elementId);
+
+    if (!addressPanel) return;
+
     var widgets = {};
 
     var nullWidget = {
