@@ -31,7 +31,7 @@ var fieldsForAddressType = {
     }
 
     return widget;
-  }
+  };
 
   var bindToAddressPanel = function(type, elementId) {
     var addressPanel = document.getElementById(elementId);
@@ -83,7 +83,7 @@ var fieldsForAddressType = {
         widgets.nz.disable();
 
       }
-    }
+    };
 
     /* enable/disable correct widget at start */
     toggleWidgets();
@@ -99,7 +99,7 @@ var fieldsForAddressType = {
     for (field in fields) {
        document.getElementById(fields[field]).value = "";
     }
-  }
+  };
 
   var setState = function(elementId, value, countryCode) {
     switch (countryCode) {
@@ -136,7 +136,7 @@ var fieldsForAddressType = {
     }
     var state = codeByRegion[value];
     setFieldValue(elementId, state);
-  }
+  };
 
   var setAuState = function(elementId, value) {
     var statesByCode = {
@@ -208,7 +208,7 @@ var fieldsForAddressType = {
     if (window.console) {
       console.log(errorMessage);
     }
-  }
+  };
 
   /*
    * We expect BC to remove the class "ExpressCheckoutBlockCollapsed" from
@@ -248,7 +248,7 @@ var fieldsForAddressType = {
         console.log("AddressFinder Error - please use a more modern browser");
       }
     }
-  }
+  };
 
   var bindWidget = function(addressType, elementId, oldValue) {
     var target = document.getElementById("CheckoutStepBillingAddress");
@@ -268,7 +268,7 @@ var fieldsForAddressType = {
        */
       bindToAddressPanel(addressType, fieldsForAddressType[addressType]["address_1"]);
     }
-  }
+  };
 
   var initialisePlugin = function() {
     bindWidget("billing", "CheckoutStepBillingAddress", "ExpressCheckoutBlockCollapsed");
