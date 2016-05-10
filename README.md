@@ -25,6 +25,10 @@ programming ability.
 * [Australia](https://addressfinder.com.au/)
 * [New Zealand](https://addressfinder.nz/)
 
+### Compatibility
+
+Addressfinder-BigCommerce requires IE9 or higher, Chrome, Safari, or Firefox.
+
 ### Demonstration Video
 
 Coming soon.
