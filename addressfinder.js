@@ -278,12 +278,9 @@ var fieldsForAddressType = {
   jQuery(document).ready(function(){
     var script = document.createElement("script");
     script.src = "https://api.addressfinder.io/assets/v3/widget.js";
-    script.onreadystatechange = function() {
-      if (script.readyState === "complete" || script.readyState === "loaded"){
-          initialisePlugin();
-      }
-    };
-    script.onload = initialisePlugin;
+    script.onload = function() {
+      initialisePlugin();
+    }
     document.body.appendChild(script);
   });
 
