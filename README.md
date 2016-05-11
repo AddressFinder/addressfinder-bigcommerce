@@ -37,7 +37,7 @@ Coming soon.
 
 ### Demonstration Video
 
-Follow the instructions below, or watch the [installation video](http://placeholder.com).
+Follow the instructions below, or watch the [installation video](https://vimeo.com/166156223).
 
 ### Installation instructions
 
