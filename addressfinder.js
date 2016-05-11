@@ -4,7 +4,7 @@
  *
  * https://github.com/AbleTech/addressfinder-bigcommerce
  *
- * VERSION 1.0.0
+ * VERSION 1.0.1
  *
  * Copyright (c) 2016 Abletech
  */
@@ -101,43 +101,6 @@ var fieldsForAddressType = {
     }
   };
 
-  var setState = function(elementId, value, countryCode) {
-    switch (countryCode) {
-      case "nz":
-        setNzState(elementId, value);
-        break;
-      case "au":
-        setAuState(elementId, value);
-        break;
-      default:
-        setFieldValue(elementId, value);
-    }
-  };
-
-  var setNzState = function(elementId, value) {
-    var codeByRegion = {
-      "Auckland Region"            : "AL",
-      "Bay Of Plenty Region"       : "BP",
-      "Canterbury Region"          : "CT",
-      "Gisborne Region"            : "GI",
-      "Hawke's Bay Region"         : "HB",
-      "Manawatu-Wanganui Region"   : "MW",
-      "Marlborough Region"         : "MB",
-      "Nelson Region"              : "NS",
-      "Northland Region"           : "NL",
-      "Otago Region"               : "OT",
-      "Southland Region"           : "SL",
-      "Taranaki Region"            : "TK",
-      "Tasman Region"              : "TM",
-      "Waikato Region"             : "WA",
-      "Wellington Region"          : "WE",
-      "West Coast Region"          : "WC",
-      "No Region (Chatham Islands)": null
-    }
-    var state = codeByRegion[value];
-    setFieldValue(elementId, state);
-  };
-
   var setAuState = function(elementId, value) {
     var statesByCode = {
       "ACT": "Australian Capital Territory",
@@ -181,7 +144,7 @@ var fieldsForAddressType = {
     }
 
     setFieldValue(curr.address_1, addressLines.join(", "));
-    setState(curr.state, metaData.region, this.country_code);
+    setFieldValue(curr.state, metaData.region);
   };
 
   var selectAustralia = function(address, metaData) {
@@ -191,7 +154,7 @@ var fieldsForAddressType = {
     setFieldValue(curr.address_1, metaData.address_line_1);
     setFieldValue(curr.address_2, metaData.address_line_2 || "");
     setFieldValue(curr.city, metaData.locality_name || "");
-    setState(curr.state, metaData.state_territory, this.country_code);
+    setAuState(curr.state, metaData.state_territory);
     setFieldValue(curr.postcode, metaData.postcode);
   };
 
