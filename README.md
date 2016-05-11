@@ -8,19 +8,12 @@ The AddressFinder plugin for BigCommerce adds an autocomplete capability to
 the billing and shipping address fields for New Zealand and Australian
 BigCommerce stores.
 
-#### Get Verified Addresses
-
-No more mistakes. Save addresses straight from your webform to your database.
-
-#### Access the latest addresses
-
-Leave the hard work to us. Access addresses frequently refreshed from multiple
-sources.
-
-#### No software required
-
-AddressFinder is a JavaScript widget and API. This plugin requires ZERO
-programming ability.
+* ***Get verified addresses*** – No more mistakes. Save addresses straight from your 
+  webform to your database.
+* ***Access the latest addresses*** – Access addresses frequently refreshed from 
+  multiple sources.
+* ***No software required*** – AddressFinder is a JavaScript widget and API. This 
+  plugin requires ZERO programming ability.
 
 #### Supported Countries
 
@@ -47,7 +40,8 @@ You will need to:
 1.  Log into the control panel for your site, and navigate to Store Setup > Design.
 2.  Your current theme will be displayed in the Themes tab; click Edit HTML/CSS
     to access your template files.
-3.  Find each of these template files and the javascript snippet below. You should insert the snippet just before the closing `</body>` tag.
+3.  Find each of these template files and the javascript snippet below. You should 
+    insert the snippet just before the closing `</body>` tag.
  
     * checkout_express.html 
     * createaccount.html
