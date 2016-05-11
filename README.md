@@ -37,6 +37,9 @@ Addressfinder-BigCommerce requires IE9 or higher, Chrome, Safari, or Firefox.
 
 Follow the instructions below, or watch the [installation video](https://vimeo.com/166156223).
 
+[![addressfinder-bigcommerce plugin demo](assets/bigcommerce-install-vimeo.png?raw=true)](https://vimeo.com/166156223)
+
+
 #### Installation instructions
 
 You will need to:
