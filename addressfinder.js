@@ -1,3 +1,13 @@
+/*
+ * The AddressFinder plugin for BigCommerce adds an autocomplete capability to
+ * the billing and shipping address fields of your online store.
+ *
+ * https://github.com/AbleTech/addressfinder-bigcommerce
+ *
+ * VERSION 1.0.0
+ *
+ * Copyright (c) 2016 Abletech
+ */
 var fieldsForAddressType = {
     billing: { address_1: "FormField_8", address_2: "FormField_9", city: "FormField_10", country: "FormField_11", state: "FormField_12", postcode: "FormField_13" },
     shipping: { address_1: "FormField_18", address_2: "FormField_19", city: "FormField_20", country: "FormField_21", state: "FormField_22", postcode: "FormField_23" }
@@ -21,9 +31,13 @@ var fieldsForAddressType = {
     }
 
     return widget;
-  }
+  };
 
-  var bindToAddressPanel = function(type, elementId){
+  var bindToAddressPanel = function(type, elementId) {
+    var addressPanel = document.getElementById(elementId);
+
+    if (!addressPanel) return;
+
     var widgets = {};
 
     var nullWidget = {
@@ -40,38 +54,43 @@ var fieldsForAddressType = {
     }
 
     if(AddressFinderConfig.key_au){
-       widgets.au = initialiseWidget(elementId, AddressFinderConfig.key_au, "au", selectAustralia);
-       widgets.au.type = type;
+      widgets.au = initialiseWidget(elementId, AddressFinderConfig.key_au, "au", selectAustralia);
+      widgets.au.type = type;
     } else {
-       widgets.au = nullWidget;
+      widgets.au = nullWidget;
     }
 
-    var countryChangeHandler = function(clear){
-      if(jQuery(this).val() == "New Zealand") {
+    var countryField = fieldsForAddressType[type].country;
+
+    var toggleWidgets = function() {
+      var selectedCountry = document.getElementById(countryField).value;
+
+      if (selectedCountry == "New Zealand") {
+
         widgets.nz.enable();
-      } else {
-        widgets.nz.disable();
-      }
-
-      if(jQuery(this).val() == "Australia") {
-        widgets.au.enable();
-      } else {
         widgets.au.disable();
-      }
+        clearFields(type);
 
-      clear = clear === undefined ? true : clear;
+      } else if (selectedCountry == "Australia") {
 
-      if (clear) {
-       clearFields(type);
+        widgets.au.enable();
+        widgets.nz.disable();
+        clearFields(type);
+
+      } else {
+
+        widgets.au.disable();
+        widgets.nz.disable();
+
       }
     };
 
-    var countryField = fieldsForAddressType[type].country;
-    jQuery("#" + countryField).change(countryChangeHandler);
+    /* enable/disable correct widget at start */
+    toggleWidgets();
 
-    // Run the countryChangeHandler first to enable/disable the currently selected country
-    countryChangeHandler.bind(jQuery("#" + countryField))(false);
- };
+    /* enable/disable correct widget for subsequent changes in country selected */
+    jQuery("#" + countryField).on("change", toggleWidgets);
+  };
 
   var clearFields = function(type) {
     var fields = fieldsForAddressType[type];
@@ -80,7 +99,7 @@ var fieldsForAddressType = {
     for (field in fields) {
        document.getElementById(fields[field]).value = "";
     }
-  }
+  };
 
   var setState = function(elementId, value, countryCode) {
     switch (countryCode) {
@@ -117,7 +136,7 @@ var fieldsForAddressType = {
     }
     var state = codeByRegion[value];
     setFieldValue(elementId, state);
-  }
+  };
 
   var setAuState = function(elementId, value) {
     var statesByCode = {
@@ -189,43 +208,79 @@ var fieldsForAddressType = {
     if (window.console) {
       console.log(errorMessage);
     }
-  }
+  };
 
   /*
    * We expect BC to remove the class "ExpressCheckoutBlockCollapsed" from
    * the selector when the address fields are replaced. Only when we have
-   * observed thid mutation do we bind an AF widget to the "address_1" field.
+   * observed this mutation do we bind an AF widget to the "address_1" field.
    */
-  var bindWidget = function(addressType, selector, oldValue) {
-    var target = document.querySelector(selector),
-        config = { attributes: true, attributeOldValue: true };
+  var setObserver = function(addressType, elementId, oldValue) {
+    if (window.MutationObserver) {
 
-    var observer = new MutationObserver(function(mutations) {
-      mutations.forEach(function(mutation) {
-        if (mutation.attributeName === "class" && mutation.oldValue.indexOf(oldValue) !== -1) {
-          bindToAddressPanel(addressType, fieldsForAddressType[addressType]["address_1"]);
-          observer.disconnect();
-        }
+      /* for modern browsers */
+      var target = document.querySelector("#" + elementId),
+          config = { attributes: true, attributeOldValue: true };
+      var observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+          if (mutation.attributeName === "class" && mutation.oldValue.indexOf(oldValue) !== -1) {
+            bindToAddressPanel(addressType, fieldsForAddressType[addressType]["address_1"]);
+            observer.disconnect();
+          }
+        });
       });
-    });
+      observer.observe(target, config);
 
-    observer.observe(target, config);
-  }
+    } else if (window.addEventListener) {
+
+      /* for IE 9 and 10 */
+      var target = document.getElementById(elementId);
+      var listener = function(event) {
+        if (event.attrName.toLowerCase() === "class" && event.prevValue.indexOf(oldValue) !== -1) {
+          bindToAddressPanel(addressType, fieldsForAddressType[addressType]["address_1"]);
+          target.removeEventListener("DOMAttrModified", listener, false);
+        }
+      }
+      target.addEventListener("DOMAttrModified", listener, false);
+
+    } else {
+      if (window.console) {
+        console.log("AddressFinder Error - please use a more modern browser");
+      }
+    }
+  };
+
+  var bindWidget = function(addressType, elementId, oldValue) {
+    var target = document.getElementById("CheckoutStepBillingAddress");
+
+    if (jQuery(target).hasClass("ExpressCheckoutBlockCollapsed")) {
+      /*
+       * For guest checkout, both billing and shipping addresses are collapsed
+       */
+      setObserver(addressType, elementId, oldValue);
+    } else {
+      /*
+       * No collapsed address block when:
+       *   - customer is logged in, only shipping address is collapsed
+       *   - a new account is being created
+       *   - a new address is being added to an account
+       *   - an existing address for an account is being edited
+       */
+      bindToAddressPanel(addressType, fieldsForAddressType[addressType]["address_1"]);
+    }
+  };
 
   var initialisePlugin = function() {
-    bindWidget("billing", "#CheckoutStepBillingAddress", "ExpressCheckoutBlockCollapsed");
-    bindWidget("shipping", "#CheckoutStepShippingAddress", "ExpressCheckoutBlockCollapsed");
+    bindWidget("billing", "CheckoutStepBillingAddress", "ExpressCheckoutBlockCollapsed");
+    bindWidget("shipping", "CheckoutStepShippingAddress", "ExpressCheckoutBlockCollapsed");
   };
 
   jQuery(document).ready(function(){
     var script = document.createElement("script");
     script.src = "https://api.addressfinder.io/assets/v3/widget.js";
-    script.onreadystatechange = function() {
-      if (script.readyState === "complete" || script.readyState === "loaded"){
-          initialisePlugin();
-      }
-    };
-    script.onload = initialisePlugin;
+    script.onload = function() {
+      initialisePlugin();
+    }
     document.body.appendChild(script);
   });
 
