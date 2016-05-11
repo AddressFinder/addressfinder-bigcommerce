@@ -1,6 +1,6 @@
 # AddressFinder-BigCommerce
 
-[![addressfinder-bigcommerce plugin demo](assets/demo.gif?raw=true)](https://vimeo.com/166156223)
+[![addressfinder-bigcommerce plugin demo](assets/bigcommerce-nz.gif?raw=true)](https://vimeo.com/166156223)
 
 ## Description
 
