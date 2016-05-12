@@ -4,7 +4,7 @@
  *
  * https://github.com/AbleTech/addressfinder-bigcommerce
  *
- * VERSION 1.0.1
+ * VERSION 1.0.2
  *
  * Copyright (c) 2016 Abletech
  */
