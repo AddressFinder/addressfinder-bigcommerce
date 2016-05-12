@@ -4,7 +4,7 @@
  *
  * https://github.com/AbleTech/addressfinder-bigcommerce
  *
- * VERSION 1.0.1
+ * VERSION 1.0.2
  *
  * Copyright (c) 2016 Abletech
  */
@@ -90,6 +90,9 @@ var fieldsForAddressType = {
 
     /* enable/disable correct widget for subsequent changes in country selected */
     jQuery("#" + countryField).on("change", toggleWidgets);
+
+    /* ensure results are displayed */
+    jQuery(".af_list").css("z-index", 999);
   };
 
   var clearFields = function(type) {
