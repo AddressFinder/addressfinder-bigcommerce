@@ -8,11 +8,11 @@ The AddressFinder plugin for BigCommerce adds an autocomplete capability to
 the billing and shipping address fields for New Zealand and Australian
 BigCommerce stores.
 
-* ***Get verified addresses*** – No more mistakes. Save addresses straight from your 
+* ***Get verified addresses*** – No more mistakes. Save addresses straight from your
   webform to your database.
-* ***Access the latest addresses*** – Access addresses frequently refreshed from 
+* ***Access the latest addresses*** – Access addresses frequently refreshed from
   multiple sources.
-* ***No software required*** – AddressFinder is a JavaScript widget and API. This 
+* ***No software required*** – AddressFinder is a JavaScript widget and API. This
   plugin requires ZERO programming ability.
 
 #### Supported Countries
@@ -40,21 +40,27 @@ You will need to:
 1.  Log into the control panel for your site, and navigate to Store Setup > Design.
 2.  Your current theme will be displayed in the Themes tab; click Edit HTML/CSS
     to access your template files.
-3.  Find each of these template files and the javascript snippet below. You should 
-    insert the snippet just before the closing `</body>` tag.
- 
-    * checkout_express.html 
+3.  Find each of these template files and insert the javascript snippet below.
+    You should insert the snippet just before the closing `</body>` tag.
+
+    * checkout_express.html
     * createaccount.html
     * shippingaddressform.html
 
     ```
-    <script type="text/javascript">
-      var AddressFinderConfig = { key_nz: "my_nz_af_key", key_au: "my_au_af_key" };
-      jQuery(document).ready(function() {
-        var script = document.createElement("script");
-        script.src = "https://api.addressfinder.io/assets/bigcommerce/v1/boot.js";
-        document.body.appendChild(script);
+    <script>
+    (function(d,w){
+      w.AddressFinderConfig = {
+        key_nz: "MY_NZ_AF_KEY",
+        key_au: "MY_AU_AF_KEY"
+      };
+      w.addEventListener('DOMContentLoaded', function(){
+        var s = d.createElement("script");
+        s.src = "https://api.addressfinder.io/assets/bigcommerce/v1/boot.js";
+        s.async = 1;
+        d.body.appendChild(s);
       });
+    })(document, window);
     </script>
     ```
 
@@ -68,3 +74,7 @@ New users can register for a free AddressFinder account at one of these links:
 
 Existing users can obtain their API key from the
 [AddressFinder Portal](https://portal.addressfinder.io/).
+
+## Software License
+
+The AddressFinder plugin for Salesforce is released under the permissive free software [MIT License](https://github.com/AbleTech/addressfinder-bigcommerce/blob/master/LICENCE.md).
