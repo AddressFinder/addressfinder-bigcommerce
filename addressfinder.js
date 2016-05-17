@@ -304,11 +304,11 @@
    * It adds the AddressFinder widget script, and when it loads, calls _initAF().
    */
   var _addScript = function() {
-      var s = d.createElement('script');
-      s.src = 'https://api.addressfinder.io/assets/v3/widget.js';
-      s.async = 1;
-      s.onload = _initPlugin;
-      d.body.appendChild(s);
+    var s = d.createElement("script");
+    s.src = "https://api.addressfinder.io/assets/v3/widget.js";
+    s.async = 1;
+    s.onload = _initPlugin;
+    d.body.appendChild(s);
   };
   /**************************************************************************/
 
