@@ -39,7 +39,7 @@ Follow the instructions below, or watch the [installation video](https://vimeo.c
 2.  Your current theme will be displayed in the Themes tab; click Edit HTML/CSS
     to access your template files.
 3.  Install the plugin:
-  1. Find the checkout_express.html file
+  1. Find the **checkout_express.html** file
   2. Scroll to the bottom of the page
   3. Copy the following javascript snippet and paste it in just before the closing `</body>` tag
 
@@ -62,7 +62,7 @@ Follow the instructions below, or watch the [installation video](https://vimeo.c
 
   4. Replace the `MY_NZ_AF_KEY` and `MY_AU_AF_KEY` placeholders in the snippet you added in the previous step with your own AddressFinder keys
 
-4. Then, repeat Step 3 for the files createaccount.html and shippingaddressform.html.
+4. Then, repeat Step 3 for the files **createaccount.html** and **shippingaddressform.html**.
 
 
 #### Obtaining a licence key
