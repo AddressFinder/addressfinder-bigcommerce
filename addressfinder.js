@@ -274,7 +274,7 @@
   var _bindAF = function(addressType, elementId, oldValue) {
     var target = d.getElementById("CheckoutStepBillingAddress");
 
-    if (target && _hasClass(target, "CheckoutStepBillingAddress")) {
+    if (target && _hasClass(target, "ExpressCheckoutBlockCollapsed")) {
       /*
        * For guest checkout, both billing and shipping addresses are collapsed
        */
