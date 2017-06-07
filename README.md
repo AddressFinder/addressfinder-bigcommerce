@@ -39,16 +39,19 @@ Follow the instructions below, or watch the [installation video](https://vimeo.c
 2.  Your current theme will be displayed in the Themes tab; click Edit HTML/CSS
     to access your template files.
 3.  Install the plugin:
-  1. Find the **checkout_express.html** file
-  2. Scroll to the bottom of the page
-  3. Copy the following javascript snippet and paste it in just before the closing `</body>` tag
+4. Find the **checkout_express.html** file
+5. Scroll to the bottom of the page
+6. Copy the following javascript snippet and paste it in just before the closing `</body>` tag
 
         ```
         <script>
         (function(d,w){
           w.AddressFinderConfig = {
             key_nz: "MY_NZ_AF_KEY",
-            key_au: "MY_AU_AF_KEY"
+            key_au: "MY_AU_AF_KEY",
+            options: {
+              byline: true
+            }
           };
           w.addEventListener('DOMContentLoaded', function(){
             var s = d.createElement("script");
@@ -60,9 +63,11 @@ Follow the instructions below, or watch the [installation video](https://vimeo.c
         </script>
         ```
 
-  4. Replace the `MY_NZ_AF_KEY` and `MY_AU_AF_KEY` placeholders in the snippet you added in the previous step with your own AddressFinder keys
+7. Replace the `MY_NZ_AF_KEY` and `MY_AU_AF_KEY` placeholders in the snippet you added in the previous step with your own AddressFinder keys
 
-4. Then, repeat Step 3 for the files **createaccount.html** and **shippingaddressform.html**.
+8. If you are a paying user and you would like to remove the 'powered by Abletech' byline you can do so in the 'options' inside the script block. Set byline to false:
+
+9. Then, repeat Step 3 for the files **createaccount.html** and **shippingaddressform.html**.
 
 
 #### Obtaining a licence key
