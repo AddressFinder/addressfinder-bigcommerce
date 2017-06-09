@@ -149,11 +149,26 @@
    * This function invokes the AF widget, and makes adjustments to the
    * address response data returned by the AF widget
    */
-  var _initAF = function(elementId, key, code, onSelectFn, options) {
-    var widget = new AddressFinder.Widget(d.getElementById(elementId), key, code, options);
+  var _initAF = function(elementId, key, code, onSelectFn, widgetOptions) {
+    var widget = new AddressFinder.Widget(d.getElementById(elementId), key, code, widgetOptions);
     widget.on("result:select", onSelectFn);
 
     return widget;
+  };
+
+  var parseWidgetOptions = function(item) {
+    try {
+      item = JSON.parse(item);
+    } catch (e) {
+      if (AFC.debug) {
+        alert('invalid widget option');
+      }
+      item = null;
+    }
+    if (typeof item !== 'object') {
+      item = null;
+    }
+    return item;
   };
 
   /*
@@ -173,15 +188,17 @@
       on: function() { }
     };
 
+    var parsedOptions = parseWidgetOptions(AddressFinderConfig.widgetOptions);
+
     if(AddressFinderConfig.key_nz){
-      widgets.nz = _initAF(elementId, AddressFinderConfig.key_nz, "nz", _selectNewZealand, AddressFinderConfig.options || null);
+      widgets.nz = _initAF(elementId, AddressFinderConfig.key_nz, "nz", _selectNewZealand, parsedOptions);
       widgets.nz.type = type;
     } else {
       widgets.nz = nullWidget;
     }
 
     if(AddressFinderConfig.key_au){
-      widgets.au = _initAF(elementId, AddressFinderConfig.key_au, "au", _selectAustralia, AddressFinderConfig.options || null);
+      widgets.au = _initAF(elementId, AddressFinderConfig.key_au, "au", _selectAustralia, parsedOptions);
       widgets.au.type = type;
     } else {
       widgets.au = nullWidget;

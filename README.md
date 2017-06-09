@@ -35,24 +35,21 @@ Follow the instructions below, or watch the [installation video](https://vimeo.c
 
 #### Installation instructions
 
-1.  Log into the control panel for your site, and navigate to Store Setup > Design.
+1.  Log into the control panel for your site, and navigate to Store Setup > Design.  (Storefront Design > My Themes)
 2.  Your current theme will be displayed in the Themes tab; click Edit HTML/CSS
-    to access your template files.
-3.  Install the plugin:
-4. Find the **checkout_express.html** file
-5. Scroll to the bottom of the page
-6. Copy the following javascript snippet and paste it in just before the closing `</body>` tag
+    to access your template files. (Edit the theme files)
+Install the plugin:
+3. Find the **checkout_express.html** file  checkout.html > pages
+4. Scroll to the bottom of the page
+5. Copy the following javascript snippet and paste it in just before the closing `</body>` tag
 
         ```
         <script>
         (function(d,w){
           w.AddressFinderConfig = {
             key_nz: "MY_NZ_AF_KEY",
-            key_au: "MY_AU_AF_KEY",
-            options: {
-              byline: true
-            }
-          };
+            key_au: "MY_AU_AF_KEY"
+          }
           w.addEventListener('DOMContentLoaded', function(){
             var s = d.createElement("script");
             s.src = "https://api.addressfinder.io/assets/bigcommerce/v1/boot.js";
@@ -63,12 +60,10 @@ Follow the instructions below, or watch the [installation video](https://vimeo.c
         </script>
         ```
 
-7. Replace the `MY_NZ_AF_KEY` and `MY_AU_AF_KEY` placeholders in the snippet you added in the previous step with your own AddressFinder keys
+6. Replace the `MY_NZ_AF_KEY` and `MY_AU_AF_KEY` placeholders in the snippet you added in the previous step with your own AddressFinder keys
 
-8. If you are a paying user and you would like to remove the 'powered by Abletech' byline you can do so in the 'options' inside the script block. Set byline to false:
-
-9. Then, repeat Step 3 for the files **createaccount.html** and **shippingaddressform.html**.
-
+7. Then, repeat Step 3 for the files **createaccount.html** and **shippingaddressform.html**.
+create-account.html > auth > pages > templates and details.html > pages > account > orders
 
 #### Obtaining a licence key
 
@@ -78,6 +73,19 @@ New users can register for a free AddressFinder account at one of these links:
 
 Existing users can obtain their API key from the
 [AddressFinder Portal](https://portal.addressfinder.io/).
+
+### Advanced Usage
+You can add advanced options by adding key-value pairs to AddressFinderPlugin, under the key. For example, to hide the addressfinder byline:
+
+```
+  w.AddressFinderPlugin = {
+    key: "ADDRESSFINDER_NZ_DEMO_KEY",
+    widgetOptions: {
+      byline: false
+    }
+  };
+```
+For a full list of possible options visit our widget documentation page: https://addressfinder.nz/docs/widget_docs/
 
 ## Software License
 
