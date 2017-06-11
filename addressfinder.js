@@ -156,19 +156,21 @@
     return widget;
   };
 
-  var parseWidgetOptions = function(item) {
+  /* This function parses advanced options that users may add to the widget */
+
+  var safeParseJSONObject = function(jsonObject) {
+    if(jsonObject == undefined){
+      return null;
+    }
     try {
-      item = JSON.parse(item);
+      jsonObject = JSON.parse(jsonObject);
     } catch (e) {
       if (AFC.debug) {
-        alert('invalid widget option');
+        alert('Invalid widget option: ' + jsonObject);
       }
-      item = null;
+      return null;
     }
-    if (typeof item !== 'object') {
-      item = null;
-    }
-    return item;
+    return jsonObject;
   };
 
   /*
@@ -188,7 +190,7 @@
       on: function() { }
     };
 
-    var parsedOptions = parseWidgetOptions(AddressFinderConfig.widgetOptions);
+    var parsedOptions = safeParseJSONObject(AddressFinderConfig.widgetOptions);
 
     if(AddressFinderConfig.key_nz){
       widgets.nz = _initAF(elementId, AddressFinderConfig.key_nz, "nz", _selectNewZealand, parsedOptions);

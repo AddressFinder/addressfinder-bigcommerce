@@ -35,11 +35,11 @@ Follow the instructions below, or watch the [installation video](https://vimeo.c
 
 #### Installation instructions
 
-1.  Log into the control panel for your site, and navigate to Store Setup > Design.  (Storefront Design > My Themes)
+1.  Log into the control panel for your site, and navigate to Store Setup > Design.
 2.  Your current theme will be displayed in the Themes tab; click Edit HTML/CSS
-    to access your template files. (Edit the theme files)
+    to access your template files.
 Install the plugin:
-3. Find the **checkout_express.html** file  checkout.html > pages
+3. Find the **checkout_express.html** file
 4. Scroll to the bottom of the page
 5. Copy the following javascript snippet and paste it in just before the closing `</body>` tag
 
@@ -63,7 +63,6 @@ Install the plugin:
 6. Replace the `MY_NZ_AF_KEY` and `MY_AU_AF_KEY` placeholders in the snippet you added in the previous step with your own AddressFinder keys
 
 7. Then, repeat Step 3 for the files **createaccount.html** and **shippingaddressform.html**.
-create-account.html > auth > pages > templates and details.html > pages > account > orders
 
 #### Obtaining a licence key
 
