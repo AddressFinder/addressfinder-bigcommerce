@@ -1,0 +1,23 @@
+{
+  "name": "addressfinder-bigcommerce",
+  "version": "1.1.2",
+  "description": "An address verification tool for BigCommerce stores serving New Zealand and Australian customers",
+  "main": "src/index.js",
+  "repository": "git@github.com:AbleTech/addressfinder-bigcommerce.git",
+  "author": "@Abletech",
+  "license": "GPL",
+  "devDependencies": {
+    "concat": "^1.0.3",
+    "eslint": "^3.19.0",
+    "uglify-js": "^3.0.1",
+    "watch": "^1.0.2"
+  },
+  "scripts": {
+    "lint": "eslint src/*.js",
+    "concat": "concat src/*.js -o dist/bigcommerce-v1-boot.js",
+    "minify": "uglifyjs dist/bigcommerce-v1-boot.js -m -o dist/bigcommerce-v1-boot.min.js",
+    "build": "npm run lint && npm run concat",
+    "build:production": "npm run build && npm run minify",
+    "watch": "watch 'npm run build' src/"
+  }
+}
