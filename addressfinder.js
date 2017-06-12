@@ -4,7 +4,7 @@
  *
  * https://github.com/AbleTech/addressfinder-bigcommerce
  *
- * VERSION 1.1.1
+ * VERSION 1.1.2
  *
  * Copyright (c) 2016 Abletech
  */
@@ -149,8 +149,8 @@
    * This function invokes the AF widget, and makes adjustments to the
    * address response data returned by the AF widget
    */
-  var _initAF = function(elementId, key, code, onSelectFn) {
-    var widget = new AddressFinder.Widget(d.getElementById(elementId), key, code);
+  var _initAF = function(elementId, key, code, onSelectFn, widgetOptions) {
+    var widget = new AddressFinder.Widget(d.getElementById(elementId), key, code, widgetOptions);
     widget.on("result:select", onSelectFn);
 
     return widget;
@@ -174,14 +174,14 @@
     };
 
     if(AddressFinderConfig.key_nz){
-      widgets.nz = _initAF(elementId, AddressFinderConfig.key_nz, "nz", _selectNewZealand);
+      widgets.nz = _initAF(elementId, AddressFinderConfig.key_nz, "nz", _selectNewZealand, AddressFinderConfig.nzWidgetOptions || AddressFinderConfig.widgetOptions);
       widgets.nz.type = type;
     } else {
       widgets.nz = nullWidget;
     }
 
     if(AddressFinderConfig.key_au){
-      widgets.au = _initAF(elementId, AddressFinderConfig.key_au, "au", _selectAustralia);
+      widgets.au = _initAF(elementId, AddressFinderConfig.key_au, "au", _selectAustralia, AddressFinderConfig.auWidgetOptions || AddressFinderConfig.widgetOptions);
       widgets.au.type = type;
     } else {
       widgets.au = nullWidget;
