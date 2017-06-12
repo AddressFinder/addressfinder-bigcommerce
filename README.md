@@ -105,4 +105,4 @@ For the full list of [AU specific options](https://addressfinder.com.au/docs/wid
 
 ## Software License
 
-The AddressFinder plugin for Salesforce is released under the permissive free software [MIT License](https://github.com/AbleTech/addressfinder-bigcommerce/blob/master/LICENCE.md).
+The AddressFinder plugin for BigCommerce is released under the permissive free software [MIT License](https://github.com/AbleTech/addressfinder-bigcommerce/blob/master/LICENCE.md).
