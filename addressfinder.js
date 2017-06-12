@@ -4,7 +4,7 @@
  *
  * https://github.com/AbleTech/addressfinder-bigcommerce
  *
- * VERSION 1.1.1
+ * VERSION 1.1.2
  *
  * Copyright (c) 2016 Abletech
  */
@@ -156,23 +156,6 @@
     return widget;
   };
 
-  /* This function parses advanced options that users may add to the widget */
-
-  var safeParseJSONObject = function(jsonObject) {
-    if(jsonObject == undefined){
-      return null;
-    }
-    try {
-      jsonObject = JSON.parse(jsonObject);
-    } catch (e) {
-      if (AFC.debug) {
-        alert('Invalid widget option: ' + jsonObject);
-      }
-      return null;
-    }
-    return jsonObject;
-  };
-
   /*
    * This function calls _initAF to invoke the AF widget and binds it to the
    * address_1 fields
@@ -190,17 +173,15 @@
       on: function() { }
     };
 
-    var parsedOptions = safeParseJSONObject(AddressFinderConfig.widgetOptions);
-
     if(AddressFinderConfig.key_nz){
-      widgets.nz = _initAF(elementId, AddressFinderConfig.key_nz, "nz", _selectNewZealand, parsedOptions);
+      widgets.nz = _initAF(elementId, AddressFinderConfig.key_nz, "nz", _selectNewZealand, AddressFinderConfig.nzWidgetOptions || AddressFinderConfig.widgetOptions);
       widgets.nz.type = type;
     } else {
       widgets.nz = nullWidget;
     }
 
     if(AddressFinderConfig.key_au){
-      widgets.au = _initAF(elementId, AddressFinderConfig.key_au, "au", _selectAustralia, parsedOptions);
+      widgets.au = _initAF(elementId, AddressFinderConfig.key_au, "au", _selectAustralia, AddressFinderConfig.auWidgetOptions || AddressFinderConfig.widgetOptions);
       widgets.au.type = type;
     } else {
       widgets.au = nullWidget;
