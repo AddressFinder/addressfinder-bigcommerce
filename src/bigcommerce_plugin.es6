@@ -61,7 +61,7 @@
             elements: {
               address1: 'FormField_8',
               address2: 'FormField_9',
-              city: 'FormField_10',
+              suburb: 'FormField_10',
               region: 'FormField_12',
               postcode: 'FormField_13',
             },
@@ -127,35 +127,33 @@
         if(search){
           let formHelperConfig = {
             nz: {
-              countryValue: search,
+              countryValue: config.nz.countryValue,
               elements: {
                 search: search,
-                address1: d.getElementById(config.elements.nz.address1),
+                address1: d.getElementById(config.nz.elements.address1),
                 address2: null,
-                suburb: d.getElementById(config.elements.nz.suburb),
-                city: d.getElementById(config.elements.nz.city),
-                region: d.getElementById(config.elements.nz.region),
-                postcode: d.querySelector(config.elements.nz.postcode)
+                suburb: d.getElementById(config.nz.elements.suburb),
+                city: d.getElementById(config.nz.elements.city),
+                region: d.getElementById(config.nz.elements.region),
+                postcode: d.getElementById(config.nz.elements.postcode)
               },
               regionValues: null
             },
             au: {
-              countryValue: search,
+              countryValue: config.au.countryValue,
               elements: {
                 search: search,
-                address1: d.getElementById(config.elements.au.address1),
-                address2: null,
-                suburb: d.getElementById(config.elements.au.suburb),
-                city: d.getElementById(config.elements.au.city),
-                region: d.getElementById(config.elements.au.region),
-                postcode: d.querySelector(config.elements.au.postcode)
+                address1: d.getElementById(config.au.elements.address1),
+                address2: d.getElementById(config.au.elements.address2),
+                suburb: d.getElementById(config.au.elements.suburb),
+                city: null,
+                region: d.getElementById(config.au.elements.region),
+                postcode: d.getElementById(config.au.elements.postcode)
               },
-              stateValues: config.stateValues
-            }
+              stateValues: config.au.states
+            },
+            country_element: d.getElementById(config.country)
           }
-
-          let combinedConfig = {countryValues: fields.countryValues, stateValues: fields.stateValues}
-          Object.assign(combinedConfig, this.config);
 
           let helper = new AF.FormHelper(this.apiConfig, formHelperConfig)
           this.formHelpers.push(helper)

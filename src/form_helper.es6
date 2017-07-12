@@ -2,9 +2,9 @@
   w.AF = w.AF || {}
 
   w.AF.FormHelper = class {
-    constructor(config, formElements){
+    constructor(apiConfig, config){
+      this.apiConfig = apiConfig
       this.config = config
-      this.elements = formElements
       this.widgets = {}
 
       this.bindToForm()
@@ -12,13 +12,13 @@
 
     bindToForm(){
       this.boundCountryChangedListener = this.countryChanged.bind(this) // save this so we can unbind in the destroy() method
-      this.elements.country.addEventListener("change", this.boundCountryChangedListener);
+      this.config.country_element.addEventListener("change", this.boundCountryChangedListener);
 
-      let nzWidget = new w.AddressFinder.Widget(this.elements.address1, this.config.nzKey, "nz", this.config.nzWidgetOptions);
+      let nzWidget = new w.AddressFinder.Widget(this.config.nz.elements.search, this.apiConfig.nzKey, "nz", this.apiConfig.nzWidgetOptions);
       nzWidget.on("result:select", this.nzAddressSelected.bind(this))
       this.widgets["nz"] = nzWidget
 
-      let auWidget = new w.AddressFinder.Widget(this.elements.address1, this.config.auKey, "au", this.config.auWidgetOptions);
+      let auWidget = new w.AddressFinder.Widget(this.config.au.elements.search, this.apiConfig.auKey, "au", this.apiConfig.auWidgetOptions);
       auWidget.on("result:select", this.auAddressSelected.bind(this))
       this.widgets["au"] = auWidget
 
@@ -31,11 +31,11 @@
     }
 
     countryChanged(){
-      switch (this.elements.country.value) {
-        case this.config.countryValues.nz:
+      switch (this.config.country_element.value) {
+        case this.config.nz.countryValue:
           this.setActiveCountry("nz")
           break
-        case this.config.countryValues.au:
+        case this.config.au.countryValue:
           this.setActiveCountry("au")
           break
         default:
@@ -54,38 +54,36 @@
     nzAddressSelected(fullAddress, metaData){
       let selected = new AddressFinder.NZSelectedAddress(fullAddress, metaData);
 
-      if (this.elements.address2) {
-        this.elements.address1.value = selected.address_line_1()
-        this.elements.address2.value = selected.address_line_2()
+      if (this.config.nz.elements.address2) {
+        this.config.nz.elements.address1.value = selected.address_line_1()
+        this.config.nz.elements.address2.value = selected.address_line_2()
       }
       else {
-        this.elements.address1.value = selected.address_line_1_and_2()
+        this.config.nz.elements.address1.value = selected.address_line_1_and_2()
       }
 
-      this.elements.suburb.value = selected.suburb()
-      this.elements.city.value = selected.city()
-      this.elements.postcode.value = selected.postcode()
+      this.config.nz.elements.suburb.value = selected.suburb()
+      this.config.nz.elements.city.value = selected.city()
+      this.config.nz.elements.postcode.value = selected.postcode()
     }
 
     auAddressSelected(fullAddress, metaData){
-      console.log(`selected address ${fullAddress}`)
+      let elements = this.config.au.elements
 
-      if (this.elements.address2) {
-        this.elements.address1.value = metaData.address_line_1()
-        this.elements.address2.value = metaData.address_line_2()
+      if (elements.address2) {
+        elements.address1.value = metaData.address_line_1
+        elements.address2.value = metaData.address_line_2
       }
       else {
-        this.elements.address1.value = metaData.address_line_1_and_2
+        if (metaData.address_line_2) {
+          elements.address1.value = metaData.address_line_1 + ", " + metaData.address_line_2
+        } else {
+          elements.address1.value = metaData.address_line_1
+        }
       }
 
-      this.elements.city.value = metaData.locality_name
-      this.elements.postcode = metaData.postcode
-
-      // _setFieldValue(curr.address_1, metaData.address_line_1);
-      // _setFieldValue(curr.address_2, metaData.address_line_2 || '');
-      // _setFieldValue(curr.city, metaData.locality_name || '');
-      // _setAuState(curr.state, metaData.state_territory);
-      // _setFieldValue(curr.postcode, metaData.postcode);
+      elements.suburb.value = metaData.locality_name
+      elements.postcode.value = metaData.postcode
     }
 
     // shuts down this object by disabling the widget and country selector
@@ -96,7 +94,7 @@
 
       this.widgets = []
 
-      this.elements.country.removeEventListener("change", this.boundCountryChangedListener)
+      this.config.country_element.removeEventListener("change", this.boundCountryChangedListener)
     }
   }
 })(document, window)

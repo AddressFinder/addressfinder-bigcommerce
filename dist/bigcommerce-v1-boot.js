@@ -1,324 +1,387 @@
-/*
- * The AddressFinder plugin for BigCommerce adds an autocomplete capability to
- * the billing and shipping address fields of your online store.
- *
- * https://github.com/AbleTech/addressfinder-bigcommerce
- *
- * VERSION 1.1.2
- *
- * Copyright (c) 2016 Abletech
- */
-(function(d, w) {
-  /*
-   * We expect BC stores to always have address fields with these IDs,
-   * regardless of theme
-   */
-  var fieldsForAddressType = {
-    billing: {
-      address_1: 'FormField_8', address_2: 'FormField_9', city: 'FormField_10',
-      country: 'FormField_11', state: 'FormField_12', postcode: 'FormField_13'
-    },
-    shipping: {
-      address_1: 'FormField_18', address_2: 'FormField_19', city: 'FormField_20',
-      country: 'FormField_21', state: 'FormField_22', postcode: 'FormField_23'
+"use strict";
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+(function (d, w) {
+  w.AF = w.AF || {};
+
+  w.AF.BigCommercePlugin = function () {
+    function _class(config) {
+      _classCallCheck(this, _class);
+
+      this.apiConfig = config;
+      this.addressConfig = [{
+        label: "Optimized one-page checkout (Early access)",
+        country: 'countryCodeInput',
+        search: "addressLine1Input",
+        nz: {
+          countryValue: "string:NZ",
+          elements: {
+            address1: 'addressLine1Input',
+            suburb: 'addressLine2Input',
+            city: 'cityInput',
+            region: 'provinceInput',
+            postcode: 'postCodeInput'
+          },
+          regionValues: null
+        },
+        au: {
+          countryValue: "string:AU",
+          elements: {
+            address1: 'addressLine1Input',
+            address2: 'addressLine2Input',
+            suburb: 'cityInput',
+            state: 'provinceInput',
+            postcode: 'postCodeInput'
+          },
+          states: {
+            'ACT': 'string:Australian Capital Territory',
+            'NSW': 'string:New South Wales',
+            'NT': 'string:Northern Territory',
+            'QLD': 'string:Queensland',
+            'SA': 'string:South Australia',
+            'TAS': 'string:Tasmania',
+            'VIC': 'string:Victoria',
+            'WA': 'string:Western Australia'
+          }
+        }
+      }, {
+        label: "One-page checkout (Billing details)",
+        country: 'FormField_11',
+        search: "FormField_8",
+        nz: {
+          countryValue: "New Zealand",
+          elements: {
+            address1: 'FormField_8',
+            suburb: 'FormField_9',
+            city: 'FormField_10',
+            region: 'FormField_12',
+            postcode: 'FormField_13'
+          },
+          regionValues: null
+        },
+        au: {
+          countryValue: "Australia",
+          elements: {
+            address1: 'FormField_8',
+            address2: 'FormField_9',
+            suburb: 'FormField_10',
+            region: 'FormField_12',
+            postcode: 'FormField_13'
+          },
+          states: {
+            'ACT': 'Australian Capital Territory',
+            'NSW': 'New South Wales',
+            'NT': 'Northern Territory',
+            'QLD': 'Queensland',
+            'SA': 'South Australia',
+            'TAS': 'Tasmania',
+            'VIC': 'Victoria',
+            'WA': 'Western Australia'
+          }
+        }
+      }, {
+        label: "One-page checkout (Shipping details)",
+        country: "FormField_21",
+        search: "FormField_18",
+        nz: {
+          countryValue: "New Zealand",
+          elements: {
+            address1: 'FormField_18',
+            suburb: 'FormField_19',
+            city: 'FormField_20',
+            region: 'FormField_22',
+            postcode: 'FormField_23'
+          },
+          regionValues: null
+        },
+        au: {
+          countryValue: "Australia",
+          elements: {
+            address1: 'FormField_18',
+            address2: 'FormField_19',
+            suburb: 'FormField_20',
+            state: 'FormField_22',
+            postcode: 'FormField_23'
+          },
+          states: {
+            'ACT': 'Australian Capital Territory',
+            'NSW': 'New South Wales',
+            'NT': 'Northern Territory',
+            'QLD': 'Queensland',
+            'SA': 'South Australia',
+            'TAS': 'Tasmania',
+            'VIC': 'Victoria',
+            'WA': 'Western Australia'
+          }
+        }
+      }];
+      this.formHelpers = [];
+
+      this.searchForAddresses();
+      this.monitorPageMutations();
     }
-  };
 
-  /************************** PRIVATE FUNCTIONS *****************************/
+    _createClass(_class, [{
+      key: "searchForAddresses",
+      value: function searchForAddresses() {
+        var _iteratorNormalCompletion = true;
+        var _didIteratorError = false;
+        var _iteratorError = undefined;
 
-  /*
-   * Clear all address fields (except country)
-   */
-  var _clearFields = function(type) {
-    var fields = fieldsForAddressType[type];
-    delete fields.country;
+        try {
+          for (var _iterator = this.addressConfig[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+            var config = _step.value;
 
-    for (var field in fields) {
-      d.getElementById(fields[field]).value = '';
-    }
-  };
+            var search = d.getElementById(config.search);
 
-  /*
-   * Sets the value of the input field corresponding to a given element id.
-   * If the corresponding field is not found an error message is logged to
-   * console.
-   */
-  var _setFieldValue = function(elementId, value) {
-    var field = d.getElementById(elementId);
+            if (search) {
+              var formHelperConfig = {
+                nz: {
+                  countryValue: config.nz.countryValue,
+                  elements: {
+                    search: search,
+                    address1: d.getElementById(config.nz.elements.address1),
+                    address2: null,
+                    suburb: d.getElementById(config.nz.elements.suburb),
+                    city: d.getElementById(config.nz.elements.city),
+                    region: d.getElementById(config.nz.elements.region),
+                    postcode: d.getElementById(config.nz.elements.postcode)
+                  },
+                  regionValues: null
+                },
+                au: {
+                  countryValue: config.au.countryValue,
+                  elements: {
+                    search: search,
+                    address1: d.getElementById(config.au.elements.address1),
+                    address2: d.getElementById(config.au.elements.address2),
+                    suburb: d.getElementById(config.au.elements.suburb),
+                    city: null,
+                    region: d.getElementById(config.au.elements.region),
+                    postcode: d.getElementById(config.au.elements.postcode)
+                  },
+                  stateValues: config.au.states
+                },
+                country_element: d.getElementById(config.country)
+              };
 
-    if (field) {
-      field.value = value;
-
-      var options = field.options;
-
-      if (options) {
-        var event = document.createEvent('HTMLEvents');
-        event.initEvent('change', true, false);
-        field.dispatchEvent(event);
-
-        for (var i = 0; i < options.length; i++) {
-          if (field.options[i].value === value) {
-            field.dispatchEvent(event);
-            break;
+              var helper = new AF.FormHelper(this.apiConfig, formHelperConfig);
+              this.formHelpers.push(helper);
+            }
+          }
+        } catch (err) {
+          _didIteratorError = true;
+          _iteratorError = err;
+        } finally {
+          try {
+            if (!_iteratorNormalCompletion && _iterator.return) {
+              _iterator.return();
+            }
+          } finally {
+            if (_didIteratorError) {
+              throw _iteratorError;
+            }
           }
         }
       }
+    }, {
+      key: "resetAndReloadFormHelpers",
+      value: function resetAndReloadFormHelpers() {
+        var _iteratorNormalCompletion2 = true;
+        var _didIteratorError2 = false;
+        var _iteratorError2 = undefined;
 
-      return;
-    }
+        try {
+          for (var _iterator2 = this.formHelpers[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+            var helper = _step2.value;
 
-    var errorMessage = 'AddressFinder Error: '
-                       + 'Attempted to update value for field that could not be found.\n'
-                       + '\nField ID: ' + elementId
-                       + '\nValue: ' + value;
-
-    if (w.console) {
-      console.warn(errorMessage);
-    }
-  };
-
-  /*
-   * Australian addresses returned by the AF widget have abbreviated states,
-   * but the dropdown from BC has the states' names in full. This function
-   * looks up the appropriate state name and sets the dropdown value.
-   */
-  var _setAuState = function(elementId, value) {
-    var statesByCode = {
-      'ACT': 'Australian Capital Territory',
-      'NSW': 'New South Wales',
-      'NT' : 'Northern Territory',
-      'QLD': 'Queensland',
-      'SA' : 'South Australia',
-      'TAS': 'Tasmania',
-      'VIC': 'Victoria',
-      'WA' : 'Western Australia'
-    };
-    var state = statesByCode[value];
-    _setFieldValue(elementId, state);
-  };
-
-
-  /*
-   * Populate the address fields with the NZ address returned by the AF widget
-   */
-  var _selectNewZealand = function(address, metaData) {
-    var type = this.type, curr = fieldsForAddressType[type];
-
-    /* split and trim */
-    address = metaData.postal || metaData.a;
-    var addressLines = address.split(',');
-    for(var i = 0; i < addressLines.length; i++) {
-      addressLines[i] = addressLines[i].replace(/^\s+|\s+$/g,'');
-    }
-
-    /* remove City/Postcode */
-    var city = metaData.mailtown || metaData.city;
-    if(addressLines[addressLines.length-1] == city + ' ' + metaData.postcode) {
-      addressLines.pop();
-      _setFieldValue(curr.city, city);
-      _setFieldValue(curr.postcode, metaData.postcode);
-    }
-
-    /* set address_2 */
-    if(addressLines.length > 1) {
-      _setFieldValue(curr.address_2, addressLines.pop());
-    } else {
-      _setFieldValue(curr.address_2, '');
-    }
-
-    _setFieldValue(curr.address_1, addressLines.join(', '));
-    _setFieldValue(curr.state, metaData.region);
-  };
-
-  /*
-   * Populate the address fields with the AU address returned by the AF widget
-   */
-  var _selectAustralia = function(address, metaData) {
-    var type = this.type;
-    var curr = fieldsForAddressType[type];
-
-    _setFieldValue(curr.address_1, metaData.address_line_1);
-    _setFieldValue(curr.address_2, metaData.address_line_2 || '');
-    _setFieldValue(curr.city, metaData.locality_name || '');
-    _setAuState(curr.state, metaData.state_territory);
-    _setFieldValue(curr.postcode, metaData.postcode);
-  };
-
-  /*
-   * This function invokes the AF widget, and makes adjustments to the
-   * address response data returned by the AF widget
-   */
-  var _initAF = function(elementId, key, code, onSelectFn, widgetOptions) {
-    var widget = new w.AddressFinder.Widget(d.getElementById(elementId), key, code, widgetOptions);
-    widget.on('result:select', onSelectFn);
-
-    return widget;
-  };
-
-  /*
-   * This function calls _initAF to invoke the AF widget and binds it to the
-   * address_1 fields
-   */
-  var _bindToAddressPanel = function(type, elementId) {
-    var addressPanel = d.getElementById(elementId);
-
-    if (!addressPanel) return;
-
-    var widgets = {};
-
-    var nullWidget = {
-      enable: function() { },
-      disable: function() { },
-      on: function() { }
-    };
-
-    if(w.AddressFinderConfig.key_nz){
-      widgets.nz = _initAF(elementId, w.AddressFinderConfig.key_nz, 'nz', _selectNewZealand, w.AddressFinderConfig.nzWidgetOptions || w.AddressFinderConfig.widgetOptions);
-      widgets.nz.type = type;
-    } else {
-      widgets.nz = nullWidget;
-    }
-
-    if(w.AddressFinderConfig.key_au){
-      widgets.au = _initAF(elementId, w.AddressFinderConfig.key_au, 'au', _selectAustralia, w.AddressFinderConfig.auWidgetOptions || w.AddressFinderConfig.widgetOptions);
-      widgets.au.type = type;
-    } else {
-      widgets.au = nullWidget;
-    }
-
-    var countryField = fieldsForAddressType[type].country;
-
-    var _toggleWidgets = function() {
-      var selectedCountry = d.getElementById(countryField).value;
-
-      if (selectedCountry == 'New Zealand') {
-        widgets.nz.enable();
-        widgets.au.disable();
-        _clearFields(type);
-      } else if (selectedCountry == 'Australia') {
-        widgets.au.enable();
-        widgets.nz.disable();
-        _clearFields(type);
-      } else {
-        widgets.au.disable();
-        widgets.nz.disable();
-      }
-    };
-
-    /* enable/disable correct widget at start */
-    _toggleWidgets();
-
-    /* enable/disable correct widget for subsequent changes in country selected */
-    d.getElementById(countryField).addEventListener('change', _toggleWidgets);
-
-    /* ensure results are displayed */
-    var addresses = d.getElementsByClassName('af_list');
-    for (var i = 0; i < addresses.length; i++) {
-      addresses[i].style.zIndex = 999;
-    }
-  };
-
-  /*
-   * We expect BC to remove the class "ExpressCheckoutBlockCollapsed" from
-   * the selector when the address fields are replaced. Only when we have
-   * observed this mutation do we bind an AF widget to the "address_1" field.
-   */
-  var _setObserver = function(addressType, elementId, oldValue) {
-    if (w.MutationObserver) {
-
-      /* for modern browsers */
-      var target = d.querySelector('#' + elementId);
-      var config = { attributes: true, attributeOldValue: true };
-      var observer = new MutationObserver(function(mutations) {
-        mutations.forEach(function(mutation) {
-          if (mutation.attributeName === 'class' && mutation.oldValue.indexOf(oldValue) !== -1) {
-            _bindToAddressPanel(addressType, fieldsForAddressType[addressType]['address_1']);
-            observer.disconnect();
+            helper.destroy();
           }
-        });
-      });
-      observer.observe(target, config);
-
-    } else if (w.addEventListener) {
-
-      /* for IE 9 and 10 */
-      target = d.getElementById(elementId);
-      var listener = function(event) {
-        if (event.attrName.toLowerCase() === 'class' && event.prevValue.indexOf(oldValue) !== -1) {
-          _bindToAddressPanel(addressType, fieldsForAddressType[addressType]['address_1']);
-          target.removeEventListener('DOMAttrModified', listener, false);
+        } catch (err) {
+          _didIteratorError2 = true;
+          _iteratorError2 = err;
+        } finally {
+          try {
+            if (!_iteratorNormalCompletion2 && _iterator2.return) {
+              _iterator2.return();
+            }
+          } finally {
+            if (_didIteratorError2) {
+              throw _iteratorError2;
+            }
+          }
         }
-      };
-      target.addEventListener('DOMAttrModified', listener, false);
 
-    } else {
-      if (w.console) {
-        console.info('AddressFinder Error - please use a more modern browser');
+        this.formHelpers = [];
+
+        this.searchForAddresses();
       }
-    }
-  };
 
-  var _hasClass = function(element, className) {
-    if (element.classList) {
-      return element.classList.contains(className);
-    } else {
-      return new RegExp('(^| )' + className + '( |$)', 'gi').test(element.className);
-    }
-  };
+      // TODO handle older versions of Internet Explorer
 
-  /*
-   * This function binds the AF widget to the address_1 field, either directly
-   * or by setting an observer and binding only after the mutation is observed
-   */
-  var _bindAF = function(addressType, elementId, oldValue) {
-    var target = d.getElementById('CheckoutStepBillingAddress');
+    }, {
+      key: "monitorPageMutations",
+      value: function monitorPageMutations() {
+        var _this = this;
 
-    if (target && _hasClass(target, 'ExpressCheckoutBlockCollapsed')) {
-      /*
-       * For guest checkout, both billing and shipping addresses are collapsed
-       */
-      _setObserver(addressType, elementId, oldValue);
-    } else {
-      /*
-       * No collapsed address block when:
-       *   - customer is logged in, only shipping address is collapsed
-       *   - a new account is being created
-       *   - a new address is being added to an account
-       *   - an existing address for an account is being edited
-       */
-      _bindToAddressPanel(addressType, fieldsForAddressType[addressType]['address_1']);
-    }
-  };
+        if (w.MutationObserver) {
+          /* for modern browsers */
+          var observer = new MutationObserver(function (mutations) {
+            _this.resetAndReloadFormHelpers();
+          });
+          var billing = d.getElementById("CheckoutStepBillingAddress");
+          observer.observe(billing, { childList: true, characterData: true, attributes: true });
+        }
+      }
+    }]);
 
-  /*
-   * This callback function invokes the AF widget
-   */
-  var _initPlugin = function() {
-    _bindAF('billing', 'CheckoutStepBillingAddress', 'ExpressCheckoutBlockCollapsed');
-    _bindAF('shipping', 'CheckoutStepShippingAddress', 'ExpressCheckoutBlockCollapsed');
-  };
-
-  /*
-   * This function is called when the window DOMContentLoaded event fires.
-   * It adds the AddressFinder widget script, and when it loads, calls _initAF().
-   */
-  var _addScript = function() {
-    var s = d.createElement('script');
-    s.src = 'https://api.addressfinder.io/assets/v3/widget.js';
-    s.async = 1;
-    s.onload = _initPlugin;
-    d.body.appendChild(s);
-  };
-  /**************************************************************************/
-
-  /*
-   * Add the AF widget when DOM content has loaded.
-   * The widget (when downloaded) will then call the initAF function
-   */
-  if (d.readyState != 'loading') {
-    _addScript();
-  } else {
-    d.addEventListener('DOMContentLoaded', _addScript);
-  }
-
+    return _class;
+  }();
 })(document, window);
+//# sourceMappingURL=bigcommerce_plugin.js.map
+"use strict";
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+(function (d, w) {
+  w.AF = w.AF || {};
+
+  w.AF.FormHelper = function () {
+    function _class(apiConfig, config) {
+      _classCallCheck(this, _class);
+
+      this.apiConfig = apiConfig;
+      this.config = config;
+      this.widgets = {};
+
+      this.bindToForm();
+    }
+
+    _createClass(_class, [{
+      key: "bindToForm",
+      value: function bindToForm() {
+        this.boundCountryChangedListener = this.countryChanged.bind(this); // save this so we can unbind in the destroy() method
+        this.config.country_element.addEventListener("change", this.boundCountryChangedListener);
+
+        var nzWidget = new w.AddressFinder.Widget(this.config.nz.elements.search, this.apiConfig.nzKey, "nz", this.apiConfig.nzWidgetOptions);
+        nzWidget.on("result:select", this.nzAddressSelected.bind(this));
+        this.widgets["nz"] = nzWidget;
+
+        var auWidget = new w.AddressFinder.Widget(this.config.au.elements.search, this.apiConfig.auKey, "au", this.apiConfig.auWidgetOptions);
+        auWidget.on("result:select", this.auAddressSelected.bind(this));
+        this.widgets["au"] = auWidget;
+
+        this.widgets["null"] = {
+          enable: function enable() {},
+          disable: function disable() {}
+        };
+
+        this.countryChanged();
+      }
+    }, {
+      key: "countryChanged",
+      value: function countryChanged() {
+        switch (this.config.country_element.value) {
+          case this.config.nz.countryValue:
+            this.setActiveCountry("nz");
+            break;
+          case this.config.au.countryValue:
+            this.setActiveCountry("au");
+            break;
+          default:
+            this.setActiveCountry("null");
+        }
+      }
+    }, {
+      key: "setActiveCountry",
+      value: function setActiveCountry(countryCode) {
+        for (var widgetCountryCode in this.widgets) {
+          this.widgets[widgetCountryCode].disable();
+        }
+
+        this.widgets[countryCode].enable();
+      }
+    }, {
+      key: "nzAddressSelected",
+      value: function nzAddressSelected(fullAddress, metaData) {
+        var selected = new AddressFinder.NZSelectedAddress(fullAddress, metaData);
+
+        if (this.config.nz.elements.address2) {
+          this.config.nz.elements.address1.value = selected.address_line_1();
+          this.config.nz.elements.address2.value = selected.address_line_2();
+        } else {
+          this.config.nz.elements.address1.value = selected.address_line_1_and_2();
+        }
+
+        this.config.nz.elements.suburb.value = selected.suburb();
+        this.config.nz.elements.city.value = selected.city();
+        this.config.nz.elements.postcode.value = selected.postcode();
+      }
+    }, {
+      key: "auAddressSelected",
+      value: function auAddressSelected(fullAddress, metaData) {
+        var elements = this.config.au.elements;
+
+        if (elements.address2) {
+          elements.address1.value = metaData.address_line_1;
+          elements.address2.value = metaData.address_line_2;
+        } else {
+          if (metaData.address_line_2) {
+            elements.address1.value = metaData.address_line_1 + ", " + metaData.address_line_2;
+          } else {
+            elements.address1.value = metaData.address_line_1;
+          }
+        }
+
+        elements.suburb.value = metaData.locality_name;
+        elements.postcode.value = metaData.postcode;
+      }
+
+      // shuts down this object by disabling the widget and country selector
+
+    }, {
+      key: "destroy",
+      value: function destroy() {
+        for (var widgetCountryCode in this.widgets) {
+          this.widgets[widgetCountryCode].disable();
+        }
+
+        this.widgets = [];
+
+        this.config.country_element.removeEventListener("change", this.boundCountryChangedListener);
+      }
+    }]);
+
+    return _class;
+  }();
+})(document, window);
+//# sourceMappingURL=form_helper.js.map
+'use strict';
+
+// // this is done within
+// window.AddressFinderConfig = {
+//   key: "ADDRESSFINDER_NZ_DEMO_KEY"
+// }
+
+(function (d, w) {
+  var _initPlugin = function _initPlugin() {
+    w._plugin = new AF.BigCommercePlugin({
+      nzKey: w.AddressFinderConfig.key_nz || w.AddressFinderConfig.key,
+      auKey: w.AddressFinderConfig.key_au || w.AddressFinderConfig.key,
+      nzWidgetOptions: w.AddressFinderConfig.nzWidgetOptions || w.AddressFinderConfig.widgetOptions,
+      auWidgetOptions: w.AddressFinderConfig.auWidgetOptions || w.AddressFinderConfig.widgetOptions
+    });
+  };
+
+  var s = d.createElement('script');
+  s.src = 'https://api.addressfinder.io/assets/v3/widget.js';
+  s.async = 1;
+  s.onload = _initPlugin;
+  d.body.appendChild(s);
+})(document, window);
+//# sourceMappingURL=index.js.map
