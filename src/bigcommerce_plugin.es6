@@ -62,7 +62,7 @@
               address1: 'FormField_8',
               address2: 'FormField_9',
               suburb: 'FormField_10',
-              region: 'FormField_12',
+              state: 'FormField_12',
               postcode: 'FormField_13',
             },
             states: {
@@ -147,7 +147,7 @@
                 address2: d.getElementById(config.au.elements.address2),
                 suburb: d.getElementById(config.au.elements.suburb),
                 city: null,
-                region: d.getElementById(config.au.elements.region),
+                state: d.getElementById(config.au.elements.state),
                 postcode: d.getElementById(config.au.elements.postcode)
               },
               stateValues: config.au.states
@@ -162,6 +162,7 @@
     }
 
     resetAndReloadFormHelpers(){
+      console.log("Boom, reset all the things")
       for (const helper of this.formHelpers) {
         helper.destroy()
       }
@@ -179,7 +180,7 @@
           this.resetAndReloadFormHelpers()
         });
         let billing = d.getElementById("CheckoutStepBillingAddress")
-        observer.observe(billing, {childList: true, characterData: true, attributes: true});
+        observer.observe(billing, {childList: true, subtree: true});
       }
     }
   }

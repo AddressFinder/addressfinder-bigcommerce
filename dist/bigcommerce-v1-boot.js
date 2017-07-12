@@ -68,7 +68,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             address1: 'FormField_8',
             address2: 'FormField_9',
             suburb: 'FormField_10',
-            region: 'FormField_12',
+            state: 'FormField_12',
             postcode: 'FormField_13'
           },
           states: {
@@ -160,7 +160,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                     address2: d.getElementById(config.au.elements.address2),
                     suburb: d.getElementById(config.au.elements.suburb),
                     city: null,
-                    region: d.getElementById(config.au.elements.region),
+                    state: d.getElementById(config.au.elements.state),
                     postcode: d.getElementById(config.au.elements.postcode)
                   },
                   stateValues: config.au.states
@@ -190,6 +190,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     }, {
       key: "resetAndReloadFormHelpers",
       value: function resetAndReloadFormHelpers() {
+        console.log("Boom, reset all the things");
         var _iteratorNormalCompletion2 = true;
         var _didIteratorError2 = false;
         var _iteratorError2 = undefined;
@@ -233,7 +234,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             _this.resetAndReloadFormHelpers();
           });
           var billing = d.getElementById("CheckoutStepBillingAddress");
-          observer.observe(billing, { childList: true, characterData: true, attributes: true });
+          observer.observe(billing, { childList: true, subtree: true });
         }
       }
     }]);
@@ -309,18 +310,21 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     }, {
       key: "nzAddressSelected",
       value: function nzAddressSelected(fullAddress, metaData) {
+        var elements = this.config.nz.elements;
         var selected = new AddressFinder.NZSelectedAddress(fullAddress, metaData);
 
         if (this.config.nz.elements.address2) {
-          this.config.nz.elements.address1.value = selected.address_line_1();
-          this.config.nz.elements.address2.value = selected.address_line_2();
+          elements.address1.value = selected.address_line_1();
+          elements.address2.value = selected.address_line_2();
         } else {
-          this.config.nz.elements.address1.value = selected.address_line_1_and_2();
+          elements.address1.value = selected.address_line_1_and_2();
         }
 
-        this.config.nz.elements.suburb.value = selected.suburb();
-        this.config.nz.elements.city.value = selected.city();
-        this.config.nz.elements.postcode.value = selected.postcode();
+        elements.suburb.value = selected.suburb();
+        elements.city.value = selected.city();
+        elements.postcode.value = selected.postcode();
+
+        this.setFieldValue(elements.region, metaData.region);
       }
     }, {
       key: "auAddressSelected",
@@ -340,6 +344,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
         elements.suburb.value = metaData.locality_name;
         elements.postcode.value = metaData.postcode;
+
+        // set state
+        var state_value = this.config.au.stateValues[metaData.state_territory];
+        this.setFieldValue(elements.state, state_value, "state");
       }
 
       // shuts down this object by disabling the widget and country selector
@@ -354,6 +362,36 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         this.widgets = [];
 
         this.config.country_element.removeEventListener("change", this.boundCountryChangedListener);
+      }
+    }, {
+      key: "setFieldValue",
+      value: function setFieldValue(field, value, label) {
+        if (field) {
+          field.value = value;
+
+          var options = field.options;
+
+          if (options) {
+            var event = document.createEvent('HTMLEvents');
+            event.initEvent('change', true, false);
+            field.dispatchEvent(event);
+
+            for (var i = 0; i < options.length; i++) {
+              if (field.options[i].value === value) {
+                field.dispatchEvent(event);
+                break;
+              }
+            }
+          }
+
+          return;
+        }
+
+        var errorMessage = 'AddressFinder Error: ' + 'Attempted to update value for field that could not be found.\n' + '\nField: ' + label + '\nValue: ' + value;
+
+        if (w.console) {
+          console.warn(errorMessage);
+        }
       }
     }]);
 
