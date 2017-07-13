@@ -126,12 +126,14 @@
 
         if(search){
           let formHelperConfig = {
+            countryElement: d.getElementById(config.country),
             nz: {
               countryValue: config.nz.countryValue,
+              searchElement: d.getElementById(config.nz.elements.address1),
               elements: {
-                search: search,
-                address1: d.getElementById(config.nz.elements.address1),
-                address2: null,
+                address_line_1_and_2: d.getElementById(config.nz.elements.address1),
+                address_line_1: null,
+                address_line_2: null,
                 suburb: d.getElementById(config.nz.elements.suburb),
                 city: d.getElementById(config.nz.elements.city),
                 region: d.getElementById(config.nz.elements.region),
@@ -141,34 +143,23 @@
             },
             au: {
               countryValue: config.au.countryValue,
+              searchElement: d.getElementById(config.au.elements.address1),
               elements: {
-                search: search,
-                address1: d.getElementById(config.au.elements.address1),
-                address2: d.getElementById(config.au.elements.address2),
-                suburb: d.getElementById(config.au.elements.suburb),
+                address_line_1_and_2: null,
+                address_line_1: d.getElementById(config.au.elements.address1),
+                address_line_2: d.getElementById(config.au.elements.address2),
+                locality_name: d.getElementById(config.au.elements.suburb),
                 city: null,
-                state: d.getElementById(config.au.elements.state),
+                state_territory: d.getElementById(config.au.elements.state),
                 postcode: d.getElementById(config.au.elements.postcode)
               },
               stateValues: config.au.stateMappings
-            },
-            countryElement: d.getElementById(config.country)
+            }
           }
 
           let helper = new AF.FormHelper(this.apiConfig, formHelperConfig)
-          helper.on("result:select:au", this.auAddressSelected.bind(this));
-          helper.on("result:select:nz", this.nzAddressSelected.bind(this));
-          this.formHelpers.push(helper)
         }
       }
-    }
-
-    nzAddressSelected(metaData){
-      console.log("NZ selected")
-    }
-
-    auAddressSelected(metaData){
-      console.log("AU selected")
     }
 
     resetAndReloadFormHelpers(){

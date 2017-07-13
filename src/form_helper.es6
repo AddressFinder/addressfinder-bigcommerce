@@ -15,6 +15,7 @@
    *   countryElement: document.getElementById("country"),
    *   nz: {
    *     countryValue: "NZ",
+   *     searchElement: document.getElementById('FormField_18'),
    *     regionMappings: {
    *       "Auckland Region": "Auckland Region",
    *       "Bay of Plenty Region": "Bay of Plenty",
@@ -35,8 +36,9 @@
    *       "No Region": "Chatham Islands"
    *     },
    *     elements: {
-   *       address1: document.getElementById('FormField_18'),
-   *       address2: null,
+   *       address_line_1_and_2: document.getElementById('FormField_18'),
+   *       address_line_1: null,
+   *       address_line_2: null,
    *       suburb: document.getElementById('FormField_19'),
    *       city: document.getElementById('FormField_20'),
    *       region: document.getElementById('FormField_22'),
@@ -44,7 +46,8 @@
    *     }
    *   },
    *   au: {
-   *     countryValue: "AU"
+   *     countryValue: "AU",
+   *     searchElement: document.getElementById('FormField_18'),
    *     stateMappings: {
    *       ACT: "Australian Capital Territory",
    *       NSW: "New South Wales",
@@ -56,10 +59,11 @@
    *       WA: "Western Australia"
    *     },
    *     elements: {
-   *       address1: document.getElementById('FormField_18'),
-   *       address2: document.getElementById('FormField_19'),
-   *       suburb: document.getElementById('FormField_20'),
-   *       state: document.getElementById('FormField_22'),
+   *       address_line_1_and_2: null,
+   *       address_line_1: document.getElementById('FormField_18'),
+   *       address_line_2: document.getElementById('FormField_19'),
+   *       locality_name: document.getElementById('FormField_20'),
+   *       state_territory: document.getElementById('FormField_22'),
    *       postcode: document.getElementById('FormField_23')
    *     }
    *   }
@@ -75,6 +79,28 @@
       this._bindToForm()
     }
 
+    /**
+     * Shuts down this object by disabling the widget and any callback handlers.
+     */
+    destroy(){
+      for (var widgetCountryCode in this.widgets) {
+        this.widgets[widgetCountryCode].disable()
+      }
+
+      this.widgets = null
+      this.subscriptions = null
+
+      this.config.countryElement.removeEventListener("change", this.boundCountryChangedListener)
+    }
+
+    /**
+     * Subscribe to events. Current event_name values supported:
+     *
+     * - "result:select:au" when an Australian address has been selected
+     * - "result:select:nz" when a New Zealand address has been selected
+     *
+     * When an event occurs, the address metadata will be supplied as the first parameter
+     */
     on(event_name, callbackFunction){
       this.subscriptions[event_name] = this.subscriptions[event_name] || []
       this.subscriptions[event_name].push(callbackFunction)
@@ -93,11 +119,11 @@
       this.boundCountryChangedListener = this._countryChanged.bind(this) // save this so we can unbind in the destroy() method
       this.config.countryElement.addEventListener("change", this.boundCountryChangedListener);
 
-      let nzWidget = new w.AddressFinder.Widget(this.config.nz.elements.search, this.apiConfig.nzKey, "nz", this.apiConfig.nzWidgetOptions);
+      let nzWidget = new w.AddressFinder.Widget(this.config.nz.searchElement, this.apiConfig.nzKey, "nz", this.apiConfig.nzWidgetOptions);
       nzWidget.on("result:select", this._nzAddressSelected.bind(this))
       this.widgets["nz"] = nzWidget
 
-      let auWidget = new w.AddressFinder.Widget(this.config.au.elements.search, this.apiConfig.auKey, "au", this.apiConfig.auWidgetOptions);
+      let auWidget = new w.AddressFinder.Widget(this.config.au.searchElement, this.apiConfig.auKey, "au", this.apiConfig.auWidgetOptions);
       auWidget.on("result:select", this._auAddressSelected.bind(this))
       this.widgets["au"] = auWidget
 
@@ -134,20 +160,25 @@
       let elements = this.config.nz.elements
       let selected = new AddressFinder.NZSelectedAddress(fullAddress, metaData);
 
-      if (this.config.nz.elements.address2) {
-        this._setFieldValue(elements.address1, selected.address_line_1(), "address1")
-        this._setFieldValue(elements.address2, selected.address_line_2(), "address2")
+      if(elements.address_line_1_and_2){
+        this._setFieldValue(elements.address_line_1_and_2, selected.address_line_1_and_2(), "address_line_1_and_2")
       }
       else {
-        this._setFieldValue(elements.address1, selected.address_line_1_and_2(), "address1")
+        this._setFieldValue(elements.address_line_1, selected.address_line_1(), "address_line_1")
+        this._setFieldValue(elements.address_line_2, selected.address_line_2(), "address_line_2")
       }
 
       this._setFieldValue(elements.suburb, selected.suburb(), "suburb")
       this._setFieldValue(elements.city, selected.city(), "city")
       this._setFieldValue(elements.postcode, selected.postcode(), "postcode")
 
-      // TODO check if regionValues are null, and if so use region directly
-      this._setFieldValue(elements.region, metaData.region, "region")
+      if (this.config.au.regionValues) {
+        const translatedRegionValue = this.config.au.regionValues[metaData.region]
+        this._setFieldValue(elements.region, translatedRegionValue, "region")
+      }
+      else {
+        this._setFieldValue(elements.region, metaData.region, "region")
+      }
 
       this._trigger("result:select:nz", metaData)
     }
@@ -155,42 +186,33 @@
     _auAddressSelected(fullAddress, metaData){
       let elements = this.config.au.elements
 
-      if (elements.address2) {
-        this._setFieldValue(elements.address1, metaData.address_line_1, "address1")
-        this._setFieldValue(elements.address2, metaData.address_line_2, "address2")
+      if(elements.address_line_1_and_2){
+        const combined = [
+          metaData.address_line_1, metaData.address_line_2
+        ].filter(function(a){return a != null}).join(", ")
+
+        this._setFieldValue(elements.address_line_1_and_2, combined, "address_line_1_and_2")
       }
       else {
-        if (metaData.address_line_2) {
-          this._setFieldValue(elements.address1, metaData.address_line_1 + ", " + metaData.address_line_2.address_line_1, "address1")
-        } else {
-          this._setFieldValue(elements.address1, metaData.address_line_1, "address1")
-        }
+        this._setFieldValue(elements.address_line_1, metaData.address_line_1, "address_line_1")
+        this._setFieldValue(elements.address_line_2, metaData.address_line_2, "address_line_2")
       }
 
-      this._setFieldValue(elements.suburb, metaData.locality_name, "suburb")
+      this._setFieldValue(elements.locality_name, metaData.locality_name, "suburb")
       this._setFieldValue(elements.postcode, metaData.postcode, "postcode")
 
-      // TODO check if stateValues are null, and if so use state_territory directly
-      const state_value = this.config.au.stateValues[metaData.state_territory]
-      this._setFieldValue(elements.state, state_value, "state")
+      if (this.config.au.stateValues) {
+        const translatedStateValue = this.config.au.stateValues[metaData.state_territory]
+        this._setFieldValue(elements.state_territory, translatedStateValue, "state_territory")
+      }
+      else {
+        this._setFieldValue(elements.state_territory, metaData.state_territory, "state_territory")
+      }
 
       this._trigger("result:select:au", metaData)
     }
 
-    // shuts down this object by disabling the widget and country selector
-    destroy(){
-      for (var widgetCountryCode in this.widgets) {
-        this.widgets[widgetCountryCode].disable()
-      }
-
-      this.widgets = null
-      this.subscriptions = null
-
-      this.config.countryElement.removeEventListener("change", this.boundCountryChangedListener)
-    }
-
     _setFieldValue(field, value, fieldLabel){
-      console.log("Setting " + fieldLabel)
       if (field) {
         field.value = value;
 
