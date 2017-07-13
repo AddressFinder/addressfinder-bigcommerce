@@ -84,7 +84,7 @@
      */
     destroy(){
       for (var widgetCountryCode in this.widgets) {
-        this.widgets[widgetCountryCode].disable()
+        this.widgets[widgetCountryCode].destroy()
       }
 
       this.widgets = null
@@ -128,8 +128,9 @@
       this.widgets["au"] = auWidget
 
       this.widgets["null"] = {
-        enable: function() { },
-        disable: function() { },
+        enable: function(){},
+        disable: function(){},
+        destroy: function(){}
       }
 
       this._countryChanged()

@@ -9,6 +9,7 @@
           label: "Optimized one-page checkout (Early access)",
           country: 'countryCodeInput',
           search: "addressLine1Input",
+          mutation: "micro-app-ng-checkout",
           nz: {
             countryValue: "string:NZ",
             elements: {
@@ -125,6 +126,8 @@
         let search = d.getElementById(config.search)
 
         if(search){
+          console.log(`Found ${config.search}`)
+
           let formHelperConfig = {
             countryElement: d.getElementById(config.country),
             nz: {
@@ -158,6 +161,7 @@
           }
 
           let helper = new AF.FormHelper(this.apiConfig, formHelperConfig)
+          this.formHelpers.push(helper)
         }
       }
     }
@@ -173,6 +177,16 @@
       this.searchForAddresses()
     }
 
+    resetAndReloadFormHelpersWithTimeout(){
+      if (this._mutationTimeout) {
+        clearTimeout(this._mutationTimeout)
+      }
+
+      this._mutationTimeout = setTimeout(() => {
+        this.resetAndReloadFormHelpers()
+      }, 500)
+    }
+
     // TODO handle older versions of Internet Explorer
     // TODO use a setTimeout to avoid too many of these events running
     monitorPageMutations(){
@@ -182,7 +196,7 @@
       if (billing && w.MutationObserver) {
         /* for modern browsers */
         var observer = new MutationObserver((mutations) => {
-          this.resetAndReloadFormHelpers()
+          this.resetAndReloadFormHelpersWithTimeout()
         });
 
         observer.observe(billing, {childList: true, subtree: true});

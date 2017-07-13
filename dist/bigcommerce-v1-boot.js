@@ -16,6 +16,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         label: "Optimized one-page checkout (Early access)",
         country: 'countryCodeInput',
         search: "addressLine1Input",
+        mutation: "micro-app-ng-checkout",
         nz: {
           countryValue: "string:NZ",
           elements: {
@@ -138,6 +139,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             var search = d.getElementById(config.search);
 
             if (search) {
+              console.log("Found " + config.search);
+
               var formHelperConfig = {
                 countryElement: d.getElementById(config.country),
                 nz: {
@@ -171,6 +174,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
               };
 
               var helper = new AF.FormHelper(this.apiConfig, formHelperConfig);
+              this.formHelpers.push(helper);
             }
           }
         } catch (err) {
@@ -221,6 +225,19 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
         this.searchForAddresses();
       }
+    }, {
+      key: "resetAndReloadFormHelpersWithTimeout",
+      value: function resetAndReloadFormHelpersWithTimeout() {
+        var _this = this;
+
+        if (this._mutationTimeout) {
+          clearTimeout(this._mutationTimeout);
+        }
+
+        this._mutationTimeout = setTimeout(function () {
+          _this.resetAndReloadFormHelpers();
+        }, 500);
+      }
 
       // TODO handle older versions of Internet Explorer
       // TODO use a setTimeout to avoid too many of these events running
@@ -228,7 +245,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     }, {
       key: "monitorPageMutations",
       value: function monitorPageMutations() {
-        var _this = this;
+        var _this2 = this;
 
         // TODO look for different top level elements (not just micro-app-ng-checkout)
         var billing = d.getElementById("micro-app-ng-checkout");
@@ -236,7 +253,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         if (billing && w.MutationObserver) {
           /* for modern browsers */
           var observer = new MutationObserver(function (mutations) {
-            _this.resetAndReloadFormHelpers();
+            _this2.resetAndReloadFormHelpersWithTimeout();
           });
 
           observer.observe(billing, { childList: true, subtree: true });
@@ -346,7 +363,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       key: "destroy",
       value: function destroy() {
         for (var widgetCountryCode in this.widgets) {
-          this.widgets[widgetCountryCode].disable();
+          this.widgets[widgetCountryCode].destroy();
         }
 
         this.widgets = null;
@@ -417,7 +434,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
         this.widgets["null"] = {
           enable: function enable() {},
-          disable: function disable() {}
+          disable: function disable() {},
+          destroy: function destroy() {}
         };
 
         this._countryChanged();
