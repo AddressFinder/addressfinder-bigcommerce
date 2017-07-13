@@ -240,7 +240,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }
 
       // TODO handle older versions of Internet Explorer
-      // TODO use a setTimeout to avoid too many of these events running
 
     }, {
       key: "monitorPageMutations",

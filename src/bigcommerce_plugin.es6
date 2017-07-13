@@ -188,7 +188,6 @@
     }
 
     // TODO handle older versions of Internet Explorer
-    // TODO use a setTimeout to avoid too many of these events running
     monitorPageMutations(){
       // TODO look for different top level elements (not just micro-app-ng-checkout)
       let billing = d.getElementById("micro-app-ng-checkout")
