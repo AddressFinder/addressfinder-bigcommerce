@@ -18,7 +18,7 @@
               region: 'provinceInput',
               postcode: 'postCodeInput'
             },
-            regionValues: null
+            regionMappings: null
           },
           au: {
             countryValue: "string:AU",
@@ -29,7 +29,7 @@
               state: 'provinceInput',
               postcode: 'postCodeInput'
             },
-            states: {
+            stateMappings: {
               'ACT': 'string:Australian Capital Territory',
               'NSW': 'string:New South Wales',
               'NT' : 'string:Northern Territory',
@@ -54,7 +54,7 @@
               region: 'FormField_12',
               postcode: 'FormField_13',
             },
-            regionValues: null
+            regionMappings: null
           },
           au: {
             countryValue: "Australia",
@@ -65,7 +65,7 @@
               state: 'FormField_12',
               postcode: 'FormField_13',
             },
-            states: {
+            stateMappings: {
               'ACT': 'Australian Capital Territory',
               'NSW': 'New South Wales',
               'NT' : 'Northern Territory',
@@ -90,7 +90,7 @@
               region: 'FormField_22',
               postcode: 'FormField_23'
             },
-            regionValues: null
+            regionMappings: null
           },
           au: {
             countryValue: "Australia",
@@ -101,7 +101,7 @@
               state: 'FormField_22',
               postcode: 'FormField_23'
             },
-            states: {
+            stateMappings: {
               'ACT': 'Australian Capital Territory',
               'NSW': 'New South Wales',
               'NT' : 'Northern Territory',
@@ -137,7 +137,7 @@
                 region: d.getElementById(config.nz.elements.region),
                 postcode: d.getElementById(config.nz.elements.postcode)
               },
-              regionValues: null
+              regionMappings: null
             },
             au: {
               countryValue: config.au.countryValue,
@@ -150,15 +150,25 @@
                 state: d.getElementById(config.au.elements.state),
                 postcode: d.getElementById(config.au.elements.postcode)
               },
-              stateValues: config.au.states
+              stateValues: config.au.stateMappings
             },
-            country_element: d.getElementById(config.country)
+            countryElement: d.getElementById(config.country)
           }
 
           let helper = new AF.FormHelper(this.apiConfig, formHelperConfig)
+          helper.on("result:select:au", this.auAddressSelected.bind(this));
+          helper.on("result:select:nz", this.nzAddressSelected.bind(this));
           this.formHelpers.push(helper)
         }
       }
+    }
+
+    nzAddressSelected(metaData){
+      console.log("NZ selected")
+    }
+
+    auAddressSelected(metaData){
+      console.log("AU selected")
     }
 
     resetAndReloadFormHelpers(){
@@ -173,13 +183,17 @@
     }
 
     // TODO handle older versions of Internet Explorer
+    // TODO use a setTimeout to avoid too many of these events running
     monitorPageMutations(){
-      if (w.MutationObserver) {
+      // TODO look for different top level elements (not just micro-app-ng-checkout)
+      let billing = d.getElementById("micro-app-ng-checkout")
+
+      if (billing && w.MutationObserver) {
         /* for modern browsers */
         var observer = new MutationObserver((mutations) => {
           this.resetAndReloadFormHelpers()
         });
-        let billing = d.getElementById("CheckoutStepBillingAddress")
+
         observer.observe(billing, {childList: true, subtree: true});
       }
     }
