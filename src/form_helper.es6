@@ -88,31 +88,9 @@
       }
 
       this.widgets = null
-      this.subscriptions = null
+      this.subscriptions = []
 
       this.config.countryElement.removeEventListener("change", this.boundCountryChangedListener)
-    }
-
-    /**
-     * Subscribe to events. Current event_name values supported:
-     *
-     * - "result:select:au" when an Australian address has been selected
-     * - "result:select:nz" when a New Zealand address has been selected
-     *
-     * When an event occurs, the address metadata will be supplied as the first parameter
-     */
-    on(event_name, callbackFunction){
-      this.subscriptions[event_name] = this.subscriptions[event_name] || []
-      this.subscriptions[event_name].push(callbackFunction)
-      this
-    }
-
-    _trigger(event_name, args){
-      if(this.subscriptions[event_name]){
-        for (const callback of this.subscriptions[event_name]) {
-          callback.apply(this, args)
-        }
-      }
     }
 
     _bindToForm(){
@@ -133,10 +111,10 @@
         destroy: function(){}
       }
 
-      this._countryChanged()
+      this._countryChanged(true)
     }
 
-    _countryChanged(){
+    _countryChanged(preserveValues){
       switch (this.config.countryElement.value) {
         case this.config.nz.countryValue:
           this._setActiveCountry("nz")
@@ -146,6 +124,10 @@
           break
         default:
           this._setActiveCountry("null")
+      }
+
+      if (!preserveValues){
+        // TODO reset field values here
       }
     }
 
@@ -180,8 +162,6 @@
       else {
         this._setFieldValue(elements.region, metaData.region, "region")
       }
-
-      this._trigger("result:select:nz", metaData)
     }
 
     _auAddressSelected(fullAddress, metaData){
@@ -209,8 +189,6 @@
       else {
         this._setFieldValue(elements.state_territory, metaData.state_territory, "state_territory")
       }
-
-      this._trigger("result:select:au", metaData)
     }
 
     _setFieldValue(field, value, fieldLabel){

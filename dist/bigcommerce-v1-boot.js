@@ -14,9 +14,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       this.apiConfig = config;
       this.addressConfig = [{
         label: "Optimized one-page checkout (Early access)",
-        country: 'countryCodeInput',
-        search: "addressLine1Input",
-        mutation: "micro-app-ng-checkout",
+        layoutIdentifier: "micro-app-ng-checkout",
+        countryIdentifier: 'countryCodeInput',
+        searchIdentifier: "addressLine1Input",
         nz: {
           countryValue: "string:NZ",
           elements: {
@@ -50,8 +50,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }
       }, {
         label: "One-page checkout (Billing details)",
-        country: 'FormField_11',
-        search: "FormField_8",
+        layoutIdentifier: "CheckoutStepBillingAddress",
+        countryIdentifier: 'FormField_11',
+        searchIdentifier: "FormField_8",
         nz: {
           countryValue: "New Zealand",
           elements: {
@@ -85,8 +86,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }
       }, {
         label: "One-page checkout (Shipping details)",
-        country: "FormField_21",
-        search: "FormField_18",
+        layoutIdentifier: "CheckoutStepShippingAddress",
+        countryIdentifier: "FormField_21",
+        searchIdentifier: "FormField_18",
         nz: {
           countryValue: "New Zealand",
           elements: {
@@ -121,60 +123,26 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }];
       this.formHelpers = [];
 
-      this.searchForAddresses();
-      this.monitorPageMutations();
+      this.identifyLayout();
+      this.setupMutationMonitor();
     }
 
     _createClass(_class, [{
-      key: "searchForAddresses",
-      value: function searchForAddresses() {
+      key: "identifyLayout",
+      value: function identifyLayout() {
         var _iteratorNormalCompletion = true;
         var _didIteratorError = false;
         var _iteratorError = undefined;
 
         try {
           for (var _iterator = this.addressConfig[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-            var config = _step.value;
+            var layoutConfig = _step.value;
 
-            var search = d.getElementById(config.search);
+            var identifyingElement = d.getElementById(layoutConfig.layoutIdentifier);
 
-            if (search) {
-              console.log("Found " + config.search);
-
-              var formHelperConfig = {
-                countryElement: d.getElementById(config.country),
-                nz: {
-                  countryValue: config.nz.countryValue,
-                  searchElement: d.getElementById(config.nz.elements.address1),
-                  elements: {
-                    address_line_1_and_2: d.getElementById(config.nz.elements.address1),
-                    address_line_1: null,
-                    address_line_2: null,
-                    suburb: d.getElementById(config.nz.elements.suburb),
-                    city: d.getElementById(config.nz.elements.city),
-                    region: d.getElementById(config.nz.elements.region),
-                    postcode: d.getElementById(config.nz.elements.postcode)
-                  },
-                  regionMappings: null
-                },
-                au: {
-                  countryValue: config.au.countryValue,
-                  searchElement: d.getElementById(config.au.elements.address1),
-                  elements: {
-                    address_line_1_and_2: null,
-                    address_line_1: d.getElementById(config.au.elements.address1),
-                    address_line_2: d.getElementById(config.au.elements.address2),
-                    locality_name: d.getElementById(config.au.elements.suburb),
-                    city: null,
-                    state_territory: d.getElementById(config.au.elements.state),
-                    postcode: d.getElementById(config.au.elements.postcode)
-                  },
-                  stateValues: config.au.stateMappings
-                }
-              };
-
-              var helper = new AF.FormHelper(this.apiConfig, formHelperConfig);
-              this.formHelpers.push(helper);
+            if (identifyingElement) {
+              console.log("Identified layout: " + layoutConfig.label);
+              this.initialiseFormHelper(layoutConfig);
             }
           }
         } catch (err) {
@@ -190,6 +158,48 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
               throw _iteratorError;
             }
           }
+        }
+      }
+    }, {
+      key: "initialiseFormHelper",
+      value: function initialiseFormHelper(layoutConfig) {
+        var searchElement = d.getElementById(layoutConfig.searchIdentifier);
+
+        if (searchElement) {
+          var formHelperConfig = {
+            countryElement: d.getElementById(layoutConfig.countryIdentifier),
+            nz: {
+              countryValue: layoutConfig.nz.countryValue,
+              searchElement: d.getElementById(layoutConfig.nz.elements.address1),
+              elements: {
+                address_line_1_and_2: d.getElementById(layoutConfig.nz.elements.address1),
+                address_line_1: null,
+                address_line_2: null,
+                suburb: d.getElementById(layoutConfig.nz.elements.suburb),
+                city: d.getElementById(layoutConfig.nz.elements.city),
+                region: d.getElementById(layoutConfig.nz.elements.region),
+                postcode: d.getElementById(layoutConfig.nz.elements.postcode)
+              },
+              regionMappings: null
+            },
+            au: {
+              countryValue: layoutConfig.au.countryValue,
+              searchElement: d.getElementById(layoutConfig.au.elements.address1),
+              elements: {
+                address_line_1_and_2: null,
+                address_line_1: d.getElementById(layoutConfig.au.elements.address1),
+                address_line_2: d.getElementById(layoutConfig.au.elements.address2),
+                locality_name: d.getElementById(layoutConfig.au.elements.suburb),
+                city: null,
+                state_territory: d.getElementById(layoutConfig.au.elements.state),
+                postcode: d.getElementById(layoutConfig.au.elements.postcode)
+              },
+              stateValues: layoutConfig.au.stateMappings
+            }
+          };
+
+          var helper = new AF.FormHelper(this.apiConfig, formHelperConfig);
+          this.formHelpers.push(helper);
         }
       }
     }, {
@@ -223,7 +233,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
         this.formHelpers = [];
 
-        this.searchForAddresses();
+        this.identifyLayout();
       }
     }, {
       key: "resetAndReloadFormHelpersWithTimeout",
@@ -242,20 +252,62 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       // TODO handle older versions of Internet Explorer
 
     }, {
-      key: "monitorPageMutations",
-      value: function monitorPageMutations() {
+      key: "setupMutationMonitor",
+      value: function setupMutationMonitor() {
+        var topLevelElementQueries = ["[id=micro-app-ng-checkout]", "div[class=page]"];
+
+        var _iteratorNormalCompletion3 = true;
+        var _didIteratorError3 = false;
+        var _iteratorError3 = undefined;
+
+        try {
+          for (var _iterator3 = topLevelElementQueries[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+            var query = _step3.value;
+
+            var element = d.querySelector(query);
+
+            if (element) {
+              this.monitorMutations(element);
+            }
+          }
+          // // TODO look for different top level elements (not just micro-app-ng-checkout)
+          // let billing = d.getElementById("micro-app-ng-checkout")
+          //
+          // if (billing && w.MutationObserver) {
+          //   /* for modern browsers */
+          //   var observer = new MutationObserver((mutations) => {
+          //     this.resetAndReloadFormHelpersWithTimeout()
+          //   });
+          //
+          //   observer.observe(billing, {childList: true, subtree: true});
+          // }
+        } catch (err) {
+          _didIteratorError3 = true;
+          _iteratorError3 = err;
+        } finally {
+          try {
+            if (!_iteratorNormalCompletion3 && _iterator3.return) {
+              _iterator3.return();
+            }
+          } finally {
+            if (_didIteratorError3) {
+              throw _iteratorError3;
+            }
+          }
+        }
+      }
+    }, {
+      key: "monitorMutations",
+      value: function monitorMutations(element) {
         var _this2 = this;
 
-        // TODO look for different top level elements (not just micro-app-ng-checkout)
-        var billing = d.getElementById("micro-app-ng-checkout");
-
-        if (billing && w.MutationObserver) {
+        if (w.MutationObserver) {
           /* for modern browsers */
           var observer = new MutationObserver(function (mutations) {
             _this2.resetAndReloadFormHelpersWithTimeout();
           });
 
-          observer.observe(billing, { childList: true, subtree: true });
+          observer.observe(element, { childList: true, subtree: true });
         }
       }
     }]);
@@ -366,56 +418,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }
 
         this.widgets = null;
-        this.subscriptions = null;
+        this.subscriptions = [];
 
         this.config.countryElement.removeEventListener("change", this.boundCountryChangedListener);
-      }
-
-      /**
-       * Subscribe to events. Current event_name values supported:
-       *
-       * - "result:select:au" when an Australian address has been selected
-       * - "result:select:nz" when a New Zealand address has been selected
-       *
-       * When an event occurs, the address metadata will be supplied as the first parameter
-       */
-
-    }, {
-      key: "on",
-      value: function on(event_name, callbackFunction) {
-        this.subscriptions[event_name] = this.subscriptions[event_name] || [];
-        this.subscriptions[event_name].push(callbackFunction);
-        this;
-      }
-    }, {
-      key: "_trigger",
-      value: function _trigger(event_name, args) {
-        if (this.subscriptions[event_name]) {
-          var _iteratorNormalCompletion = true;
-          var _didIteratorError = false;
-          var _iteratorError = undefined;
-
-          try {
-            for (var _iterator = this.subscriptions[event_name][Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-              var callback = _step.value;
-
-              callback.apply(this, args);
-            }
-          } catch (err) {
-            _didIteratorError = true;
-            _iteratorError = err;
-          } finally {
-            try {
-              if (!_iteratorNormalCompletion && _iterator.return) {
-                _iterator.return();
-              }
-            } finally {
-              if (_didIteratorError) {
-                throw _iteratorError;
-              }
-            }
-          }
-        }
       }
     }, {
       key: "_bindToForm",
@@ -437,11 +442,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           destroy: function destroy() {}
         };
 
-        this._countryChanged();
+        this._countryChanged(true);
       }
     }, {
       key: "_countryChanged",
-      value: function _countryChanged() {
+      value: function _countryChanged(preserveValues) {
         switch (this.config.countryElement.value) {
           case this.config.nz.countryValue:
             this._setActiveCountry("nz");
@@ -451,6 +456,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             break;
           default:
             this._setActiveCountry("null");
+        }
+
+        if (!preserveValues) {
+          // TODO reset field values here
         }
       }
     }, {
@@ -485,8 +494,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         } else {
           this._setFieldValue(elements.region, metaData.region, "region");
         }
-
-        this._trigger("result:select:nz", metaData);
       }
     }, {
       key: "_auAddressSelected",
@@ -513,8 +520,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         } else {
           this._setFieldValue(elements.state_territory, metaData.state_territory, "state_territory");
         }
-
-        this._trigger("result:select:au", metaData);
       }
     }, {
       key: "_setFieldValue",

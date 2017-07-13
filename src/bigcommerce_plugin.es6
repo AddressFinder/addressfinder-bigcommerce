@@ -7,9 +7,9 @@
       this.addressConfig = [
         {
           label: "Optimized one-page checkout (Early access)",
-          country: 'countryCodeInput',
-          search: "addressLine1Input",
-          mutation: "micro-app-ng-checkout",
+          layoutIdentifier: "micro-app-ng-checkout",
+          countryIdentifier: 'countryCodeInput',
+          searchIdentifier: "addressLine1Input",
           nz: {
             countryValue: "string:NZ",
             elements: {
@@ -44,8 +44,9 @@
         },
         {
           label: "One-page checkout (Billing details)",
-          country: 'FormField_11',
-          search: "FormField_8",
+          layoutIdentifier: "CheckoutStepBillingAddress",
+          countryIdentifier: 'FormField_11',
+          searchIdentifier: "FormField_8",
           nz: {
             countryValue: "New Zealand",
             elements: {
@@ -80,8 +81,9 @@
         },
         {
           label: "One-page checkout (Shipping details)",
-          country: "FormField_21",
-          search: "FormField_18",
+          layoutIdentifier: "CheckoutStepShippingAddress",
+          countryIdentifier: "FormField_21",
+          searchIdentifier: "FormField_18",
           nz: {
             countryValue: "New Zealand",
             elements: {
@@ -117,52 +119,59 @@
       ]
       this.formHelpers = []
 
-      this.searchForAddresses()
-      this.monitorPageMutations()
+      this.identifyLayout()
+      this.setupMutationMonitor()
     }
 
-    searchForAddresses(){
-      for (const config of this.addressConfig){
-        let search = d.getElementById(config.search)
+    identifyLayout(){
+      for (const layoutConfig of this.addressConfig){
+        let identifyingElement = d.getElementById(layoutConfig.layoutIdentifier)
 
-        if(search){
-          console.log(`Found ${config.search}`)
-
-          let formHelperConfig = {
-            countryElement: d.getElementById(config.country),
-            nz: {
-              countryValue: config.nz.countryValue,
-              searchElement: d.getElementById(config.nz.elements.address1),
-              elements: {
-                address_line_1_and_2: d.getElementById(config.nz.elements.address1),
-                address_line_1: null,
-                address_line_2: null,
-                suburb: d.getElementById(config.nz.elements.suburb),
-                city: d.getElementById(config.nz.elements.city),
-                region: d.getElementById(config.nz.elements.region),
-                postcode: d.getElementById(config.nz.elements.postcode)
-              },
-              regionMappings: null
-            },
-            au: {
-              countryValue: config.au.countryValue,
-              searchElement: d.getElementById(config.au.elements.address1),
-              elements: {
-                address_line_1_and_2: null,
-                address_line_1: d.getElementById(config.au.elements.address1),
-                address_line_2: d.getElementById(config.au.elements.address2),
-                locality_name: d.getElementById(config.au.elements.suburb),
-                city: null,
-                state_territory: d.getElementById(config.au.elements.state),
-                postcode: d.getElementById(config.au.elements.postcode)
-              },
-              stateValues: config.au.stateMappings
-            }
-          }
-
-          let helper = new AF.FormHelper(this.apiConfig, formHelperConfig)
-          this.formHelpers.push(helper)
+        if (identifyingElement) {
+          console.log(`Identified layout: ${layoutConfig.label}`);
+          this.initialiseFormHelper(layoutConfig)
         }
+      }
+    }
+
+    initialiseFormHelper(layoutConfig){
+      let searchElement = d.getElementById(layoutConfig.searchIdentifier)
+
+      if (searchElement) {
+        let formHelperConfig = {
+          countryElement: d.getElementById(layoutConfig.countryIdentifier),
+          nz: {
+            countryValue: layoutConfig.nz.countryValue,
+            searchElement: d.getElementById(layoutConfig.nz.elements.address1),
+            elements: {
+              address_line_1_and_2: d.getElementById(layoutConfig.nz.elements.address1),
+              address_line_1: null,
+              address_line_2: null,
+              suburb: d.getElementById(layoutConfig.nz.elements.suburb),
+              city: d.getElementById(layoutConfig.nz.elements.city),
+              region: d.getElementById(layoutConfig.nz.elements.region),
+              postcode: d.getElementById(layoutConfig.nz.elements.postcode)
+            },
+            regionMappings: null
+          },
+          au: {
+            countryValue: layoutConfig.au.countryValue,
+            searchElement: d.getElementById(layoutConfig.au.elements.address1),
+            elements: {
+              address_line_1_and_2: null,
+              address_line_1: d.getElementById(layoutConfig.au.elements.address1),
+              address_line_2: d.getElementById(layoutConfig.au.elements.address2),
+              locality_name: d.getElementById(layoutConfig.au.elements.suburb),
+              city: null,
+              state_territory: d.getElementById(layoutConfig.au.elements.state),
+              postcode: d.getElementById(layoutConfig.au.elements.postcode)
+            },
+            stateValues: layoutConfig.au.stateMappings
+          }
+        }
+
+        let helper = new AF.FormHelper(this.apiConfig, formHelperConfig)
+        this.formHelpers.push(helper)
       }
     }
 
@@ -174,7 +183,7 @@
 
       this.formHelpers = []
 
-      this.searchForAddresses()
+      this.identifyLayout()
     }
 
     resetAndReloadFormHelpersWithTimeout(){
@@ -188,17 +197,37 @@
     }
 
     // TODO handle older versions of Internet Explorer
-    monitorPageMutations(){
-      // TODO look for different top level elements (not just micro-app-ng-checkout)
-      let billing = d.getElementById("micro-app-ng-checkout")
+    setupMutationMonitor(){
+      let topLevelElementQueries = ["[id=micro-app-ng-checkout]", "div[class=page]"]
 
-      if (billing && w.MutationObserver) {
+      for (let query of topLevelElementQueries) {
+        const element = d.querySelector(query)
+
+        if (element) {
+          this.monitorMutations(element)
+        }
+      }
+      // // TODO look for different top level elements (not just micro-app-ng-checkout)
+      // let billing = d.getElementById("micro-app-ng-checkout")
+      //
+      // if (billing && w.MutationObserver) {
+      //   /* for modern browsers */
+      //   var observer = new MutationObserver((mutations) => {
+      //     this.resetAndReloadFormHelpersWithTimeout()
+      //   });
+      //
+      //   observer.observe(billing, {childList: true, subtree: true});
+      // }
+    }
+
+    monitorMutations(element){
+      if (w.MutationObserver) {
         /* for modern browsers */
         var observer = new MutationObserver((mutations) => {
           this.resetAndReloadFormHelpersWithTimeout()
         });
 
-        observer.observe(billing, {childList: true, subtree: true});
+        observer.observe(element, {childList: true, subtree: true});
       }
     }
   }
