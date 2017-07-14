@@ -126,8 +126,19 @@
           this._setActiveCountry("null")
       }
 
-      if (!preserveValues){
-        // TODO reset field values here
+      if (preserveValues !== true){
+        var fields = []
+        if (countryCode == 'nz') {
+          var values = ['address_line_1_and_2', 'suburb', 'city', 'region', 'postcode']
+        } else {
+          var values = ['address_line_1', 'address_line_2', 'locality_name', 'state_territory', 'postcode']
+        }
+        for (var i = 0; i < values.length; i++) {
+          fields.push(this.config[this.config.countryElement.value].elements[values[i]])
+        }
+        for (var j = 0; j < fields.length; j++) {
+          fields[j].value = '';
+        };
       }
     }
 
