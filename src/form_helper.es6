@@ -155,23 +155,23 @@
       let selected = new AddressFinder.NZSelectedAddress(fullAddress, metaData);
 
       if(elements.address_line_1_and_2){
-        this._setFieldValue(elements.address_line_1_and_2, selected.address_line_1_and_2(), "address_line_1_and_2")
+        this._setFieldValue(elements.address_line_1_and_2, selected.address_line_1_and_2())
       }
       else {
-        this._setFieldValue(elements.address_line_1, selected.address_line_1(), "address_line_1")
-        this._setFieldValue(elements.address_line_2, selected.address_line_2(), "address_line_2")
+        this._setFieldValue(elements.address_line_1, selected.address_line_1())
+        this._setFieldValue(elements.address_line_2, selected.address_line_2())
       }
 
-      this._setFieldValue(elements.suburb, selected.suburb(), "suburb")
-      this._setFieldValue(elements.city, selected.city(), "city")
-      this._setFieldValue(elements.postcode, selected.postcode(), "postcode")
+      this._setFieldValue(elements.suburb, selected.suburb())
+      this._setFieldValue(elements.city, selected.city())
+      this._setFieldValue(elements.postcode, selected.postcode())
 
       if (this.config.nz.regionMappings) {
         const translatedRegionValue = this.config.au.regionMappings[metaData.region]
-        this._setFieldValue(elements.region, translatedRegionValue, "region")
+        this._setFieldValue(elements.region, translatedRegionValue)
       }
       else {
-        this._setFieldValue(elements.region, metaData.region, "region")
+        this._setFieldValue(elements.region, metaData.region)
       }
     }
 
@@ -183,26 +183,26 @@
           metaData.address_line_1, metaData.address_line_2
         ].filter(function(a){return a != null}).join(", ")
 
-        this._setFieldValue(elements.address_line_1_and_2, combined, "address_line_1_and_2")
+        this._setFieldValue(elements.address_line_1_and_2, combined)
       }
       else {
-        this._setFieldValue(elements.address_line_1, metaData.address_line_1, "address_line_1")
-        this._setFieldValue(elements.address_line_2, metaData.address_line_2, "address_line_2")
+        this._setFieldValue(elements.address_line_1, metaData.address_line_1)
+        this._setFieldValue(elements.address_line_2, metaData.address_line_2)
       }
 
-      this._setFieldValue(elements.locality_name, metaData.locality_name, "suburb")
-      this._setFieldValue(elements.postcode, metaData.postcode, "postcode")
+      this._setFieldValue(elements.locality_name, metaData.locality_name)
+      this._setFieldValue(elements.postcode, metaData.postcode)
 
       if (this.config.au.stateMappings) {
         const translatedStateValue = this.config.au.stateMappings[metaData.state_territory]
-        this._setFieldValue(elements.state_territory, translatedStateValue, "state_territory")
+        this._setFieldValue(elements.state_territory, translatedStateValue)
       }
       else {
-        this._setFieldValue(elements.state_territory, metaData.state_territory, "state_territory")
+        this._setFieldValue(elements.state_territory, metaData.state_territory)
       }
     }
 
-    _setFieldValue(field, value, fieldLabel){
+    _setFieldValue(field, value){
       if (field) {
         field.value = value;
 
