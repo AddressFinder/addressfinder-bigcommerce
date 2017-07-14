@@ -18,7 +18,7 @@
    *     searchElement: document.getElementById('FormField_18'),
    *     regionMappings: {
    *       "Auckland Region": "Auckland Region",
-   *       "Bay of Plenty Region": "Bay of Plenty",
+   *       "Bay Of Plenty Region": "Bay of Plenty",
    *       "Canterbury Region": "Canterbury",
    *       "Gisborne Region": "Gisborne Region",
    *       "Hawke's Bay Region": "Hawke's Bay",
@@ -128,17 +128,17 @@
 
       if (preserveValues !== true){
         var fields = []
-        if (countryCode == 'nz') {
+        if (this.config.countryElement.value == 'nz') {
           var values = ['address_line_1_and_2', 'suburb', 'city', 'region', 'postcode']
         } else {
           var values = ['address_line_1', 'address_line_2', 'locality_name', 'state_territory', 'postcode']
         }
-        for (var i = 0; i < values.length; i++) {
-          fields.push(this.config[this.config.countryElement.value].elements[values[i]])
-        }
-        for (var j = 0; j < fields.length; j++) {
-          fields[j].value = '';
-        };
+        values.map((value) => {
+          fields.push(that.config[this.config.countryElement.value].elements[value])
+        })
+        fields.map((field) => {
+          field.value = ''
+        })
       }
     }
 
