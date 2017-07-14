@@ -155,8 +155,8 @@
       this._setFieldValue(elements.city, selected.city(), "city")
       this._setFieldValue(elements.postcode, selected.postcode(), "postcode")
 
-      if (this.config.au.regionValues) {
-        const translatedRegionValue = this.config.au.regionValues[metaData.region]
+      if (this.config.nz.regionMappings) {
+        const translatedRegionValue = this.config.au.regionMappings[metaData.region]
         this._setFieldValue(elements.region, translatedRegionValue, "region")
       }
       else {
@@ -182,8 +182,8 @@
       this._setFieldValue(elements.locality_name, metaData.locality_name, "suburb")
       this._setFieldValue(elements.postcode, metaData.postcode, "postcode")
 
-      if (this.config.au.stateValues) {
-        const translatedStateValue = this.config.au.stateValues[metaData.state_territory]
+      if (this.config.au.stateMappings) {
+        const translatedStateValue = this.config.au.stateMappings[metaData.state_territory]
         this._setFieldValue(elements.state_territory, translatedStateValue, "state_territory")
       }
       else {
