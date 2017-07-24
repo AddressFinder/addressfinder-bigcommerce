@@ -196,7 +196,6 @@
       }, 500)
     }
 
-    // TODO handle older versions of Internet Explorer
     setupMutationMonitor(){
       let topLevelElementQueries = ["[id=micro-app-ng-checkout]", "div[class=page]"]
 
@@ -207,17 +206,6 @@
           this.monitorMutations(element)
         }
       }
-      // // TODO look for different top level elements (not just micro-app-ng-checkout)
-      // let billing = d.getElementById("micro-app-ng-checkout")
-      //
-      // if (billing && w.MutationObserver) {
-      //   /* for modern browsers */
-      //   var observer = new MutationObserver((mutations) => {
-      //     this.resetAndReloadFormHelpersWithTimeout()
-      //   });
-      //
-      //   observer.observe(billing, {childList: true, subtree: true});
-      // }
     }
 
     monitorMutations(element){
@@ -226,9 +214,21 @@
         var observer = new MutationObserver((mutations) => {
           this.resetAndReloadFormHelpersWithTimeout()
         });
-
         observer.observe(element, {childList: true, subtree: true});
+
+      } else if (w.addEventListener) {
+          /* for IE 9 and 10 */
+          var listener = function(event) {
+            this.resetAndReloadFormHelpersWithTimeout()
+            }
+          };
+        element.addEventListener('DOMAttrModified', listener, false);
+      } else {
+          if (w.console) {
+            console.info('AddressFinder Error - please use a more modern browser')
+          }
       }
     }
+
   }
 })(document, window);
