@@ -1,0 +1,234 @@
+(function(d, w) {
+  w.AF = w.AF || {}
+
+  w.AF.BigCommercePlugin = class {
+    constructor(widgetConfig){
+      this.version = "1.1.2"
+      this.widgetConfig = widgetConfig
+      this.layoutConfigurations = [
+        {
+          label: "Optimized one-page checkout (Early access)",
+          layoutIdentifier: "micro-app-ng-checkout",
+          countryIdentifier: 'countryCodeInput',
+          searchIdentifier: "addressLine1Input",
+          nz: {
+            countryValue: "string:NZ",
+            elements: {
+              address1: 'addressLine1Input',
+              suburb: 'addressLine2Input',
+              city: 'cityInput',
+              region: 'provinceInput',
+              postcode: 'postCodeInput'
+            },
+            regionMappings: null
+          },
+          au: {
+            countryValue: "string:AU",
+            elements: {
+              address1: 'addressLine1Input',
+              address2: 'addressLine2Input',
+              suburb: 'cityInput',
+              state: 'provinceInput',
+              postcode: 'postCodeInput'
+            },
+            stateMappings: {
+              'ACT': 'string:Australian Capital Territory',
+              'NSW': 'string:New South Wales',
+              'NT' : 'string:Northern Territory',
+              'QLD': 'string:Queensland',
+              'SA' : 'string:South Australia',
+              'TAS': 'string:Tasmania',
+              'VIC': 'string:Victoria',
+              'WA' : 'string:Western Australia'
+            }
+          }
+        },
+        {
+          label: "One-page checkout (Billing details)",
+          layoutIdentifier: "CheckoutStepBillingAddress",
+          countryIdentifier: 'FormField_11',
+          searchIdentifier: "FormField_8",
+          nz: {
+            countryValue: "New Zealand",
+            elements: {
+              address1: 'FormField_8',
+              suburb: 'FormField_9',
+              city: 'FormField_10',
+              region: 'FormField_12',
+              postcode: 'FormField_13',
+            },
+            regionMappings: null
+          },
+          au: {
+            countryValue: "Australia",
+            elements: {
+              address1: 'FormField_8',
+              address2: 'FormField_9',
+              suburb: 'FormField_10',
+              state: 'FormField_12',
+              postcode: 'FormField_13',
+            },
+            stateMappings: {
+              'ACT': 'Australian Capital Territory',
+              'NSW': 'New South Wales',
+              'NT' : 'Northern Territory',
+              'QLD': 'Queensland',
+              'SA' : 'South Australia',
+              'TAS': 'Tasmania',
+              'VIC': 'Victoria',
+              'WA' : 'Western Australia'
+            }
+          }
+        },
+        {
+          label: "One-page checkout (Shipping details)",
+          layoutIdentifier: "CheckoutStepShippingAddress",
+          countryIdentifier: "FormField_21",
+          searchIdentifier: "FormField_18",
+          nz: {
+            countryValue: "New Zealand",
+            elements: {
+              address1: 'FormField_18',
+              suburb: 'FormField_19',
+              city: 'FormField_20',
+              region: 'FormField_22',
+              postcode: 'FormField_23'
+            },
+            regionMappings: null
+          },
+          au: {
+            countryValue: "Australia",
+            elements: {
+              address1: 'FormField_18',
+              address2: 'FormField_19',
+              suburb: 'FormField_20',
+              state: 'FormField_22',
+              postcode: 'FormField_23'
+            },
+            stateMappings: {
+              'ACT': 'Australian Capital Territory',
+              'NSW': 'New South Wales',
+              'NT' : 'Northern Territory',
+              'QLD': 'Queensland',
+              'SA' : 'South Australia',
+              'TAS': 'Tasmania',
+              'VIC': 'Victoria',
+              'WA' : 'Western Australia'
+            }
+          }
+        }
+      ]
+      this.formHelpers = []
+
+      this.identifyLayout()
+      this.setupMutationMonitor()
+    }
+
+    identifyLayout(){
+      for (const layoutConfig of this.layoutConfigurations){
+        let identifyingElement = d.getElementById(layoutConfig.layoutIdentifier)
+
+        if (identifyingElement) {
+          // console.log(`Identified layout: ${layoutConfig.label}`);
+          this.initialiseFormHelper(layoutConfig)
+        }
+      }
+    }
+
+    initialiseFormHelper(layoutConfig){
+      let searchElement = d.getElementById(layoutConfig.searchIdentifier)
+
+      if (searchElement) {
+        let formHelperConfig = {
+          countryElement: d.getElementById(layoutConfig.countryIdentifier),
+          nz: {
+            countryValue: layoutConfig.nz.countryValue,
+            searchElement: d.getElementById(layoutConfig.nz.elements.address1),
+            elements: {
+              address_line_1_and_2: d.getElementById(layoutConfig.nz.elements.address1),
+              address_line_1: null,
+              address_line_2: null,
+              suburb: d.getElementById(layoutConfig.nz.elements.suburb),
+              city: d.getElementById(layoutConfig.nz.elements.city),
+              region: d.getElementById(layoutConfig.nz.elements.region),
+              postcode: d.getElementById(layoutConfig.nz.elements.postcode)
+            },
+            regionMappings: null
+          },
+          au: {
+            countryValue: layoutConfig.au.countryValue,
+            searchElement: d.getElementById(layoutConfig.au.elements.address1),
+            elements: {
+              address_line_1_and_2: null,
+              address_line_1: d.getElementById(layoutConfig.au.elements.address1),
+              address_line_2: d.getElementById(layoutConfig.au.elements.address2),
+              locality_name: d.getElementById(layoutConfig.au.elements.suburb),
+              city: null,
+              state_territory: d.getElementById(layoutConfig.au.elements.state),
+              postcode: d.getElementById(layoutConfig.au.elements.postcode)
+            },
+            stateMappings: layoutConfig.au.stateMappings
+          }
+        }
+
+        let helper = new AF.FormHelper(this.widgetConfig, formHelperConfig)
+        this.formHelpers.push(helper)
+      }
+    }
+
+    resetAndReloadFormHelpers(){
+      // console.log("Boom, reset all the things")
+      for (const helper of this.formHelpers) {
+        helper.destroy()
+      }
+
+      this.formHelpers = []
+
+      this.identifyLayout()
+    }
+
+    resetAndReloadFormHelpersWithTimeout(){
+      if (this._mutationTimeout) {
+        clearTimeout(this._mutationTimeout)
+      }
+
+      this._mutationTimeout = setTimeout(() => {
+        this.resetAndReloadFormHelpers()
+      }, 500)
+    }
+
+    setupMutationMonitor(){
+      let topLevelElementQueries = ["[id=micro-app-ng-checkout]", "div[class=page]"]
+
+      for (let query of topLevelElementQueries) {
+        const element = d.querySelector(query)
+
+        if (element) {
+          this.monitorMutations(element)
+        }
+      }
+    }
+
+    monitorMutations(element){
+      if (w.MutationObserver) {
+        /* for modern browsers */
+        var observer = new MutationObserver((mutations) => {
+          this.resetAndReloadFormHelpersWithTimeout()
+        });
+        observer.observe(element, {childList: true, subtree: true});
+
+      } else if (w.addEventListener) {
+          /* for IE 9 and 10 */
+          var listener = function(event) {
+            this.resetAndReloadFormHelpersWithTimeout()
+          };
+        element.addEventListener('DOMAttrModified', listener, false);
+      } else {
+          if (w.console) {
+            console.info('AddressFinder Error - please use a more modern browser')
+          }
+      }
+    }
+
+  }
+})(document, window);
