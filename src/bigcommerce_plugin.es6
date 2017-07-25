@@ -28,7 +28,7 @@
               address1: 'addressLine1Input',
               address2: 'addressLine2Input',
               suburb: 'cityInput',
-              state: 'provinceInput',
+              state: 'provinceCodeInput',
               postcode: 'postCodeInput'
             },
             stateMappings: {

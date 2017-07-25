@@ -35,7 +35,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             address1: 'addressLine1Input',
             address2: 'addressLine2Input',
             suburb: 'cityInput',
-            state: 'provinceInput',
+            state: 'provinceCodeInput',
             postcode: 'postCodeInput'
           },
           stateMappings: {
@@ -546,6 +546,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       key: "_setElementValue",
       value: function _setElementValue(element, value, elementName) {
         if (element) {
+          console.log(value);
           element.value = value;
 
           var event = document.createEvent('HTMLEvents');
@@ -553,9 +554,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           element.dispatchEvent(event);
 
           var options = element.options;
-          if (options) {
+          if (options && value != null) {
             for (var i = 0; i < options.length; i++) {
-              if (element.options[i].value === value) {
+              if (element.options[i].innerText == value.slice(7, value.length)) {
+                element.options[i].selected = true;
                 element.options[i].dispatchEvent(event);
                 break;
               }
