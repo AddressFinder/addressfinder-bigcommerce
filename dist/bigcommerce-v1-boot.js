@@ -401,14 +401,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     }
 
     /**
-     * Shuts down this object by disabling the widget and any callback handlers.
+     * Shuts down this form_helper by disabling the widget and any callback handlers.
      */
 
 
     _createClass(_class, [{
       key: "destroy",
       value: function destroy() {
-        // TODO for some reason the "destroyed" widgets are still sending queries
         for (var widgetCountryCode in this.widgets) {
           this.widgets[widgetCountryCode].disable();
           this.widgets[widgetCountryCode].destroy();
@@ -439,16 +438,16 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           destroy: function destroy() {}
         };
 
-        this._countryChanged(true);
+        this._countryChanged(null, true);
       }
     }, {
       key: "_countryChanged",
-      value: function _countryChanged(preserveValues) {
+      value: function _countryChanged(event, preserveValues) {
         switch (this.config.countryElement.value) {
           case this.config.nz.countryValue:
             this._setActiveCountry("nz");
 
-            if (preserveValues !== true) {
+            if (!preserveValues) {
               this._clearElementValues("au");
             }
 
@@ -456,7 +455,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           case this.config.au.countryValue:
             this._setActiveCountry("au");
 
-            if (preserveValues !== true) {
+            if (!preserveValues) {
               this._clearElementValues("nz");
             }
 

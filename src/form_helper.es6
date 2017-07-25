@@ -80,10 +80,9 @@
     }
 
     /**
-     * Shuts down this object by disabling the widget and any callback handlers.
+     * Shuts down this form_helper by disabling the widget and any callback handlers.
      */
     destroy(){
-      // TODO for some reason the "destroyed" widgets are still sending queries
       for (var widgetCountryCode in this.widgets) {
         this.widgets[widgetCountryCode].disable()
         this.widgets[widgetCountryCode].destroy()
@@ -113,15 +112,15 @@
         destroy: function(){}
       }
 
-      this._countryChanged(true)
+      this._countryChanged(null, true)
     }
 
-    _countryChanged(preserveValues){
+    _countryChanged(event, preserveValues){
       switch (this.config.countryElement.value) {
         case this.config.nz.countryValue:
           this._setActiveCountry("nz")
 
-          if(preserveValues !== true){
+          if(!preserveValues){
             this._clearElementValues("au")
           }
 
@@ -129,7 +128,7 @@
         case this.config.au.countryValue:
           this._setActiveCountry("au")
 
-          if(preserveValues !== true){
+          if(!preserveValues){
             this._clearElementValues("nz")
           }
 
