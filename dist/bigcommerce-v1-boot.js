@@ -194,7 +194,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 state_territory: d.getElementById(layoutConfig.au.elements.state),
                 postcode: d.getElementById(layoutConfig.au.elements.postcode)
               },
-              stateValues: layoutConfig.au.stateMappings
+              stateMappings: layoutConfig.au.stateMappings
             }
           };
 
@@ -248,9 +248,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           _this.resetAndReloadFormHelpers();
         }, 500);
       }
-
-      // TODO handle older versions of Internet Explorer
-
     }, {
       key: "setupMutationMonitor",
       value: function setupMutationMonitor() {
@@ -270,17 +267,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
               this.monitorMutations(element);
             }
           }
-          // // TODO look for different top level elements (not just micro-app-ng-checkout)
-          // let billing = d.getElementById("micro-app-ng-checkout")
-          //
-          // if (billing && w.MutationObserver) {
-          //   /* for modern browsers */
-          //   var observer = new MutationObserver((mutations) => {
-          //     this.resetAndReloadFormHelpersWithTimeout()
-          //   });
-          //
-          //   observer.observe(billing, {childList: true, subtree: true});
-          // }
         } catch (err) {
           _didIteratorError3 = true;
           _iteratorError3 = err;
@@ -306,8 +292,17 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           var observer = new MutationObserver(function (mutations) {
             _this2.resetAndReloadFormHelpersWithTimeout();
           });
-
           observer.observe(element, { childList: true, subtree: true });
+        } else if (w.addEventListener) {
+          /* for IE 9 and 10 */
+          var listener = function listener(event) {
+            this.resetAndReloadFormHelpersWithTimeout();
+          };
+          element.addEventListener('DOMAttrModified', listener, false);
+        } else {
+          if (w.console) {
+            console.info('AddressFinder Error - please use a more modern browser');
+          }
         }
       }
     }]);
@@ -342,7 +337,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
    *     searchElement: document.getElementById('FormField_18'),
    *     regionMappings: {
    *       "Auckland Region": "Auckland Region",
-   *       "Bay of Plenty Region": "Bay of Plenty",
+   *       "Bay Of Plenty Region": "Bay of Plenty",
    *       "Canterbury Region": "Canterbury",
    *       "Gisborne Region": "Gisborne Region",
    *       "Hawke's Bay Region": "Hawke's Bay",
@@ -413,7 +408,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     _createClass(_class, [{
       key: "destroy",
       value: function destroy() {
+        // TODO for some reason the "destroyed" widgets are still sending queries
         for (var widgetCountryCode in this.widgets) {
+          this.widgets[widgetCountryCode].disable();
           this.widgets[widgetCountryCode].destroy();
         }
 
@@ -450,16 +447,35 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         switch (this.config.countryElement.value) {
           case this.config.nz.countryValue:
             this._setActiveCountry("nz");
+
+            if (preserveValues !== true) {
+              this._clearElementValues("au");
+            }
+
             break;
           case this.config.au.countryValue:
             this._setActiveCountry("au");
+
+            if (preserveValues !== true) {
+              this._clearElementValues("nz");
+            }
+
             break;
           default:
             this._setActiveCountry("null");
         }
+      }
+    }, {
+      key: "_clearElementValues",
+      value: function _clearElementValues(countryCode) {
+        for (var elementName in this.config[countryCode].elements) {
+          if (this.config[countryCode].elements.hasOwnProperty(elementName)) {
+            var element = this.config[countryCode].elements[elementName];
 
-        if (!preserveValues) {
-          // TODO reset field values here
+            if (element) {
+              this._setElementValue(element, null, elementName);
+            }
+          }
         }
       }
     }, {
@@ -478,21 +494,21 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         var selected = new AddressFinder.NZSelectedAddress(fullAddress, metaData);
 
         if (elements.address_line_1_and_2) {
-          this._setFieldValue(elements.address_line_1_and_2, selected.address_line_1_and_2(), "address_line_1_and_2");
+          this._setElementValue(elements.address_line_1_and_2, selected.address_line_1_and_2(), "address_line_1_and_2");
         } else {
-          this._setFieldValue(elements.address_line_1, selected.address_line_1(), "address_line_1");
-          this._setFieldValue(elements.address_line_2, selected.address_line_2(), "address_line_2");
+          this._setElementValue(elements.address_line_1, selected.address_line_1(), "address_line_1");
+          this._setElementValue(elements.address_line_2, selected.address_line_2(), "address_line_2");
         }
 
-        this._setFieldValue(elements.suburb, selected.suburb(), "suburb");
-        this._setFieldValue(elements.city, selected.city(), "city");
-        this._setFieldValue(elements.postcode, selected.postcode(), "postcode");
+        this._setElementValue(elements.suburb, selected.suburb(), "suburb");
+        this._setElementValue(elements.city, selected.city(), "city");
+        this._setElementValue(elements.postcode, selected.postcode(), "postcode");
 
-        if (this.config.au.regionValues) {
-          var translatedRegionValue = this.config.au.regionValues[metaData.region];
-          this._setFieldValue(elements.region, translatedRegionValue, "region");
+        if (this.config.nz.regionMappings) {
+          var translatedRegionValue = this.config.au.regionMappings[metaData.region];
+          this._setElementValue(elements.region, translatedRegionValue, "region");
         } else {
-          this._setFieldValue(elements.region, metaData.region, "region");
+          this._setElementValue(elements.region, metaData.region, "region");
         }
       }
     }, {
@@ -505,37 +521,37 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             return a != null;
           }).join(", ");
 
-          this._setFieldValue(elements.address_line_1_and_2, combined, "address_line_1_and_2");
+          this._setElementValue(elements.address_line_1_and_2, combined, "address_line_1_and_2");
         } else {
-          this._setFieldValue(elements.address_line_1, metaData.address_line_1, "address_line_1");
-          this._setFieldValue(elements.address_line_2, metaData.address_line_2, "address_line_2");
+          this._setElementValue(elements.address_line_1, metaData.address_line_1, "address_line_1");
+          this._setElementValue(elements.address_line_2, metaData.address_line_2, "address_line_2");
         }
 
-        this._setFieldValue(elements.locality_name, metaData.locality_name, "suburb");
-        this._setFieldValue(elements.postcode, metaData.postcode, "postcode");
+        this._setElementValue(elements.locality_name, metaData.locality_name, "suburb");
+        this._setElementValue(elements.postcode, metaData.postcode, "postcode");
 
-        if (this.config.au.stateValues) {
-          var translatedStateValue = this.config.au.stateValues[metaData.state_territory];
-          this._setFieldValue(elements.state_territory, translatedStateValue, "state_territory");
+        if (this.config.au.stateMappings) {
+          var translatedStateValue = this.config.au.stateMappings[metaData.state_territory];
+          this._setElementValue(elements.state_territory, translatedStateValue, "state_territory");
         } else {
-          this._setFieldValue(elements.state_territory, metaData.state_territory, "state_territory");
+          this._setElementValue(elements.state_territory, metaData.state_territory, "state_territory");
         }
       }
     }, {
-      key: "_setFieldValue",
-      value: function _setFieldValue(field, value, fieldLabel) {
-        if (field) {
-          field.value = value;
+      key: "_setElementValue",
+      value: function _setElementValue(element, value, elementName) {
+        if (element) {
+          element.value = value;
 
           var event = document.createEvent('HTMLEvents');
           event.initEvent('change', true, false);
-          field.dispatchEvent(event);
+          element.dispatchEvent(event);
 
-          var options = field.options;
+          var options = element.options;
           if (options) {
             for (var i = 0; i < options.length; i++) {
-              if (field.options[i].value === value) {
-                field.options[i].dispatchEvent(event);
+              if (element.options[i].value === value) {
+                element.options[i].dispatchEvent(event);
                 break;
               }
             }
@@ -544,7 +560,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           return;
         }
 
-        var errorMessage = 'AddressFinder Error: ' + 'Attempted to update value for field that could not be found.\n' + '\nField: ' + fieldLabel + '\nValue: ' + value;
+        var errorMessage = 'AddressFinder Error: ' + 'Attempted to update value for element that could not be found.\n' + '\nElement: ' + elementName + '\nValue: ' + value;
 
         if (w.console) {
           console.warn(errorMessage);

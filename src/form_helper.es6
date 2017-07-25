@@ -83,7 +83,9 @@
      * Shuts down this object by disabling the widget and any callback handlers.
      */
     destroy(){
+      // TODO for some reason the "destroyed" widgets are still sending queries
       for (var widgetCountryCode in this.widgets) {
+        this.widgets[widgetCountryCode].disable()
         this.widgets[widgetCountryCode].destroy()
       }
 
@@ -118,27 +120,34 @@
       switch (this.config.countryElement.value) {
         case this.config.nz.countryValue:
           this._setActiveCountry("nz")
+
+          if(preserveValues !== true){
+            this._clearElementValues("au")
+          }
+
           break
         case this.config.au.countryValue:
           this._setActiveCountry("au")
+
+          if(preserveValues !== true){
+            this._clearElementValues("nz")
+          }
+
           break
         default:
           this._setActiveCountry("null")
       }
+    }
 
-      if (preserveValues !== true){
-        var fields = []
-        if (this.config.countryElement.value == 'nz') {
-          var values = ['address_line_1_and_2', 'suburb', 'city', 'region', 'postcode']
-        } else {
-          var values = ['address_line_1', 'address_line_2', 'locality_name', 'state_territory', 'postcode']
+    _clearElementValues(countryCode){
+      for (var elementName in this.config[countryCode].elements) {
+        if (this.config[countryCode].elements.hasOwnProperty(elementName)) {
+          const element = this.config[countryCode].elements[elementName];
+
+          if(element){
+            this._setElementValue(element, null, elementName);
+          }
         }
-        values.map((value) => {
-          fields.push(that.config[this.config.countryElement.value].elements[value])
-        })
-        fields.map((field) => {
-          field.value = ''
-        })
       }
     }
 
@@ -155,23 +164,23 @@
       let selected = new AddressFinder.NZSelectedAddress(fullAddress, metaData);
 
       if(elements.address_line_1_and_2){
-        this._setFieldValue(elements.address_line_1_and_2, selected.address_line_1_and_2(), "address_line_1_and_2")
+        this._setElementValue(elements.address_line_1_and_2, selected.address_line_1_and_2(), "address_line_1_and_2")
       }
       else {
-        this._setFieldValue(elements.address_line_1, selected.address_line_1(), "address_line_1")
-        this._setFieldValue(elements.address_line_2, selected.address_line_2(), "address_line_2")
+        this._setElementValue(elements.address_line_1, selected.address_line_1(), "address_line_1")
+        this._setElementValue(elements.address_line_2, selected.address_line_2(), "address_line_2")
       }
 
-      this._setFieldValue(elements.suburb, selected.suburb(), "suburb")
-      this._setFieldValue(elements.city, selected.city(), "city")
-      this._setFieldValue(elements.postcode, selected.postcode(), "postcode")
+      this._setElementValue(elements.suburb, selected.suburb(), "suburb")
+      this._setElementValue(elements.city, selected.city(), "city")
+      this._setElementValue(elements.postcode, selected.postcode(), "postcode")
 
       if (this.config.nz.regionMappings) {
         const translatedRegionValue = this.config.au.regionMappings[metaData.region]
-        this._setFieldValue(elements.region, translatedRegionValue, "region")
+        this._setElementValue(elements.region, translatedRegionValue, "region")
       }
       else {
-        this._setFieldValue(elements.region, metaData.region, "region")
+        this._setElementValue(elements.region, metaData.region, "region")
       }
     }
 
@@ -183,38 +192,38 @@
           metaData.address_line_1, metaData.address_line_2
         ].filter(function(a){return a != null}).join(", ")
 
-        this._setFieldValue(elements.address_line_1_and_2, combined, "address_line_1_and_2")
+        this._setElementValue(elements.address_line_1_and_2, combined, "address_line_1_and_2")
       }
       else {
-        this._setFieldValue(elements.address_line_1, metaData.address_line_1, "address_line_1")
-        this._setFieldValue(elements.address_line_2, metaData.address_line_2, "address_line_2")
+        this._setElementValue(elements.address_line_1, metaData.address_line_1, "address_line_1")
+        this._setElementValue(elements.address_line_2, metaData.address_line_2, "address_line_2")
       }
 
-      this._setFieldValue(elements.locality_name, metaData.locality_name, "suburb")
-      this._setFieldValue(elements.postcode, metaData.postcode, "postcode")
+      this._setElementValue(elements.locality_name, metaData.locality_name, "suburb")
+      this._setElementValue(elements.postcode, metaData.postcode, "postcode")
 
       if (this.config.au.stateMappings) {
         const translatedStateValue = this.config.au.stateMappings[metaData.state_territory]
-        this._setFieldValue(elements.state_territory, translatedStateValue, "state_territory")
+        this._setElementValue(elements.state_territory, translatedStateValue, "state_territory")
       }
       else {
-        this._setFieldValue(elements.state_territory, metaData.state_territory, "state_territory")
+        this._setElementValue(elements.state_territory, metaData.state_territory, "state_territory")
       }
     }
 
-    _setFieldValue(field, value, fieldLabel){
-      if (field) {
-        field.value = value;
+    _setElementValue(element, value, elementName){
+      if (element) {
+        element.value = value;
 
         var event = document.createEvent('HTMLEvents');
         event.initEvent('change', true, false);
-        field.dispatchEvent(event);
+        element.dispatchEvent(event);
 
-        var options = field.options;
+        var options = element.options;
         if (options) {
           for (var i = 0; i < options.length; i++) {
-            if (field.options[i].value === value) {
-              field.options[i].dispatchEvent(event);
+            if (element.options[i].value === value) {
+              element.options[i].dispatchEvent(event);
               break;
             }
           }
@@ -224,8 +233,8 @@
       }
 
       var errorMessage = 'AddressFinder Error: '
-                         + 'Attempted to update value for field that could not be found.\n'
-                         + '\nField: ' + fieldLabel
+                         + 'Attempted to update value for element that could not be found.\n'
+                         + '\nElement: ' + elementName
                          + '\nValue: ' + value;
 
       if (w.console) {

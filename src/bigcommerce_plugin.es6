@@ -166,7 +166,7 @@
               state_territory: d.getElementById(layoutConfig.au.elements.state),
               postcode: d.getElementById(layoutConfig.au.elements.postcode)
             },
-            stateValues: layoutConfig.au.stateMappings
+            stateMappings: layoutConfig.au.stateMappings
           }
         }
 
@@ -220,7 +220,6 @@
           /* for IE 9 and 10 */
           var listener = function(event) {
             this.resetAndReloadFormHelpersWithTimeout()
-            }
           };
         element.addEventListener('DOMAttrModified', listener, false);
       } else {
