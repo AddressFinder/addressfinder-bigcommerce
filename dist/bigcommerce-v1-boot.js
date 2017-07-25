@@ -39,14 +39,14 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             postcode: 'postCodeInput'
           },
           stateMappings: {
-            'ACT': 'string:Australian Capital Territory',
-            'NSW': 'string:New South Wales',
-            'NT': 'string:Northern Territory',
-            'QLD': 'string:Queensland',
-            'SA': 'string:South Australia',
-            'TAS': 'string:Tasmania',
-            'VIC': 'string:Victoria',
-            'WA': 'string:Western Australia'
+            'ACT': 'string:ACT',
+            'NSW': 'string:NSW',
+            'NT': 'string:NT',
+            'QLD': 'string:QLD',
+            'SA': 'string:SA',
+            'TAS': 'string:TAS',
+            'VIC': 'string:VIC',
+            'WA': 'string:WA'
           }
         }
       }, {
@@ -546,7 +546,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       key: "_setElementValue",
       value: function _setElementValue(element, value, elementName) {
         if (element) {
-          console.log(value);
           element.value = value;
 
           var event = document.createEvent('HTMLEvents');
@@ -554,10 +553,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           element.dispatchEvent(event);
 
           var options = element.options;
-          if (options && value != null) {
+          if (options) {
             for (var i = 0; i < options.length; i++) {
-              if (element.options[i].innerText == value.slice(7, value.length)) {
-                element.options[i].selected = true;
+              if (element.options[i].value == value) {
                 element.options[i].dispatchEvent(event);
                 break;
               }

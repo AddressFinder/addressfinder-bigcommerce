@@ -217,7 +217,6 @@
 
     _setElementValue(element, value, elementName){
       if (element) {
-        console.log(value)
         element.value = value;
 
         var event = document.createEvent('HTMLEvents');
@@ -225,10 +224,9 @@
         element.dispatchEvent(event);
 
         var options = element.options;
-        if (options && value != null) {
+        if (options) {
           for (var i = 0; i < options.length; i++) {
-            if (element.options[i].innerText == value.slice(7, value.length)) {
-              element.options[i].selected = true;
+            if (element.options[i].value == value) {
               element.options[i].dispatchEvent(event);
               break;
             }
