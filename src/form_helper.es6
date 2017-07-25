@@ -70,9 +70,9 @@
    * });
    */
   w.AF.FormHelper = class {
-    constructor(apiConfig, config){
-      this.apiConfig = apiConfig
-      this.config = config
+    constructor(widgetConfig, formHelperConfig){
+      this.widgetConfig = widgetConfig
+      this.formHelperConfig = formHelperConfig
       this.widgets = {}
       this.subscriptions = {}
 
@@ -91,18 +91,18 @@
       this.widgets = null
       this.subscriptions = []
 
-      this.config.countryElement.removeEventListener("change", this.boundCountryChangedListener)
+      this.formHelperConfig.countryElement.removeEventListener("change", this.boundCountryChangedListener)
     }
 
     _bindToForm(){
       this.boundCountryChangedListener = this._countryChanged.bind(this) // save this so we can unbind in the destroy() method
-      this.config.countryElement.addEventListener("change", this.boundCountryChangedListener);
+      this.formHelperConfig.countryElement.addEventListener("change", this.boundCountryChangedListener);
 
-      let nzWidget = new w.AddressFinder.Widget(this.config.nz.searchElement, this.apiConfig.nzKey, "nz", this.apiConfig.nzWidgetOptions);
+      let nzWidget = new w.AddressFinder.Widget(this.formHelperConfig.nz.searchElement, this.widgetConfig.nzKey, "nz", this.widgetConfig.nzWidgetOptions);
       nzWidget.on("result:select", this._nzAddressSelected.bind(this))
       this.widgets["nz"] = nzWidget
 
-      let auWidget = new w.AddressFinder.Widget(this.config.au.searchElement, this.apiConfig.auKey, "au", this.apiConfig.auWidgetOptions);
+      let auWidget = new w.AddressFinder.Widget(this.formHelperConfig.au.searchElement, this.widgetConfig.auKey, "au", this.widgetConfig.auWidgetOptions);
       auWidget.on("result:select", this._auAddressSelected.bind(this))
       this.widgets["au"] = auWidget
 
@@ -116,8 +116,8 @@
     }
 
     _countryChanged(event, preserveValues){
-      switch (this.config.countryElement.value) {
-        case this.config.nz.countryValue:
+      switch (this.formHelperConfig.countryElement.value) {
+        case this.formHelperConfig.nz.countryValue:
           this._setActiveCountry("nz")
 
           if(!preserveValues){
@@ -125,7 +125,7 @@
           }
 
           break
-        case this.config.au.countryValue:
+        case this.formHelperConfig.au.countryValue:
           this._setActiveCountry("au")
 
           if(!preserveValues){
@@ -135,13 +135,18 @@
           break
         default:
           this._setActiveCountry("null")
+
+          if(!preserveValues){
+            this._clearElementValues("au")
+            this._clearElementValues("nz")
+          }
       }
     }
 
     _clearElementValues(countryCode){
-      for (var elementName in this.config[countryCode].elements) {
-        if (this.config[countryCode].elements.hasOwnProperty(elementName)) {
-          const element = this.config[countryCode].elements[elementName];
+      for (var elementName in this.formHelperConfig[countryCode].elements) {
+        if (this.formHelperConfig[countryCode].elements.hasOwnProperty(elementName)) {
+          const element = this.formHelperConfig[countryCode].elements[elementName];
 
           if(element){
             this._setElementValue(element, null, elementName);
@@ -159,7 +164,7 @@
     }
 
     _nzAddressSelected(fullAddress, metaData){
-      let elements = this.config.nz.elements
+      let elements = this.formHelperConfig.nz.elements
       let selected = new AddressFinder.NZSelectedAddress(fullAddress, metaData);
 
       if(elements.address_line_1_and_2){
@@ -174,8 +179,8 @@
       this._setElementValue(elements.city, selected.city(), "city")
       this._setElementValue(elements.postcode, selected.postcode(), "postcode")
 
-      if (this.config.nz.regionMappings) {
-        const translatedRegionValue = this.config.au.regionMappings[metaData.region]
+      if (this.formHelperConfig.nz.regionMappings) {
+        const translatedRegionValue = this.formHelperConfig.au.regionMappings[metaData.region]
         this._setElementValue(elements.region, translatedRegionValue, "region")
       }
       else {
@@ -184,7 +189,7 @@
     }
 
     _auAddressSelected(fullAddress, metaData){
-      let elements = this.config.au.elements
+      let elements = this.formHelperConfig.au.elements
 
       if(elements.address_line_1_and_2){
         const combined = [
@@ -201,8 +206,8 @@
       this._setElementValue(elements.locality_name, metaData.locality_name, "suburb")
       this._setElementValue(elements.postcode, metaData.postcode, "postcode")
 
-      if (this.config.au.stateMappings) {
-        const translatedStateValue = this.config.au.stateMappings[metaData.state_territory]
+      if (this.formHelperConfig.au.stateMappings) {
+        const translatedStateValue = this.formHelperConfig.au.stateMappings[metaData.state_territory]
         this._setElementValue(elements.state_territory, translatedStateValue, "state_territory")
       }
       else {

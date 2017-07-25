@@ -2,9 +2,9 @@
   w.AF = w.AF || {}
 
   w.AF.BigCommercePlugin = class {
-    constructor(config){
-      this.apiConfig = config
-      this.addressConfig = [
+    constructor(widgetConfig){
+      this.widgetConfig = widgetConfig
+      this.layoutConfigurations = [
         {
           label: "Optimized one-page checkout (Early access)",
           layoutIdentifier: "micro-app-ng-checkout",
@@ -124,11 +124,11 @@
     }
 
     identifyLayout(){
-      for (const layoutConfig of this.addressConfig){
+      for (const layoutConfig of this.layoutConfigurations){
         let identifyingElement = d.getElementById(layoutConfig.layoutIdentifier)
 
         if (identifyingElement) {
-          console.log(`Identified layout: ${layoutConfig.label}`);
+          // console.log(`Identified layout: ${layoutConfig.label}`);
           this.initialiseFormHelper(layoutConfig)
         }
       }
@@ -170,13 +170,13 @@
           }
         }
 
-        let helper = new AF.FormHelper(this.apiConfig, formHelperConfig)
+        let helper = new AF.FormHelper(this.widgetConfig, formHelperConfig)
         this.formHelpers.push(helper)
       }
     }
 
     resetAndReloadFormHelpers(){
-      console.log("Boom, reset all the things")
+      // console.log("Boom, reset all the things")
       for (const helper of this.formHelpers) {
         helper.destroy()
       }

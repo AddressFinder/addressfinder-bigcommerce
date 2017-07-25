@@ -8,11 +8,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
   w.AF = w.AF || {};
 
   w.AF.BigCommercePlugin = function () {
-    function _class(config) {
+    function _class(widgetConfig) {
       _classCallCheck(this, _class);
 
-      this.apiConfig = config;
-      this.addressConfig = [{
+      this.widgetConfig = widgetConfig;
+      this.layoutConfigurations = [{
         label: "Optimized one-page checkout (Early access)",
         layoutIdentifier: "micro-app-ng-checkout",
         countryIdentifier: 'countryCodeInput',
@@ -135,13 +135,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         var _iteratorError = undefined;
 
         try {
-          for (var _iterator = this.addressConfig[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+          for (var _iterator = this.layoutConfigurations[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
             var layoutConfig = _step.value;
 
             var identifyingElement = d.getElementById(layoutConfig.layoutIdentifier);
 
             if (identifyingElement) {
-              console.log("Identified layout: " + layoutConfig.label);
+              // console.log(`Identified layout: ${layoutConfig.label}`);
               this.initialiseFormHelper(layoutConfig);
             }
           }
@@ -198,14 +198,14 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             }
           };
 
-          var helper = new AF.FormHelper(this.apiConfig, formHelperConfig);
+          var helper = new AF.FormHelper(this.widgetConfig, formHelperConfig);
           this.formHelpers.push(helper);
         }
       }
     }, {
       key: "resetAndReloadFormHelpers",
       value: function resetAndReloadFormHelpers() {
-        console.log("Boom, reset all the things");
+        // console.log("Boom, reset all the things")
         var _iteratorNormalCompletion2 = true;
         var _didIteratorError2 = false;
         var _iteratorError2 = undefined;
@@ -389,11 +389,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
    * });
    */
   w.AF.FormHelper = function () {
-    function _class(apiConfig, config) {
+    function _class(widgetConfig, formHelperConfig) {
       _classCallCheck(this, _class);
 
-      this.apiConfig = apiConfig;
-      this.config = config;
+      this.widgetConfig = widgetConfig;
+      this.formHelperConfig = formHelperConfig;
       this.widgets = {};
       this.subscriptions = {};
 
@@ -416,19 +416,19 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         this.widgets = null;
         this.subscriptions = [];
 
-        this.config.countryElement.removeEventListener("change", this.boundCountryChangedListener);
+        this.formHelperConfig.countryElement.removeEventListener("change", this.boundCountryChangedListener);
       }
     }, {
       key: "_bindToForm",
       value: function _bindToForm() {
         this.boundCountryChangedListener = this._countryChanged.bind(this); // save this so we can unbind in the destroy() method
-        this.config.countryElement.addEventListener("change", this.boundCountryChangedListener);
+        this.formHelperConfig.countryElement.addEventListener("change", this.boundCountryChangedListener);
 
-        var nzWidget = new w.AddressFinder.Widget(this.config.nz.searchElement, this.apiConfig.nzKey, "nz", this.apiConfig.nzWidgetOptions);
+        var nzWidget = new w.AddressFinder.Widget(this.formHelperConfig.nz.searchElement, this.widgetConfig.nzKey, "nz", this.widgetConfig.nzWidgetOptions);
         nzWidget.on("result:select", this._nzAddressSelected.bind(this));
         this.widgets["nz"] = nzWidget;
 
-        var auWidget = new w.AddressFinder.Widget(this.config.au.searchElement, this.apiConfig.auKey, "au", this.apiConfig.auWidgetOptions);
+        var auWidget = new w.AddressFinder.Widget(this.formHelperConfig.au.searchElement, this.widgetConfig.auKey, "au", this.widgetConfig.auWidgetOptions);
         auWidget.on("result:select", this._auAddressSelected.bind(this));
         this.widgets["au"] = auWidget;
 
@@ -443,8 +443,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     }, {
       key: "_countryChanged",
       value: function _countryChanged(event, preserveValues) {
-        switch (this.config.countryElement.value) {
-          case this.config.nz.countryValue:
+        switch (this.formHelperConfig.countryElement.value) {
+          case this.formHelperConfig.nz.countryValue:
             this._setActiveCountry("nz");
 
             if (!preserveValues) {
@@ -452,7 +452,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             }
 
             break;
-          case this.config.au.countryValue:
+          case this.formHelperConfig.au.countryValue:
             this._setActiveCountry("au");
 
             if (!preserveValues) {
@@ -462,14 +462,19 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             break;
           default:
             this._setActiveCountry("null");
+
+            if (!preserveValues) {
+              this._clearElementValues("au");
+              this._clearElementValues("nz");
+            }
         }
       }
     }, {
       key: "_clearElementValues",
       value: function _clearElementValues(countryCode) {
-        for (var elementName in this.config[countryCode].elements) {
-          if (this.config[countryCode].elements.hasOwnProperty(elementName)) {
-            var element = this.config[countryCode].elements[elementName];
+        for (var elementName in this.formHelperConfig[countryCode].elements) {
+          if (this.formHelperConfig[countryCode].elements.hasOwnProperty(elementName)) {
+            var element = this.formHelperConfig[countryCode].elements[elementName];
 
             if (element) {
               this._setElementValue(element, null, elementName);
@@ -489,7 +494,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     }, {
       key: "_nzAddressSelected",
       value: function _nzAddressSelected(fullAddress, metaData) {
-        var elements = this.config.nz.elements;
+        var elements = this.formHelperConfig.nz.elements;
         var selected = new AddressFinder.NZSelectedAddress(fullAddress, metaData);
 
         if (elements.address_line_1_and_2) {
@@ -503,8 +508,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         this._setElementValue(elements.city, selected.city(), "city");
         this._setElementValue(elements.postcode, selected.postcode(), "postcode");
 
-        if (this.config.nz.regionMappings) {
-          var translatedRegionValue = this.config.au.regionMappings[metaData.region];
+        if (this.formHelperConfig.nz.regionMappings) {
+          var translatedRegionValue = this.formHelperConfig.au.regionMappings[metaData.region];
           this._setElementValue(elements.region, translatedRegionValue, "region");
         } else {
           this._setElementValue(elements.region, metaData.region, "region");
@@ -513,7 +518,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     }, {
       key: "_auAddressSelected",
       value: function _auAddressSelected(fullAddress, metaData) {
-        var elements = this.config.au.elements;
+        var elements = this.formHelperConfig.au.elements;
 
         if (elements.address_line_1_and_2) {
           var combined = [metaData.address_line_1, metaData.address_line_2].filter(function (a) {
@@ -529,8 +534,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         this._setElementValue(elements.locality_name, metaData.locality_name, "suburb");
         this._setElementValue(elements.postcode, metaData.postcode, "postcode");
 
-        if (this.config.au.stateMappings) {
-          var translatedStateValue = this.config.au.stateMappings[metaData.state_territory];
+        if (this.formHelperConfig.au.stateMappings) {
+          var translatedStateValue = this.formHelperConfig.au.stateMappings[metaData.state_territory];
           this._setElementValue(elements.state_territory, translatedStateValue, "state_territory");
         } else {
           this._setElementValue(elements.state_territory, metaData.state_territory, "state_territory");
