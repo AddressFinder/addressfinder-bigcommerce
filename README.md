@@ -47,8 +47,8 @@ Install the plugin:
         <script>
         (function(d,w){
           w.AddressFinderConfig = {
-            key_nz: "MY_NZ_AF_KEY",
-            key_au: "MY_AU_AF_KEY"
+            key_nz: "ADDRESSFINDER_NZ_DEMO_KEY",
+            key_au: "ADDRESSFINDER_AU_DEMO_KEY"
           }
           w.addEventListener('DOMContentLoaded', function(){
             var s = d.createElement("script");
@@ -79,7 +79,8 @@ If you want to adjust the default behaviour of the widget you may add additional
 
 ```
   w.AddressFinderPlugin = {
-    key: "ADDRESSFINDER_NZ_DEMO_KEY",
+    key_nz: "ADDRESSFINDER_NZ_DEMO_KEY",
+    key_au: "ADDRESSFINDER_AU_DEMO_KEY",
     widgetOptions: {
       byline: false
     }
@@ -90,7 +91,8 @@ If you need to add different options for each country you can enter them in obje
 
 ```
   w.AddressFinderPlugin = {
-    key: "ADDRESSFINDER_NZ_DEMO_KEY",
+    key_nz: "ADDRESSFINDER_NZ_DEMO_KEY",
+    key_au: "ADDRESSFINDER_AU_DEMO_KEY",
     nzWidgetOptions: {
       byline: false
     },
