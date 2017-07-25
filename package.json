@@ -7,16 +7,21 @@
   "author": "@Abletech",
   "license": "GPL",
   "devDependencies": {
+    "babel-cli": "^6.0.0",
     "concat": "^1.0.3",
     "eslint": "^3.19.0",
     "uglify-js": "^3.0.1",
-    "watch": "^1.0.2"
+    "watch": "^1.0.2",
+    "babel-preset-env": "^1.6.0"
+  },
+  "dependencies": {
+    "core-js": "^0.8.4"
   },
   "scripts": {
-    "lint": "eslint src/*.js",
-    "concat": "concat src/*.js -o dist/bigcommerce-v1-boot.js",
+    "compile": "babel src --source-maps --out-dir lib",
+    "concat": "concat lib/*.js -o dist/bigcommerce-v1-boot.js",
     "minify": "uglifyjs dist/bigcommerce-v1-boot.js -m -o dist/bigcommerce-v1-boot.min.js",
-    "build": "npm run lint && npm run concat",
+    "build": "npm run compile && npm run concat",
     "build:production": "npm run build && npm run minify",
     "watch": "watch 'npm run build' src/"
   }
