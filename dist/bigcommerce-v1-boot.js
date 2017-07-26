@@ -135,6 +135,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           var identifyingElement = d.getElementById(layoutConfig.layoutIdentifier);
 
           if (identifyingElement) {
+            this.log("Identified layout named: " + layoutConfig.label);
             this.initialiseFormHelper(layoutConfig);
             this.setupMutationMonitor(layoutConfig.layoutIdentifier);
           }
@@ -148,6 +149,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         if (searchElement) {
           var formHelperConfig = {
             countryElement: d.getElementById(layoutConfig.countryIdentifier),
+            label: layoutConfig.label,
             nz: {
               countryValue: layoutConfig.nz.countryValue,
               searchElement: d.getElementById(layoutConfig.nz.elements.address1),
@@ -185,7 +187,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     }, {
       key: "resetAndReloadFormHelpers",
       value: function resetAndReloadFormHelpers() {
-        // console.log("Boom, reset all the things")
+        this.log("Reset all form helpers things");
         for (var i = 0; i < this.formHelpers.length; i++) {
           this.formHelpers[i].destroy();
         }
@@ -238,6 +240,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           }
         }
       }
+    }, {
+      key: "log",
+      value: function log(message) {
+        if (this.widgetConfig.debug && w.console) {
+          console.log(message);
+        }
+      }
     }]);
 
     return _class;
@@ -262,7 +271,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
    *   nzWidgetOptions: {
    *     byline: false
    *   },
-   *   auWidgetOptions: {}
+   *   auWidgetOptions: {},
+   *   debug: false
    * }, {
    *   countryElement: document.getElementById("country"),
    *   nz: {
@@ -418,6 +428,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     }, {
       key: "_setActiveCountry",
       value: function _setActiveCountry(countryCode) {
+        this._log("Setting active country " + countryCode);
+
         for (var widgetCountryCode in this.widgets) {
           this.widgets[widgetCountryCode].disable();
         }
@@ -503,6 +515,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           console.warn(errorMessage);
         }
       }
+    }, {
+      key: "_log",
+      value: function _log(message) {
+        if (this.widgetConfig.debug && w.console) {
+          console.log("FormHelper for layout " + this.formHelperConfig.label + ": " + message);
+        }
+      }
     }]);
 
     return _class;
@@ -522,7 +541,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       nzKey: w.AddressFinderConfig.key_nz || w.AddressFinderConfig.key || w.AddressFinderConfig.key_au,
       auKey: w.AddressFinderConfig.key_au || w.AddressFinderConfig.key || w.AddressFinderConfig.key_nz,
       nzWidgetOptions: w.AddressFinderConfig.nzWidgetOptions || w.AddressFinderConfig.widgetOptions || {},
-      auWidgetOptions: w.AddressFinderConfig.auWidgetOptions || w.AddressFinderConfig.widgetOptions || {}
+      auWidgetOptions: w.AddressFinderConfig.auWidgetOptions || w.AddressFinderConfig.widgetOptions || {},
+      debug: w.AddressFinderConfig.debug || false
     });
   };
 

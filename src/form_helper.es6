@@ -10,7 +10,8 @@
    *   nzWidgetOptions: {
    *     byline: false
    *   },
-   *   auWidgetOptions: {}
+   *   auWidgetOptions: {},
+   *   debug: false
    * }, {
    *   countryElement: document.getElementById("country"),
    *   nz: {
@@ -156,6 +157,8 @@
     }
 
     _setActiveCountry(countryCode){
+      this._log(`Setting active country ${countryCode}`)
+
       for (var widgetCountryCode in this.widgets) {
         this.widgets[widgetCountryCode].disable()
       }
@@ -243,6 +246,12 @@
 
       if (w.console) {
         console.warn(errorMessage);
+      }
+    }
+
+    _log(message){
+      if (this.widgetConfig.debug && w.console) {
+        console.log(`FormHelper for layout ${this.formHelperConfig.label}: ${message}`)
       }
     }
   }

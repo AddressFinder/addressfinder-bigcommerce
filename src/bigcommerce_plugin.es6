@@ -129,6 +129,7 @@
         let identifyingElement = d.getElementById(layoutConfig.layoutIdentifier)
 
         if (identifyingElement) {
+          this.log(`Identified layout named: ${layoutConfig.label}`)
           this.initialiseFormHelper(layoutConfig)
           this.setupMutationMonitor(layoutConfig.layoutIdentifier)
         }
@@ -141,6 +142,7 @@
       if (searchElement) {
         let formHelperConfig = {
           countryElement: d.getElementById(layoutConfig.countryIdentifier),
+          label: layoutConfig.label,
           nz: {
             countryValue: layoutConfig.nz.countryValue,
             searchElement: d.getElementById(layoutConfig.nz.elements.address1),
@@ -177,7 +179,7 @@
     }
 
     resetAndReloadFormHelpers(){
-      // console.log("Boom, reset all the things")
+      this.log("Reset all form helpers things")
       for (var i = 0; i < this.formHelpers.length; i++) {
         this.formHelpers[i].destroy()
       }
@@ -225,5 +227,10 @@
       }
     }
 
+    log(message){
+      if (this.widgetConfig.debug && w.console) {
+        console.log(message)
+      }
+    }
   }
 })(document, window);
