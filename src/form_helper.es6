@@ -226,7 +226,7 @@
         var options = element.options;
         if (options) {
           for (var i = 0; i < options.length; i++) {
-            if (element.options[i].value === value) {
+            if (element.options[i].value == value) {
               element.options[i].dispatchEvent(event);
               break;
             }

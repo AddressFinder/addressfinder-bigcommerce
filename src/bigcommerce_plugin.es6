@@ -28,18 +28,18 @@
               address1: 'addressLine1Input',
               address2: 'addressLine2Input',
               suburb: 'cityInput',
-              state: 'provinceInput',
+              state: 'provinceCodeInput',
               postcode: 'postCodeInput'
             },
             stateMappings: {
-              'ACT': 'string:Australian Capital Territory',
-              'NSW': 'string:New South Wales',
-              'NT' : 'string:Northern Territory',
-              'QLD': 'string:Queensland',
-              'SA' : 'string:South Australia',
-              'TAS': 'string:Tasmania',
-              'VIC': 'string:Victoria',
-              'WA' : 'string:Western Australia'
+              'ACT': 'string:ACT',
+              'NSW': 'string:NSW',
+              'NT' : 'string:NT',
+              'QLD': 'string:QLD',
+              'SA' : 'string:SA',
+              'TAS': 'string:TAS',
+              'VIC': 'string:VIC',
+              'WA' : 'string:WA'
             }
           }
         },
