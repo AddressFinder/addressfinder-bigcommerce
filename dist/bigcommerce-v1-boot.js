@@ -121,6 +121,42 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             'WA': 'Western Australia'
           }
         }
+      }, {
+        label: "Create account",
+        layoutIdentifier: "CreateAccountForm",
+        countryIdentifier: 'FormField_11',
+        searchIdentifier: "FormField_8",
+        nz: {
+          countryValue: "New Zealand",
+          elements: {
+            address1: 'FormField_8',
+            suburb: 'FormField_9',
+            city: 'FormField_10',
+            region: 'FormField_12',
+            postcode: 'FormField_13'
+          },
+          regionMappings: null
+        },
+        au: {
+          countryValue: "Australia",
+          elements: {
+            address1: 'FormField_8',
+            address2: 'FormField_9',
+            suburb: 'FormField_10',
+            state: 'FormField_12',
+            postcode: 'FormField_13'
+          },
+          stateMappings: {
+            'ACT': 'Australian Capital Territory',
+            'NSW': 'New South Wales',
+            'NT': 'Northern Territory',
+            'QLD': 'Queensland',
+            'SA': 'South Australia',
+            'TAS': 'Tasmania',
+            'VIC': 'Victoria',
+            'WA': 'Western Australia'
+          }
+        }
       }];
       this.formHelpers = [];
 
