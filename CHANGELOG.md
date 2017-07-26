@@ -1,6 +1,7 @@
-# AddressFinder 1.1.3 (July 26, 2017)
+# AddressFinder 1.1.4 (July 26, 2017)
 
 * Fix state assignment issue on checkout pages with 1-page layout
+* Handle missing API keys better
 
 # AddressFinder 1.1.2 (June 12, 2017)
 
