@@ -124,7 +124,7 @@
     }
 
     identifyLayout(){
-      for (var i = 0; i < this.layoutConfigurations; i++) {
+      for (var i = 0; i < this.layoutConfigurations.length; i++) {
         let layoutConfig = this.layoutConfigurations[i]
         let identifyingElement = d.getElementById(layoutConfig.layoutIdentifier)
 
