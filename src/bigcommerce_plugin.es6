@@ -3,7 +3,7 @@
 
   w.AF.BigCommercePlugin = class {
     constructor(widgetConfig){
-      this.version = "1.1.5"
+      this.version = "1.1.6"
       this.widgetConfig = widgetConfig
       this.layoutConfigurations = [
         {
@@ -181,7 +181,7 @@
       for (var i = 0; i < this.formHelpers.length; i++) {
         this.formHelpers[i].destroy()
       }
-      
+
       this.formHelpers = []
 
       this.identifyLayout()

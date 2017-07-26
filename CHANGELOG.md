@@ -1,3 +1,6 @@
+# AddressFinder 1.1.6 (July 26, 2017)
+* Fix issue with IE compatibility
+
 # AddressFinder 1.1.5 (July 26, 2017)
 * Fix issue with monitoring mutations  
 
