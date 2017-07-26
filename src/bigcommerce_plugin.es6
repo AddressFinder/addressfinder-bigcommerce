@@ -121,7 +121,6 @@
       this.formHelpers = []
 
       this.identifyLayout()
-      this.setupMutationMonitor()
     }
 
     identifyLayout(){
@@ -129,8 +128,8 @@
         let identifyingElement = d.getElementById(layoutConfig.layoutIdentifier)
 
         if (identifyingElement) {
-          // console.log(`Identified layout: ${layoutConfig.label}`);
           this.initialiseFormHelper(layoutConfig)
+          this.setupMutationMonitor(layoutConfig.layoutIdentifier)
         }
       }
     }
@@ -197,17 +196,13 @@
       }, 500)
     }
 
-    setupMutationMonitor(){
-      let topLevelElementQueries = ["[id=micro-app-ng-checkout]", "div[class=page]"]
-
-      for (let query of topLevelElementQueries) {
-        const element = d.querySelector(query)
+    setupMutationMonitor(query){
+        const element = d.getElementById(query)
 
         if (element) {
           this.monitorMutations(element)
         }
       }
-    }
 
     monitorMutations(element){
       if (w.MutationObserver) {

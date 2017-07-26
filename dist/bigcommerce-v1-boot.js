@@ -125,7 +125,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       this.formHelpers = [];
 
       this.identifyLayout();
-      this.setupMutationMonitor();
     }
 
     _createClass(_class, [{
@@ -142,8 +141,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             var identifyingElement = d.getElementById(layoutConfig.layoutIdentifier);
 
             if (identifyingElement) {
-              // console.log(`Identified layout: ${layoutConfig.label}`);
               this.initialiseFormHelper(layoutConfig);
+              this.setupMutationMonitor(layoutConfig.layoutIdentifier);
             }
           }
         } catch (err) {
@@ -251,36 +250,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }
     }, {
       key: "setupMutationMonitor",
-      value: function setupMutationMonitor() {
-        var topLevelElementQueries = ["[id=micro-app-ng-checkout]", "div[class=page]"];
+      value: function setupMutationMonitor(query) {
+        var element = d.getElementById(query);
 
-        var _iteratorNormalCompletion3 = true;
-        var _didIteratorError3 = false;
-        var _iteratorError3 = undefined;
-
-        try {
-          for (var _iterator3 = topLevelElementQueries[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-            var query = _step3.value;
-
-            var element = d.querySelector(query);
-
-            if (element) {
-              this.monitorMutations(element);
-            }
-          }
-        } catch (err) {
-          _didIteratorError3 = true;
-          _iteratorError3 = err;
-        } finally {
-          try {
-            if (!_iteratorNormalCompletion3 && _iterator3.return) {
-              _iterator3.return();
-            }
-          } finally {
-            if (_didIteratorError3) {
-              throw _iteratorError3;
-            }
-          }
+        if (element) {
+          this.monitorMutations(element);
         }
       }
     }, {
