@@ -196,8 +196,8 @@
       }, 500)
     }
 
-    setupMutationMonitor(query){
-        const element = d.getElementById(query)
+    setupMutationMonitor(elementId){
+        const element = d.getElementById(elementId)
 
         if (element) {
           this.monitorMutations(element)
