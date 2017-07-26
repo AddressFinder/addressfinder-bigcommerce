@@ -1,3 +1,6 @@
+# AddressFinder 1.1.5 (July 26, 2017)
+* Fix issue with monitoring mutations  
+
 # AddressFinder 1.1.4 (July 26, 2017)
 
 * Fix state assignment issue on checkout pages with 1-page layout
