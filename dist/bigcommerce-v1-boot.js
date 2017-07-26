@@ -130,7 +130,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     _createClass(_class, [{
       key: "identifyLayout",
       value: function identifyLayout() {
-        for (var i = 0; i < this.layoutConfigurations; i++) {
+        for (var i = 0; i < this.layoutConfigurations.length; i++) {
           var layoutConfig = this.layoutConfigurations[i];
           var identifyingElement = d.getElementById(layoutConfig.layoutIdentifier);
 
