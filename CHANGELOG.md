@@ -1,11 +1,6 @@
-# AddressFinder 1.1.6 (July 26, 2017)
+# AddressFinder 1.1.7 (July 26, 2017)
 * Fix issue with IE compatibility
-
-# AddressFinder 1.1.5 (July 26, 2017)
-* Fix issue with monitoring mutations  
-
-# AddressFinder 1.1.4 (July 26, 2017)
-
+* Fix issue with monitoring mutations
 * Fix state assignment issue on checkout pages with 1-page layout
 * Handle missing API keys better
 
