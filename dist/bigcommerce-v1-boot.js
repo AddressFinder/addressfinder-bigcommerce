@@ -11,7 +11,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     function _class(widgetConfig) {
       _classCallCheck(this, _class);
 
-      this.version = "1.1.6";
+      this.version = "1.1.7";
       this.widgetConfig = widgetConfig;
       this.layoutConfigurations = [{
         label: "Optimized one-page checkout (Early access)",
