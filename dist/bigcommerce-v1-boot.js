@@ -11,7 +11,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     function _class(widgetConfig) {
       _classCallCheck(this, _class);
 
-      this.version = "1.1.10";
+      this.version = "1.1.11";
       this.widgetConfig = widgetConfig;
       this.layoutConfigurations = [{
         label: "Optimized one-page checkout (Early access)",
@@ -109,6 +109,42 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             suburb: 'FormField_20',
             state: 'FormField_22',
             postcode: 'FormField_23'
+          },
+          stateMappings: {
+            'ACT': 'Australian Capital Territory',
+            'NSW': 'New South Wales',
+            'NT': 'Northern Territory',
+            'QLD': 'Queensland',
+            'SA': 'South Australia',
+            'TAS': 'Tasmania',
+            'VIC': 'Victoria',
+            'WA': 'Western Australia'
+          }
+        }
+      }, {
+        label: "Create account",
+        layoutIdentifier: "CreateAccountForm",
+        countryIdentifier: 'FormField_11',
+        searchIdentifier: "FormField_8",
+        nz: {
+          countryValue: "New Zealand",
+          elements: {
+            address1: 'FormField_8',
+            suburb: 'FormField_9',
+            city: 'FormField_10',
+            region: 'FormField_12',
+            postcode: 'FormField_13'
+          },
+          regionMappings: null
+        },
+        au: {
+          countryValue: "Australia",
+          elements: {
+            address1: 'FormField_8',
+            address2: 'FormField_9',
+            suburb: 'FormField_10',
+            state: 'FormField_12',
+            postcode: 'FormField_13'
           },
           stateMappings: {
             'ACT': 'Australian Capital Territory',
