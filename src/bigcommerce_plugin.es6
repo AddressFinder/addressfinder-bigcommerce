@@ -124,7 +124,8 @@
     }
 
     identifyLayout(){
-      for (const layoutConfig of this.layoutConfigurations){
+      for (var i = 0; i < this.layoutConfigurations; i++) {
+        let layoutConfig = this.layoutConfigurations[i]
         let identifyingElement = d.getElementById(layoutConfig.layoutIdentifier)
 
         if (identifyingElement) {
@@ -177,10 +178,10 @@
 
     resetAndReloadFormHelpers(){
       // console.log("Boom, reset all the things")
-      for (const helper of this.formHelpers) {
-        helper.destroy()
+      for (var i = 0; i < this.formHelpers.length; i++) {
+        this.formHelpers[i].destroy()
       }
-
+      
       this.formHelpers = []
 
       this.identifyLayout()

@@ -130,33 +130,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     _createClass(_class, [{
       key: "identifyLayout",
       value: function identifyLayout() {
-        var _iteratorNormalCompletion = true;
-        var _didIteratorError = false;
-        var _iteratorError = undefined;
+        for (var i = 0; i < this.layoutConfigurations; i++) {
+          var layoutConfig = this.layoutConfigurations[i];
+          var identifyingElement = d.getElementById(layoutConfig.layoutIdentifier);
 
-        try {
-          for (var _iterator = this.layoutConfigurations[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-            var layoutConfig = _step.value;
-
-            var identifyingElement = d.getElementById(layoutConfig.layoutIdentifier);
-
-            if (identifyingElement) {
-              this.initialiseFormHelper(layoutConfig);
-              this.setupMutationMonitor(layoutConfig.layoutIdentifier);
-            }
-          }
-        } catch (err) {
-          _didIteratorError = true;
-          _iteratorError = err;
-        } finally {
-          try {
-            if (!_iteratorNormalCompletion && _iterator.return) {
-              _iterator.return();
-            }
-          } finally {
-            if (_didIteratorError) {
-              throw _iteratorError;
-            }
+          if (identifyingElement) {
+            this.initialiseFormHelper(layoutConfig);
+            this.setupMutationMonitor(layoutConfig.layoutIdentifier);
           }
         }
       }
@@ -206,29 +186,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       key: "resetAndReloadFormHelpers",
       value: function resetAndReloadFormHelpers() {
         // console.log("Boom, reset all the things")
-        var _iteratorNormalCompletion2 = true;
-        var _didIteratorError2 = false;
-        var _iteratorError2 = undefined;
-
-        try {
-          for (var _iterator2 = this.formHelpers[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-            var helper = _step2.value;
-
-            helper.destroy();
-          }
-        } catch (err) {
-          _didIteratorError2 = true;
-          _iteratorError2 = err;
-        } finally {
-          try {
-            if (!_iteratorNormalCompletion2 && _iterator2.return) {
-              _iterator2.return();
-            }
-          } finally {
-            if (_didIteratorError2) {
-              throw _iteratorError2;
-            }
-          }
+        for (var i = 0; i < this.formHelpers.length; i++) {
+          this.formHelpers[i].destroy();
         }
 
         this.formHelpers = [];
