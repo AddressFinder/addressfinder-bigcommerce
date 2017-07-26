@@ -3,7 +3,7 @@
 
   w.AF.BigCommercePlugin = class {
     constructor(widgetConfig){
-      this.version = "1.1.4"
+      this.version = "1.1.5"
       this.widgetConfig = widgetConfig
       this.layoutConfigurations = [
         {

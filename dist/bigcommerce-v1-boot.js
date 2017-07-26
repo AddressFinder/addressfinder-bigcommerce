@@ -11,7 +11,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     function _class(widgetConfig) {
       _classCallCheck(this, _class);
 
-      this.version = "1.1.4";
+      this.version = "1.1.5";
       this.widgetConfig = widgetConfig;
       this.layoutConfigurations = [{
         label: "Optimized one-page checkout (Early access)",
@@ -250,8 +250,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }
     }, {
       key: "setupMutationMonitor",
-      value: function setupMutationMonitor(query) {
-        var element = d.getElementById(query);
+      value: function setupMutationMonitor(elementId) {
+        var element = d.getElementById(elementId);
 
         if (element) {
           this.monitorMutations(element);
