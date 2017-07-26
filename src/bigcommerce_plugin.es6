@@ -3,7 +3,7 @@
 
   w.AF.BigCommercePlugin = class {
     constructor(widgetConfig){
-      this.version = "1.1.4"
+      this.version = "1.1.10"
       this.widgetConfig = widgetConfig
       this.layoutConfigurations = [
         {
@@ -121,16 +121,17 @@
       this.formHelpers = []
 
       this.identifyLayout()
-      this.setupMutationMonitor()
     }
 
     identifyLayout(){
-      for (const layoutConfig of this.layoutConfigurations){
+      for (var i = 0; i < this.layoutConfigurations.length; i++) {
+        let layoutConfig = this.layoutConfigurations[i]
         let identifyingElement = d.getElementById(layoutConfig.layoutIdentifier)
 
         if (identifyingElement) {
-          // console.log(`Identified layout: ${layoutConfig.label}`);
+          this.log(`Identified layout named: ${layoutConfig.label}`)
           this.initialiseFormHelper(layoutConfig)
+          this.setupMutationMonitor(layoutConfig.layoutIdentifier)
         }
       }
     }
@@ -141,6 +142,7 @@
       if (searchElement) {
         let formHelperConfig = {
           countryElement: d.getElementById(layoutConfig.countryIdentifier),
+          label: layoutConfig.label,
           nz: {
             countryValue: layoutConfig.nz.countryValue,
             searchElement: d.getElementById(layoutConfig.nz.elements.address1),
@@ -177,9 +179,9 @@
     }
 
     resetAndReloadFormHelpers(){
-      // console.log("Boom, reset all the things")
-      for (const helper of this.formHelpers) {
-        helper.destroy()
+      this.log("Reset all form helpers things")
+      for (var i = 0; i < this.formHelpers.length; i++) {
+        this.formHelpers[i].destroy()
       }
 
       this.formHelpers = []
@@ -197,17 +199,13 @@
       }, 500)
     }
 
-    setupMutationMonitor(){
-      let topLevelElementQueries = ["[id=micro-app-ng-checkout]", "div[class=page]"]
-
-      for (let query of topLevelElementQueries) {
-        const element = d.querySelector(query)
+    setupMutationMonitor(elementId){
+        const element = d.getElementById(elementId)
 
         if (element) {
           this.monitorMutations(element)
         }
       }
-    }
 
     monitorMutations(element){
       if (w.MutationObserver) {
@@ -219,10 +217,9 @@
 
       } else if (w.addEventListener) {
           /* for IE 9 and 10 */
-          var listener = function(event) {
-            this.resetAndReloadFormHelpersWithTimeout()
-          };
-        element.addEventListener('DOMAttrModified', listener, false);
+        element.addEventListener('DOMAttrModified', (event) => {
+          this.resetAndReloadFormHelpersWithTimeout()
+        }, false);
       } else {
           if (w.console) {
             console.info('AddressFinder Error - please use a more modern browser')
@@ -230,5 +227,10 @@
       }
     }
 
+    log(message){
+      if (this.widgetConfig.debug && w.console) {
+        console.log(message)
+      }
+    }
   }
 })(document, window);

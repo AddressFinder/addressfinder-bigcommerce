@@ -11,7 +11,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     function _class(widgetConfig) {
       _classCallCheck(this, _class);
 
-      this.version = "1.1.4";
+      this.version = "1.1.10";
       this.widgetConfig = widgetConfig;
       this.layoutConfigurations = [{
         label: "Optimized one-page checkout (Early access)",
@@ -125,39 +125,19 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       this.formHelpers = [];
 
       this.identifyLayout();
-      this.setupMutationMonitor();
     }
 
     _createClass(_class, [{
       key: "identifyLayout",
       value: function identifyLayout() {
-        var _iteratorNormalCompletion = true;
-        var _didIteratorError = false;
-        var _iteratorError = undefined;
+        for (var i = 0; i < this.layoutConfigurations.length; i++) {
+          var layoutConfig = this.layoutConfigurations[i];
+          var identifyingElement = d.getElementById(layoutConfig.layoutIdentifier);
 
-        try {
-          for (var _iterator = this.layoutConfigurations[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-            var layoutConfig = _step.value;
-
-            var identifyingElement = d.getElementById(layoutConfig.layoutIdentifier);
-
-            if (identifyingElement) {
-              // console.log(`Identified layout: ${layoutConfig.label}`);
-              this.initialiseFormHelper(layoutConfig);
-            }
-          }
-        } catch (err) {
-          _didIteratorError = true;
-          _iteratorError = err;
-        } finally {
-          try {
-            if (!_iteratorNormalCompletion && _iterator.return) {
-              _iterator.return();
-            }
-          } finally {
-            if (_didIteratorError) {
-              throw _iteratorError;
-            }
+          if (identifyingElement) {
+            this.log("Identified layout named: " + layoutConfig.label);
+            this.initialiseFormHelper(layoutConfig);
+            this.setupMutationMonitor(layoutConfig.layoutIdentifier);
           }
         }
       }
@@ -169,6 +149,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         if (searchElement) {
           var formHelperConfig = {
             countryElement: d.getElementById(layoutConfig.countryIdentifier),
+            label: layoutConfig.label,
             nz: {
               countryValue: layoutConfig.nz.countryValue,
               searchElement: d.getElementById(layoutConfig.nz.elements.address1),
@@ -206,30 +187,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     }, {
       key: "resetAndReloadFormHelpers",
       value: function resetAndReloadFormHelpers() {
-        // console.log("Boom, reset all the things")
-        var _iteratorNormalCompletion2 = true;
-        var _didIteratorError2 = false;
-        var _iteratorError2 = undefined;
-
-        try {
-          for (var _iterator2 = this.formHelpers[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-            var helper = _step2.value;
-
-            helper.destroy();
-          }
-        } catch (err) {
-          _didIteratorError2 = true;
-          _iteratorError2 = err;
-        } finally {
-          try {
-            if (!_iteratorNormalCompletion2 && _iterator2.return) {
-              _iterator2.return();
-            }
-          } finally {
-            if (_didIteratorError2) {
-              throw _iteratorError2;
-            }
-          }
+        this.log("Reset all form helpers things");
+        for (var i = 0; i < this.formHelpers.length; i++) {
+          this.formHelpers[i].destroy();
         }
 
         this.formHelpers = [];
@@ -251,36 +211,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }
     }, {
       key: "setupMutationMonitor",
-      value: function setupMutationMonitor() {
-        var topLevelElementQueries = ["[id=micro-app-ng-checkout]", "div[class=page]"];
+      value: function setupMutationMonitor(elementId) {
+        var element = d.getElementById(elementId);
 
-        var _iteratorNormalCompletion3 = true;
-        var _didIteratorError3 = false;
-        var _iteratorError3 = undefined;
-
-        try {
-          for (var _iterator3 = topLevelElementQueries[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-            var query = _step3.value;
-
-            var element = d.querySelector(query);
-
-            if (element) {
-              this.monitorMutations(element);
-            }
-          }
-        } catch (err) {
-          _didIteratorError3 = true;
-          _iteratorError3 = err;
-        } finally {
-          try {
-            if (!_iteratorNormalCompletion3 && _iterator3.return) {
-              _iterator3.return();
-            }
-          } finally {
-            if (_didIteratorError3) {
-              throw _iteratorError3;
-            }
-          }
+        if (element) {
+          this.monitorMutations(element);
         }
       }
     }, {
@@ -296,14 +231,20 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           observer.observe(element, { childList: true, subtree: true });
         } else if (w.addEventListener) {
           /* for IE 9 and 10 */
-          var listener = function listener(event) {
-            this.resetAndReloadFormHelpersWithTimeout();
-          };
-          element.addEventListener('DOMAttrModified', listener, false);
+          element.addEventListener('DOMAttrModified', function (event) {
+            _this2.resetAndReloadFormHelpersWithTimeout();
+          }, false);
         } else {
           if (w.console) {
             console.info('AddressFinder Error - please use a more modern browser');
           }
+        }
+      }
+    }, {
+      key: "log",
+      value: function log(message) {
+        if (this.widgetConfig.debug && w.console) {
+          console.log(message);
         }
       }
     }]);
@@ -330,7 +271,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
    *   nzWidgetOptions: {
    *     byline: false
    *   },
-   *   auWidgetOptions: {}
+   *   auWidgetOptions: {},
+   *   debug: false
    * }, {
    *   countryElement: document.getElementById("country"),
    *   nz: {
@@ -486,6 +428,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     }, {
       key: "_setActiveCountry",
       value: function _setActiveCountry(countryCode) {
+        this._log("Setting active country " + countryCode);
+
         for (var widgetCountryCode in this.widgets) {
           this.widgets[widgetCountryCode].disable();
         }
@@ -571,6 +515,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           console.warn(errorMessage);
         }
       }
+    }, {
+      key: "_log",
+      value: function _log(message) {
+        if (this.widgetConfig.debug && w.console) {
+          console.log("FormHelper for layout " + this.formHelperConfig.label + ": " + message);
+        }
+      }
     }]);
 
     return _class;
@@ -590,7 +541,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       nzKey: w.AddressFinderConfig.key_nz || w.AddressFinderConfig.key || w.AddressFinderConfig.key_au,
       auKey: w.AddressFinderConfig.key_au || w.AddressFinderConfig.key || w.AddressFinderConfig.key_nz,
       nzWidgetOptions: w.AddressFinderConfig.nzWidgetOptions || w.AddressFinderConfig.widgetOptions || {},
-      auWidgetOptions: w.AddressFinderConfig.auWidgetOptions || w.AddressFinderConfig.widgetOptions || {}
+      auWidgetOptions: w.AddressFinderConfig.auWidgetOptions || w.AddressFinderConfig.widgetOptions || {},
+      debug: w.AddressFinderConfig.debug || false
     });
   };
 
