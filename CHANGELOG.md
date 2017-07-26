@@ -1,3 +1,7 @@
+# AddressFinder 1.1.3 (July 26, 2017)
+
+* Fix state assignment issue on checkout pages with 1-page layout
+
 # AddressFinder 1.1.2 (June 12, 2017)
 
 * Allows users to add additional options to adjust default behaviour of the widget
