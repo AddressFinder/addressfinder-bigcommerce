@@ -180,7 +180,7 @@
       this._setElementValue(elements.postcode, selected.postcode(), "postcode")
 
       if (this.formHelperConfig.nz.regionMappings) {
-        const translatedRegionValue = this.formHelperConfig.au.regionMappings[metaData.region]
+        const translatedRegionValue = this.formHelperConfig.nz.regionMappings[metaData.region]
         this._setElementValue(elements.region, translatedRegionValue, "region")
       }
       else {
