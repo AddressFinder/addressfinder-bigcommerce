@@ -215,10 +215,9 @@
 
       } else if (w.addEventListener) {
           /* for IE 9 and 10 */
-          var listener = function(event) {
-            this.resetAndReloadFormHelpersWithTimeout()
-          };
-        element.addEventListener('DOMAttrModified', listener, false);
+        element.addEventListener('DOMAttrModified', (event) => {
+          this.resetAndReloadFormHelpersWithTimeout()
+        }, false);
       } else {
           if (w.console) {
             console.info('AddressFinder Error - please use a more modern browser')
