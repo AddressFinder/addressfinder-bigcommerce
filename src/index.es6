@@ -6,10 +6,10 @@
 (function(d, w) {
   let _initPlugin = function(){
     w._plugin = new AF.BigCommercePlugin({
-      nzKey: w.AddressFinderConfig.key_nz || w.AddressFinderConfig.key,
-      auKey: w.AddressFinderConfig.key_au || w.AddressFinderConfig.key,
-      nzWidgetOptions: w.AddressFinderConfig.nzWidgetOptions || w.AddressFinderConfig.widgetOptions,
-      auWidgetOptions: w.AddressFinderConfig.auWidgetOptions || w.AddressFinderConfig.widgetOptions
+      nzKey: w.AddressFinderConfig.key_nz || w.AddressFinderConfig.key || w.AddressFinderConfig.key_au,
+      auKey: w.AddressFinderConfig.key_au || w.AddressFinderConfig.key || w.AddressFinderConfig.key_nz,
+      nzWidgetOptions: w.AddressFinderConfig.nzWidgetOptions || w.AddressFinderConfig.widgetOptions || {},
+      auWidgetOptions: w.AddressFinderConfig.auWidgetOptions || w.AddressFinderConfig.widgetOptions || {}
     })
   }
 
