@@ -510,7 +510,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         this._setElementValue(elements.postcode, selected.postcode(), "postcode");
 
         if (this.formHelperConfig.nz.regionMappings) {
-          var translatedRegionValue = this.formHelperConfig.au.regionMappings[metaData.region];
+          var translatedRegionValue = this.formHelperConfig.nz.regionMappings[metaData.region];
           this._setElementValue(elements.region, translatedRegionValue, "region");
         } else {
           this._setElementValue(elements.region, metaData.region, "region");
