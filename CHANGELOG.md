@@ -1,4 +1,4 @@
-# AddressFinder 1.1.11 (July 27, 2017)
+# AddressFinder 1.1.12 (July 27, 2017)
 * Support create_account page
 * Add a debug option
 * Fix issue with mutations in IE9 and 10
