@@ -46,7 +46,7 @@ If you are using a Blueprint theme you can find the alternate setup instructions
         <script>
         (function(d,w){
           w.AddressFinderConfig = {
-            key: "ADDRESSFINDER_DEMO_KEY"
+            key: "ADDRESSFINDER_NZ_DEMO_KEY"
           }
           w.addEventListener('DOMContentLoaded', function(){
             var s = d.createElement("script");
@@ -57,7 +57,7 @@ If you are using a Blueprint theme you can find the alternate setup instructions
         })(document, window);
         </script>
         ```
-6. Replace the `ADDRESSFINDER_DEMO_KEY` placeholder in the snippet you added in the previous step with your own AddressFinder key and save.
+6. Replace the `ADDRESSFINDER_NZ_DEMO_KEY` placeholder in the snippet you added in the previous step with your own AddressFinder key and save.
 
 #### Obtaining a licence key
 
