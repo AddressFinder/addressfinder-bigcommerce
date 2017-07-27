@@ -32,24 +32,21 @@ Follow the instructions below, or watch the [installation video](https://vimeo.c
 
 [![addressfinder-bigcommerce plugin demo](assets/bigcommerce-install-vimeo.png?raw=true)](https://vimeo.com/166156223)
 
-
 #### Installation instructions
+These instructions are compatible with themes from BigCommerce's new Stencil theme platform. If you created your store within the last 6 months you will have a Stencil theme. If you are unsure check the [BigCommerce documentation](https://support.bigcommerce.com/articles/Public/Which-Theme-Platform-do-I-have) for a list of themes and their platforms.
 
-1.  Log into the control panel for your site, and navigate to Store Setup > Design.
-2.  Your current theme will be displayed in the Themes tab; click Edit HTML/CSS
-    to access your template files.
-Install the plugin:
-3. Find the **checkout_express.html** file
-4. Scroll to the bottom of the page
-5. Copy the following javascript snippet and paste it in just before the closing `</body>` tag
+If you are using a Blueprint theme you can find the alternate setup instructions on the [AddressFinder website](https://addressfinder.nz/docs/bigcommerce_instructions_for_other_themes/)
+
+1.  Log into the control panel for your site, and navigate to Advanced Settings > Web Analytics.
+2.  Click 'Google Analytics' in the Providers panel and save your changes.
+3.  Click on the 'Google Analytics' tab that appears beside the 'General Settings Tab'
+4.  Copy and paste the following javascript snippet into the 'Tracking Code' box
 
         ```
         <script>
         (function(d,w){
           w.AddressFinderConfig = {
-            key_nz: "ADDRESSFINDER_NZ_DEMO_KEY",
-            key_au: "ADDRESSFINDER_AU_DEMO_KEY",
-            debug: false
+            key: "ADDRESSFINDER_DEMO_KEY"
           }
           w.addEventListener('DOMContentLoaded', function(){
             var s = d.createElement("script");
@@ -60,10 +57,7 @@ Install the plugin:
         })(document, window);
         </script>
         ```
-
-6. Replace the `MY_NZ_AF_KEY` and `MY_AU_AF_KEY` placeholders in the snippet you added in the previous step with your own AddressFinder keys
-
-7. Then, repeat Step 3 for the files **createaccount.html** and **shippingaddressform.html**.
+6. Replace the `ADDRESSFINDER_DEMO_KEY` placeholder in the snippet you added in the previous step with your own AddressFinder key and save.
 
 #### Obtaining a licence key
 
