@@ -46,7 +46,8 @@ If you are using a Blueprint theme you can find the alternate setup instructions
         <script>
         (function(d,w){
           w.AddressFinderConfig = {
-            key: "ADDRESSFINDER_NZ_DEMO_KEY"
+            key: "ADDRESSFINDER_NZ_DEMO_KEY",
+            debug: false
           }
           w.addEventListener('DOMContentLoaded', function(){
             var s = d.createElement("script");
