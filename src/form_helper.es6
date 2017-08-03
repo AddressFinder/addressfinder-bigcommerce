@@ -131,8 +131,6 @@
         }
       }
 
-      this._log("All elements still exist")
-
       return true
     }
 

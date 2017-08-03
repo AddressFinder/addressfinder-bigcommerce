@@ -218,13 +218,12 @@
     }
 
     resetAndReloadFormHelpers(){
-      this.log("Checking existing form helpers for visibility status")
-
       let activeFormHelpers = []
 
       for (var i = 0; i < this.formHelpers.length; i++) {
         const formHelper = this.formHelpers[i]
 
+        // check that the formHelper is still intact
         if (formHelper.areAllElementsStillInTheDOM()) {
           this.log(`formHelper ${formHelper.label} is still active`)
           activeFormHelpers.push(formHelper)
@@ -247,31 +246,33 @@
         let layoutConfig = this.layoutConfigurations[i]
         let identifierToSearchFor = layoutConfig.layoutIdentifier
 
-        if (d.getElementById(identifierToSearchFor)) {
-          let found = false
+        // skip if we can't find that element
+        if (!d.getElementById(identifierToSearchFor)) { continue }
 
-          // search active formHelpers for this layoutIdentifier
-          for (var j = 0; j < this.formHelpers.length; j++) {
-            let activeFormHelper = this.formHelpers[j]
-
-            if (activeFormHelper.layoutIdentifier == identifierToSearchFor) {
-              this.log(`Found layout ${layoutConfig.label}, but it's already active - skipping.`)
-              found = true
-              break
-            }
-          }
-
-          if(!found){
-            this.log(`Identified additional layout named: ${layoutConfig.label}`)
-            layoutsToInitialise.push(layoutConfig)
-          }
+        // Only initialise if the formHelper is new
+        if (!this.anyFormHelpersWithLayoutIdentifier(identifierToSearchFor)) {
+          this.log(`Identified additional layout named: ${layoutConfig.label}`)
+          layoutsToInitialise.push(layoutConfig)
         }
       }
 
+      // initialise all the new formHelpers
       for (var i = 0; i < layoutsToInitialise.length; i++) {
-        let layoutConfig = layoutsToInitialise[i]
-        this.initialiseFormHelper(layoutConfig)
+        this.initialiseFormHelper(layoutsToInitialise[i])
       }
+    }
+
+    // search active formHelpers for this layoutIdentifier
+    anyFormHelpersWithLayoutIdentifier(identifierToSearchFor){
+      for (var j = 0; j < this.formHelpers.length; j++) {
+        let activeFormHelper = this.formHelpers[j]
+
+        if (activeFormHelper.layoutIdentifier == identifierToSearchFor) {
+          return true
+        }
+      }
+
+      return false
     }
 
     mutationHandler(mutations){
@@ -294,7 +295,7 @@
         clearTimeout(this._mutationTimeout)
       }
 
-      this._mutationTimeout = setTimeout(this.resetAndReloadFormHelpers.bind(this), 500)
+      this._mutationTimeout = setTimeout(this.resetAndReloadFormHelpers.bind(this), 750)
     }
 
     monitorMutations(){

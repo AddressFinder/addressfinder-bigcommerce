@@ -224,13 +224,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     }, {
       key: "resetAndReloadFormHelpers",
       value: function resetAndReloadFormHelpers() {
-        this.log("Checking existing form helpers for visibility status");
-
         var activeFormHelpers = [];
 
         for (var i = 0; i < this.formHelpers.length; i++) {
           var formHelper = this.formHelpers[i];
 
+          // check that the formHelper is still intact
           if (formHelper.areAllElementsStillInTheDOM()) {
             this.log("formHelper " + formHelper.label + " is still active");
             activeFormHelpers.push(formHelper);
@@ -253,31 +252,38 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           var layoutConfig = this.layoutConfigurations[i];
           var identifierToSearchFor = layoutConfig.layoutIdentifier;
 
-          if (d.getElementById(identifierToSearchFor)) {
-            var found = false;
+          // skip if we can't find that element
+          if (!d.getElementById(identifierToSearchFor)) {
+            continue;
+          }
 
-            // search active formHelpers for this layoutIdentifier
-            for (var j = 0; j < this.formHelpers.length; j++) {
-              var activeFormHelper = this.formHelpers[j];
-
-              if (activeFormHelper.layoutIdentifier == identifierToSearchFor) {
-                this.log("Found layout " + layoutConfig.label + ", but it's already active - skipping.");
-                found = true;
-                break;
-              }
-            }
-
-            if (!found) {
-              this.log("Identified additional layout named: " + layoutConfig.label);
-              layoutsToInitialise.push(layoutConfig);
-            }
+          // Only initialise if the formHelper is new
+          if (!this.anyFormHelpersWithLayoutIdentifier(identifierToSearchFor)) {
+            this.log("Identified additional layout named: " + layoutConfig.label);
+            layoutsToInitialise.push(layoutConfig);
           }
         }
 
+        // initialise all the new formHelpers
         for (var i = 0; i < layoutsToInitialise.length; i++) {
-          var _layoutConfig = layoutsToInitialise[i];
-          this.initialiseFormHelper(_layoutConfig);
+          this.initialiseFormHelper(layoutsToInitialise[i]);
         }
+      }
+
+      // search active formHelpers for this layoutIdentifier
+
+    }, {
+      key: "anyFormHelpersWithLayoutIdentifier",
+      value: function anyFormHelpersWithLayoutIdentifier(identifierToSearchFor) {
+        for (var j = 0; j < this.formHelpers.length; j++) {
+          var activeFormHelper = this.formHelpers[j];
+
+          if (activeFormHelper.layoutIdentifier == identifierToSearchFor) {
+            return true;
+          }
+        }
+
+        return false;
       }
     }, {
       key: "mutationHandler",
@@ -301,7 +307,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           clearTimeout(this._mutationTimeout);
         }
 
-        this._mutationTimeout = setTimeout(this.resetAndReloadFormHelpers.bind(this), 500);
+        this._mutationTimeout = setTimeout(this.resetAndReloadFormHelpers.bind(this), 750);
       }
     }, {
       key: "monitorMutations",
@@ -479,8 +485,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             }
           }
         }
-
-        this._log("All elements still exist");
 
         return true;
       }
