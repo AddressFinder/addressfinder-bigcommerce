@@ -159,6 +159,7 @@
       this.formHelpers = []
 
       this.identifyLayout()
+      this.monitorMutations()
     }
 
     identifyLayout(){
@@ -169,7 +170,6 @@
         if (identifyingElement) {
           this.log(`Identified layout named: ${layoutConfig.label}`)
           this.initialiseFormHelper(layoutConfig)
-          this.setupMutationMonitor(layoutConfig.layoutIdentifier)
         }
       }
     }
@@ -181,6 +181,7 @@
         let formHelperConfig = {
           countryElement: d.getElementById(layoutConfig.countryIdentifier),
           label: layoutConfig.label,
+          layoutIdentifier: layoutConfig.layoutIdentifier,
           nz: {
             countryValue: layoutConfig.nz.countryValue,
             searchElement: d.getElementById(layoutConfig.nz.elements.address1),
@@ -217,47 +218,94 @@
     }
 
     resetAndReloadFormHelpers(){
-      this.log("Reset all form helpers things")
+      this.log("Checking existing form helpers for visibility status")
+
+      let activeFormHelpers = []
+
       for (var i = 0; i < this.formHelpers.length; i++) {
-        this.formHelpers[i].destroy()
+        const formHelper = this.formHelpers[i]
+
+        if (formHelper.areAllElementsStillInTheDOM()) {
+          this.log(`formHelper ${formHelper.label} is still active`)
+          activeFormHelpers.push(formHelper)
+        }
+        else {
+          this.log(`Destroying formHelper ${formHelper.label}`)
+          formHelper.destroy()
+        }
       }
 
-      this.formHelpers = []
+      this.formHelpers = activeFormHelpers
 
-      this.identifyLayout()
+      this.identifyAdditionalLayouts()
     }
 
-    resetAndReloadFormHelpersWithTimeout(){
+    identifyAdditionalLayouts(){
+      let layoutsToInitialise = []
+
+      for (var i = 0; i < this.layoutConfigurations.length; i++) {
+        let layoutConfig = this.layoutConfigurations[i]
+        let identifierToSearchFor = layoutConfig.layoutIdentifier
+
+        if (d.getElementById(identifierToSearchFor)) {
+          let found = false
+
+          // search active formHelpers for this layoutIdentifier
+          for (var j = 0; j < this.formHelpers.length; j++) {
+            let activeFormHelper = this.formHelpers[j]
+
+            if (activeFormHelper.layoutIdentifier == identifierToSearchFor) {
+              this.log(`Found layout ${layoutConfig.label}, but it's already active - skipping.`)
+              found = true
+              break
+            }
+          }
+
+          if(!found){
+            this.log(`Identified additional layout named: ${layoutConfig.label}`)
+            layoutsToInitialise.push(layoutConfig)
+          }
+        }
+      }
+
+      for (var i = 0; i < layoutsToInitialise.length; i++) {
+        let layoutConfig = layoutsToInitialise[i]
+        this.initialiseFormHelper(layoutConfig)
+      }
+    }
+
+    mutationHandler(mutations){
+      // if all the mutations are "af_list" then do nothing extra
+      let allMutationsAreFromAddressFinder = true
+
+      for (var i = 0; i < mutations.length; i++) {
+        if (!mutations[i].target.classList.contains("af_list")) {
+          allMutationsAreFromAddressFinder = false
+          break
+        }
+      }
+
+      if (allMutationsAreFromAddressFinder) {
+        // no need to continue, as they are all from us
+        return
+      }
+
       if (this._mutationTimeout) {
         clearTimeout(this._mutationTimeout)
       }
 
-      this._mutationTimeout = setTimeout(() => {
-        this.resetAndReloadFormHelpers()
-      }, 500)
+      this._mutationTimeout = setTimeout(this.resetAndReloadFormHelpers.bind(this), 500)
     }
 
-    setupMutationMonitor(elementId){
-        const element = d.getElementById(elementId)
-
-        if (element) {
-          this.monitorMutations(element)
-        }
-      }
-
-    monitorMutations(element){
+    monitorMutations(){
       if (w.MutationObserver) {
         /* for modern browsers */
-        var observer = new MutationObserver((mutations) => {
-          this.resetAndReloadFormHelpersWithTimeout()
-        });
-        observer.observe(element, {childList: true, subtree: true});
+        var observer = new MutationObserver(this.mutationHandler.bind(this));
+        observer.observe(d.body, {childList: true, subtree: true});
 
       } else if (w.addEventListener) {
           /* for IE 9 and 10 */
-        element.addEventListener('DOMAttrModified', (event) => {
-          this.resetAndReloadFormHelpersWithTimeout()
-        }, false);
+        d.body.addEventListener('DOMAttrModified', this.mutationHandler.bind(this), false);
       } else {
           if (w.console) {
             console.info('AddressFinder Error - please use a more modern browser')

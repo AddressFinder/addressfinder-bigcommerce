@@ -11,7 +11,7 @@
       auKey: w.AddressFinderConfig.key_au || w.AddressFinderConfig.key || w.AddressFinderConfig.key_nz,
       nzWidgetOptions: w.AddressFinderConfig.nzWidgetOptions || w.AddressFinderConfig.widgetOptions || {},
       auWidgetOptions: w.AddressFinderConfig.auWidgetOptions || w.AddressFinderConfig.widgetOptions || {},
-      debug: w.AddressFinderConfig.debug || false
+      debug: w.AddressFinderConfig.debug || true
     })
   }
 

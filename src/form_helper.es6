@@ -76,6 +76,8 @@
       this.formHelperConfig = formHelperConfig
       this.widgets = {}
       this.subscriptions = {}
+      this.label = formHelperConfig.label
+      this.layoutIdentifier = formHelperConfig.layoutIdentifier
 
       this._bindToForm()
     }
@@ -93,6 +95,45 @@
       this.subscriptions = []
 
       this.formHelperConfig.countryElement.removeEventListener("change", this.boundCountryChangedListener)
+    }
+
+    // check all of the elements in the formHelper and confirm they are still
+    // within the page DOM
+    areAllElementsStillInTheDOM(){
+      if(!d.body.contains(this.formHelperConfig.countryElement)){
+        this._log("Country Element is not in the DOM")
+        return false
+      }
+
+      // TODO can we aggregate the elements to check into a single array or map?
+
+      const countryCodes = ['nz', 'au']
+      for (var i = 0; i < countryCodes.length; i++) {
+        const countryCode = countryCodes[i]
+
+        // check that the config for this country is supplied
+        if (this.formHelperConfig[countryCode]) {
+          if(!d.body.contains(this.formHelperConfig[countryCode].searchElement)){
+            this._log("Search Element is not in the DOM")
+            return false
+          }
+
+          for (var elementName in this.formHelperConfig[countryCode].elements) {
+            if (this.formHelperConfig[countryCode].elements.hasOwnProperty(elementName)) {
+              const element = this.formHelperConfig[countryCode].elements[elementName];
+
+              if(element && !d.body.contains(element)){
+                this._log(`Element ${elementName} is not in the DOM`)
+                return false
+              }
+            }
+          }
+        }
+      }
+
+      this._log("All elements still exist")
+
+      return true
     }
 
     _bindToForm(){

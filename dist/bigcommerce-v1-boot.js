@@ -161,6 +161,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       this.formHelpers = [];
 
       this.identifyLayout();
+      this.monitorMutations();
     }
 
     _createClass(_class, [{
@@ -173,7 +174,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           if (identifyingElement) {
             this.log("Identified layout named: " + layoutConfig.label);
             this.initialiseFormHelper(layoutConfig);
-            this.setupMutationMonitor(layoutConfig.layoutIdentifier);
           }
         }
       }
@@ -186,6 +186,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           var formHelperConfig = {
             countryElement: d.getElementById(layoutConfig.countryIdentifier),
             label: layoutConfig.label,
+            layoutIdentifier: layoutConfig.layoutIdentifier,
             nz: {
               countryValue: layoutConfig.nz.countryValue,
               searchElement: d.getElementById(layoutConfig.nz.elements.address1),
@@ -223,53 +224,95 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     }, {
       key: "resetAndReloadFormHelpers",
       value: function resetAndReloadFormHelpers() {
-        this.log("Reset all form helpers things");
+        this.log("Checking existing form helpers for visibility status");
+
+        var activeFormHelpers = [];
+
         for (var i = 0; i < this.formHelpers.length; i++) {
-          this.formHelpers[i].destroy();
+          var formHelper = this.formHelpers[i];
+
+          if (formHelper.areAllElementsStillInTheDOM()) {
+            this.log("formHelper " + formHelper.label + " is still active");
+            activeFormHelpers.push(formHelper);
+          } else {
+            this.log("Destroying formHelper " + formHelper.label);
+            formHelper.destroy();
+          }
         }
 
-        this.formHelpers = [];
+        this.formHelpers = activeFormHelpers;
 
-        this.identifyLayout();
+        this.identifyAdditionalLayouts();
       }
     }, {
-      key: "resetAndReloadFormHelpersWithTimeout",
-      value: function resetAndReloadFormHelpersWithTimeout() {
-        var _this = this;
+      key: "identifyAdditionalLayouts",
+      value: function identifyAdditionalLayouts() {
+        var layoutsToInitialise = [];
+
+        for (var i = 0; i < this.layoutConfigurations.length; i++) {
+          var layoutConfig = this.layoutConfigurations[i];
+          var identifierToSearchFor = layoutConfig.layoutIdentifier;
+
+          if (d.getElementById(identifierToSearchFor)) {
+            var found = false;
+
+            // search active formHelpers for this layoutIdentifier
+            for (var j = 0; j < this.formHelpers.length; j++) {
+              var activeFormHelper = this.formHelpers[j];
+
+              if (activeFormHelper.layoutIdentifier == identifierToSearchFor) {
+                this.log("Found layout " + layoutConfig.label + ", but it's already active - skipping.");
+                found = true;
+                break;
+              }
+            }
+
+            if (!found) {
+              this.log("Identified additional layout named: " + layoutConfig.label);
+              layoutsToInitialise.push(layoutConfig);
+            }
+          }
+        }
+
+        for (var i = 0; i < layoutsToInitialise.length; i++) {
+          var _layoutConfig = layoutsToInitialise[i];
+          this.initialiseFormHelper(_layoutConfig);
+        }
+      }
+    }, {
+      key: "mutationHandler",
+      value: function mutationHandler(mutations) {
+        // if all the mutations are "af_list" then do nothing extra
+        var allMutationsAreFromAddressFinder = true;
+
+        for (var i = 0; i < mutations.length; i++) {
+          if (!mutations[i].target.classList.contains("af_list")) {
+            allMutationsAreFromAddressFinder = false;
+            break;
+          }
+        }
+
+        if (allMutationsAreFromAddressFinder) {
+          // no need to continue, as they are all from us
+          return;
+        }
 
         if (this._mutationTimeout) {
           clearTimeout(this._mutationTimeout);
         }
 
-        this._mutationTimeout = setTimeout(function () {
-          _this.resetAndReloadFormHelpers();
-        }, 500);
-      }
-    }, {
-      key: "setupMutationMonitor",
-      value: function setupMutationMonitor(elementId) {
-        var element = d.getElementById(elementId);
-
-        if (element) {
-          this.monitorMutations(element);
-        }
+        this._mutationTimeout = setTimeout(this.resetAndReloadFormHelpers.bind(this), 500);
       }
     }, {
       key: "monitorMutations",
-      value: function monitorMutations(element) {
-        var _this2 = this;
-
+      value: function monitorMutations() {
         if (w.MutationObserver) {
           /* for modern browsers */
-          var observer = new MutationObserver(function (mutations) {
-            _this2.resetAndReloadFormHelpersWithTimeout();
-          });
-          observer.observe(element, { childList: true, subtree: true });
+          var observer = new MutationObserver(this.mutationHandler.bind(this));
+          observer.observe(d.body, { childList: true, subtree: true });
         } else if (w.addEventListener) {
           /* for IE 9 and 10 */
-          element.addEventListener('DOMAttrModified', function (event) {
-            _this2.resetAndReloadFormHelpersWithTimeout();
-          }, false);
+          d.body.addEventListener('DOMAttrModified', this.mutationHandler.bind(this), false);
         } else {
           if (w.console) {
             console.info('AddressFinder Error - please use a more modern browser');
@@ -375,6 +418,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       this.formHelperConfig = formHelperConfig;
       this.widgets = {};
       this.subscriptions = {};
+      this.label = formHelperConfig.label;
+      this.layoutIdentifier = formHelperConfig.layoutIdentifier;
 
       this._bindToForm();
     }
@@ -396,6 +441,48 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         this.subscriptions = [];
 
         this.formHelperConfig.countryElement.removeEventListener("change", this.boundCountryChangedListener);
+      }
+
+      // check all of the elements in the formHelper and confirm they are still
+      // within the page DOM
+
+    }, {
+      key: "areAllElementsStillInTheDOM",
+      value: function areAllElementsStillInTheDOM() {
+        if (!d.body.contains(this.formHelperConfig.countryElement)) {
+          this._log("Country Element is not in the DOM");
+          return false;
+        }
+
+        // TODO can we aggregate the elements to check into a single array or map?
+
+        var countryCodes = ['nz', 'au'];
+        for (var i = 0; i < countryCodes.length; i++) {
+          var countryCode = countryCodes[i];
+
+          // check that the config for this country is supplied
+          if (this.formHelperConfig[countryCode]) {
+            if (!d.body.contains(this.formHelperConfig[countryCode].searchElement)) {
+              this._log("Search Element is not in the DOM");
+              return false;
+            }
+
+            for (var elementName in this.formHelperConfig[countryCode].elements) {
+              if (this.formHelperConfig[countryCode].elements.hasOwnProperty(elementName)) {
+                var element = this.formHelperConfig[countryCode].elements[elementName];
+
+                if (element && !d.body.contains(element)) {
+                  this._log("Element " + elementName + " is not in the DOM");
+                  return false;
+                }
+              }
+            }
+          }
+        }
+
+        this._log("All elements still exist");
+
+        return true;
       }
     }, {
       key: "_bindToForm",
@@ -579,7 +666,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       auKey: w.AddressFinderConfig.key_au || w.AddressFinderConfig.key || w.AddressFinderConfig.key_nz,
       nzWidgetOptions: w.AddressFinderConfig.nzWidgetOptions || w.AddressFinderConfig.widgetOptions || {},
       auWidgetOptions: w.AddressFinderConfig.auWidgetOptions || w.AddressFinderConfig.widgetOptions || {},
-      debug: w.AddressFinderConfig.debug || false
+      debug: w.AddressFinderConfig.debug || true
     });
   };
 
