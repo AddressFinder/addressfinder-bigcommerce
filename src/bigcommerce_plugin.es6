@@ -1,3 +1,4 @@
+require('./form_helper.es6');
 (function(d, w) {
   w.AF = w.AF || {}
 

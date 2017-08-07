@@ -8,21 +8,17 @@
   "license": "GPL",
   "devDependencies": {
     "babel-cli": "^6.0.0",
-    "concat": "^1.0.3",
-    "eslint": "^3.19.0",
+    "babel-preset-env": "^1.6.0",
+    "babel-loader": "^6.3.2",
     "uglify-js": "^3.0.1",
-    "watch": "^1.0.2",
-    "babel-preset-env": "^1.6.0"
+    "webpack": "^3.4.1"
   },
   "dependencies": {
     "core-js": "^0.8.4"
   },
   "scripts": {
-    "compile": "babel src --source-maps --out-dir lib",
-    "concat": "concat lib/*.js -o dist/bigcommerce-v1-boot.js",
-    "minify": "uglifyjs dist/bigcommerce-v1-boot.js -m -o dist/bigcommerce-v1-boot.min.js",
-    "build": "npm run compile && npm run concat",
-    "build:production": "npm run build && npm run minify",
-    "watch": "watch 'npm run build' src/"
+    "watch": "webpack -w --config webpack.config.js",
+    "build": "webpack --config webpack.config.js",
+    "build:production": "npm run build && PROD_ENV=1 webpack --config webpack.config.js"
   }
 }

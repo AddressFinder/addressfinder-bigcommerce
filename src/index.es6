@@ -2,6 +2,7 @@
 // window.AddressFinderConfig = {
 //   key: "ADDRESSFINDER_NZ_DEMO_KEY"
 // }
+require('./bigcommerce_plugin.es6');
 
 (function(d, w) {
   let _initPlugin = function(){

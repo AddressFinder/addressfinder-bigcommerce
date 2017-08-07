@@ -108,3 +108,19 @@ See [BUILD.md](BUILD.md) for instructions on how to build this plugin from sourc
 ## Software License
 
 The AddressFinder plugin for BigCommerce is released under the permissive free software [MIT License](https://github.com/AbleTech/addressfinder-bigcommerce/blob/master/LICENCE.md).
+
+
+<!-- "scripts": {
+  "compile": "babel src --source-maps --out-dir lib",
+  "concat": "concat lib/*.js -o dist/bigcommerce-v1-boot.js",
+  "minify": "uglifyjs dist/bigcommerce-v1-boot.js -m -o dist/bigcommerce-v1-boot.min.js",
+  "build": "npm run compile && npm run concat",
+  "build:production": "npm run build && npm run minify",
+  "watch": "watch 'npm run build' src/"
+} -->
+
+<!-- "scripts": {
+  "build:test": "webpack --config webpack.config.js",
+  "build:production": "NODE_ENV=production webpack --config webpack.config.js",
+  "build:development": "webpack -w --config webpack.config.js"
+} -->
