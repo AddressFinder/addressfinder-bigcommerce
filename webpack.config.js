@@ -5,7 +5,7 @@ var PROD = JSON.parse(process.env.PROD_ENV || "0");
 
 const config = {
   entry: [
-    "babel-polyfill",
+    "iterators-polyfill",
     "./src/index.es6"
   ],
   devtool: "source-map",
@@ -24,7 +24,7 @@ const config = {
        loader: "babel-loader",
        include: [ pathLib.resolve(__dirname, "src") ],
        query: {
-         presets: ["es2015"] 
+         presets: ["es2015"]
        }
      }
     ]

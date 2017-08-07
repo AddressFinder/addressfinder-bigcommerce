@@ -10,6 +10,7 @@
     "babel-cli": "^6.0.0",
     "babel-loader": "^6.3.2",
     "babel-preset-es2015": "^6.24.1",
+    "iterators-polyfill": "^1.0.2",
     "uglify-js": "^3.0.1",
     "webpack": "^3.4.1"
   },
