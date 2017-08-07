@@ -20,6 +20,6 @@
   "scripts": {
     "watch": "webpack -w --config webpack.config.js",
     "build": "webpack --config webpack.config.js",
-    "build:production": "npm run build && PROD_ENV=1 webpack --config webpack.config.js"
+    "build:production": "npm run build && NODE_ENV=production webpack --config webpack.config.js"
   }
 }
