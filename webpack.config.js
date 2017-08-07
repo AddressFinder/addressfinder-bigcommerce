@@ -1,10 +1,13 @@
 const webpack = require("webpack");
 const pathLib = require("path");
 
-var PROD = JSON.parse(process.env.PROD_ENV || '0');
+var PROD = JSON.parse(process.env.PROD_ENV || "0");
 
 const config = {
-  entry: "./src/index.es6",
+  entry: [
+    "babel-polyfill",
+    "./src/index.es6"
+  ],
   devtool: "source-map",
   output: {
     path: pathLib.resolve(__dirname, "./dist"),
@@ -19,7 +22,10 @@ const config = {
     loaders: [
       {test: /\.es6$/,
        loader: "babel-loader",
-       exclude: /node_modules/
+       include: [ pathLib.resolve(__dirname, "src") ],
+       query: {
+         presets: ["es2015"] 
+       }
      }
     ]
   }
