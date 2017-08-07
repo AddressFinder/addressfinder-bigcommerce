@@ -765,3 +765,4 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 /***/ })
 /******/ ]);
+//# sourceMappingURL=bigcommerce-v1-boot.js.map

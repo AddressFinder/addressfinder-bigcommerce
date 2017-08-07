@@ -5,6 +5,7 @@ var PROD = JSON.parse(process.env.PROD_ENV || '0');
 
 const config = {
   entry: "./src/index.es6",
+  devtool: "source-map",
   output: {
     path: pathLib.resolve(__dirname, "./dist"),
     filename: PROD ? "bigcommerce-v1-boot-min.js" : "bigcommerce-v1-boot.js"
