@@ -2,6 +2,7 @@
 // window.AddressFinderConfig = {
 //   key: "ADDRESSFINDER_NZ_DEMO_KEY"
 // }
+require('es6-symbol/implement');
 require('./bigcommerce_plugin.es6');
 
 (function(d, w) {

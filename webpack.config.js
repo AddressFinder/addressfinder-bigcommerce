@@ -3,6 +3,7 @@ const pathLib = require("path");
 
 const config = {
   entry: [
+    "es6-symbol",
     "iterators-polyfill",
     "./src/index.es6"
   ],
