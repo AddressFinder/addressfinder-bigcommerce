@@ -3,23 +3,24 @@ const pathLib = require("path");
 
 const config = {
   entry: [
-    "es6-symbol",
-    "iterators-polyfill",
-    "./src/index.es6"
+    "./src/main.js"
   ],
   devtool: "source-map",
   output: {
     path: pathLib.resolve(__dirname, "./dist"),
   },
   module: {
-    loaders: [
-      {test: /\.es6$/,
-       loader: "babel-loader",
-       include: [ pathLib.resolve(__dirname, "src") ],
-       query: {
-         presets: ["es2015"]
-       }
-     }
+    rules: [
+      {
+        test: /\.js$/,
+        exclude: /(node_modules|bower_components)/,
+        use: {
+          loader: 'babel-loader',
+          options: {
+            presets: ['es2015']
+          }
+        }
+      }
     ]
   }
 };

@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 2);
+/******/ 	return __webpack_require__(__webpack_require__.s = 7);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -69,157 +69,128 @@
 
 "use strict";
 
+var global = typeof self != 'undefined' ? self : Function('return this')()
+  , core   = {}
+  , defineProperty = Object.defineProperty
+  , hasOwnProperty = {}.hasOwnProperty
+  , ceil  = Math.ceil
+  , floor = Math.floor
+  , max   = Math.max
+  , min   = Math.min;
+// The engine works fine with descriptors? Thank's IE8 for his funny defineProperty.
+var DESC = !!function(){
+  try {
+    return defineProperty({}, 'a', {get: function(){ return 2; }}).a == 2;
+  } catch(e){ /* empty */ }
+}();
+var hide = createDefiner(1);
+// 7.1.4 ToInteger
+function toInteger(it){
+  return isNaN(it = +it) ? 0 : (it > 0 ? floor : ceil)(it);
+}
+function desc(bitmap, value){
+  return {
+    enumerable  : !(bitmap & 1),
+    configurable: !(bitmap & 2),
+    writable    : !(bitmap & 4),
+    value       : value
+  };
+}
+function simpleSet(object, key, value){
+  object[key] = value;
+  return object;
+}
+function createDefiner(bitmap){
+  return DESC ? function(object, key, value){
+    return $.setDesc(object, key, desc(bitmap, value)); // eslint-disable-line no-use-before-define
+  } : simpleSet;
+}
 
-var validTypes = { object: true, symbol: true };
+function isObject(it){
+  return it !== null && (typeof it == 'object' || typeof it == 'function');
+}
+function isFunction(it){
+  return typeof it == 'function';
+}
+function assertDefined(it){
+  if(it == undefined)throw TypeError("Can't call method on  " + it);
+  return it;
+}
 
-module.exports = function () {
-	var symbol;
-	if (typeof Symbol !== 'function') return false;
-	symbol = Symbol('test symbol');
-	try { String(symbol); } catch (e) { return false; }
-
-	// Return 'true' also for polyfills
-	if (!validTypes[typeof Symbol.iterator]) return false;
-	if (!validTypes[typeof Symbol.toPrimitive]) return false;
-	if (!validTypes[typeof Symbol.toStringTag]) return false;
-
-	return true;
-};
-
+var $ = module.exports = __webpack_require__(12)({
+  g: global,
+  core: core,
+  html: global.document && document.documentElement,
+  // http://jsperf.com/core-js-isobject
+  isObject:   isObject,
+  isFunction: isFunction,
+  it: function(it){
+    return it;
+  },
+  that: function(){
+    return this;
+  },
+  // 7.1.4 ToInteger
+  toInteger: toInteger,
+  // 7.1.15 ToLength
+  toLength: function(it){
+    return it > 0 ? min(toInteger(it), 0x1fffffffffffff) : 0; // pow(2, 53) - 1 == 9007199254740991
+  },
+  toIndex: function(index, length){
+    index = toInteger(index);
+    return index < 0 ? max(index + length, 0) : min(index, length);
+  },
+  has: function(it, key){
+    return hasOwnProperty.call(it, key);
+  },
+  create:     Object.create,
+  getProto:   Object.getPrototypeOf,
+  DESC:       DESC,
+  desc:       desc,
+  getDesc:    Object.getOwnPropertyDescriptor,
+  setDesc:    defineProperty,
+  getKeys:    Object.keys,
+  getNames:   Object.getOwnPropertyNames,
+  getSymbols: Object.getOwnPropertySymbols,
+  // Dummy, fix for not array-like ES3 string in es5 module
+  assertDefined: assertDefined,
+  ES5Object: Object,
+  toObject: function(it){
+    return $.ES5Object(assertDefined(it));
+  },
+  hide: hide,
+  def: createDefiner(0),
+  set: global.Symbol ? simpleSet : hide,
+  mix: function(target, src){
+    for(var key in src)hide(target, key, src[key]);
+    return target;
+  },
+  each: [].forEach
+});
+if(typeof __e != 'undefined')__e = core;
+if(typeof __g != 'undefined')__g = global;
 
 /***/ }),
 /* 1 */
 /***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
-// ES2015 Symbol polyfill for environments that do not (or partially) support it
-
-
-
-var d              = __webpack_require__(4)
-  , validateSymbol = __webpack_require__(17)
-
-  , create = Object.create, defineProperties = Object.defineProperties
-  , defineProperty = Object.defineProperty, objPrototype = Object.prototype
-  , NativeSymbol, SymbolPolyfill, HiddenSymbol, globalSymbols = create(null)
-  , isNativeSafe;
-
-if (typeof Symbol === 'function') {
-	NativeSymbol = Symbol;
-	try {
-		String(NativeSymbol());
-		isNativeSafe = true;
-	} catch (ignore) {}
-}
-
-var generateName = (function () {
-	var created = create(null);
-	return function (desc) {
-		var postfix = 0, name, ie11BugWorkaround;
-		while (created[desc + (postfix || '')]) ++postfix;
-		desc += (postfix || '');
-		created[desc] = true;
-		name = '@@' + desc;
-		defineProperty(objPrototype, name, d.gs(null, function (value) {
-			// For IE11 issue see:
-			// https://connect.microsoft.com/IE/feedbackdetail/view/1928508/
-			//    ie11-broken-getters-on-dom-objects
-			// https://github.com/medikoo/es6-symbol/issues/12
-			if (ie11BugWorkaround) return;
-			ie11BugWorkaround = true;
-			defineProperty(this, name, d(value));
-			ie11BugWorkaround = false;
-		}));
-		return name;
-	};
-}());
-
-// Internal constructor (not one exposed) for creating Symbol instances.
-// This one is used to ensure that `someSymbol instanceof Symbol` always return false
-HiddenSymbol = function Symbol(description) {
-	if (this instanceof HiddenSymbol) throw new TypeError('Symbol is not a constructor');
-	return SymbolPolyfill(description);
+var global = __webpack_require__(0).g
+  , store  = {};
+module.exports = function(name){
+  return store[name] || (store[name] =
+    global.Symbol && global.Symbol[name] || __webpack_require__(2).safe('Symbol.' + name));
 };
-
-// Exposed `Symbol` constructor
-// (returns instances of HiddenSymbol)
-module.exports = SymbolPolyfill = function Symbol(description) {
-	var symbol;
-	if (this instanceof Symbol) throw new TypeError('Symbol is not a constructor');
-	if (isNativeSafe) return NativeSymbol(description);
-	symbol = create(HiddenSymbol.prototype);
-	description = (description === undefined ? '' : String(description));
-	return defineProperties(symbol, {
-		__description__: d('', description),
-		__name__: d('', generateName(description))
-	});
-};
-defineProperties(SymbolPolyfill, {
-	for: d(function (key) {
-		if (globalSymbols[key]) return globalSymbols[key];
-		return (globalSymbols[key] = SymbolPolyfill(String(key)));
-	}),
-	keyFor: d(function (s) {
-		var key;
-		validateSymbol(s);
-		for (key in globalSymbols) if (globalSymbols[key] === s) return key;
-	}),
-
-	// To ensure proper interoperability with other native functions (e.g. Array.from)
-	// fallback to eventual native implementation of given symbol
-	hasInstance: d('', (NativeSymbol && NativeSymbol.hasInstance) || SymbolPolyfill('hasInstance')),
-	isConcatSpreadable: d('', (NativeSymbol && NativeSymbol.isConcatSpreadable) ||
-		SymbolPolyfill('isConcatSpreadable')),
-	iterator: d('', (NativeSymbol && NativeSymbol.iterator) || SymbolPolyfill('iterator')),
-	match: d('', (NativeSymbol && NativeSymbol.match) || SymbolPolyfill('match')),
-	replace: d('', (NativeSymbol && NativeSymbol.replace) || SymbolPolyfill('replace')),
-	search: d('', (NativeSymbol && NativeSymbol.search) || SymbolPolyfill('search')),
-	species: d('', (NativeSymbol && NativeSymbol.species) || SymbolPolyfill('species')),
-	split: d('', (NativeSymbol && NativeSymbol.split) || SymbolPolyfill('split')),
-	toPrimitive: d('', (NativeSymbol && NativeSymbol.toPrimitive) || SymbolPolyfill('toPrimitive')),
-	toStringTag: d('', (NativeSymbol && NativeSymbol.toStringTag) || SymbolPolyfill('toStringTag')),
-	unscopables: d('', (NativeSymbol && NativeSymbol.unscopables) || SymbolPolyfill('unscopables'))
-});
-
-// Internal tweaks for real symbol producer
-defineProperties(HiddenSymbol.prototype, {
-	constructor: d(SymbolPolyfill),
-	toString: d('', function () { return this.__name__; })
-});
-
-// Proper implementation of methods exposed on Symbol.prototype
-// They won't be accessible on produced symbol instances as they derive from HiddenSymbol.prototype
-defineProperties(SymbolPolyfill.prototype, {
-	toString: d(function () { return 'Symbol (' + validateSymbol(this).__description__ + ')'; }),
-	valueOf: d(function () { return validateSymbol(this); })
-});
-defineProperty(SymbolPolyfill.prototype, SymbolPolyfill.toPrimitive, d('', function () {
-	var symbol = validateSymbol(this);
-	if (typeof symbol === 'symbol') return symbol;
-	return symbol.toString();
-}));
-defineProperty(SymbolPolyfill.prototype, SymbolPolyfill.toStringTag, d('c', 'Symbol'));
-
-// Proper implementaton of toPrimitive and toStringTag for returned symbol instances
-defineProperty(HiddenSymbol.prototype, SymbolPolyfill.toStringTag,
-	d('c', SymbolPolyfill.prototype[SymbolPolyfill.toStringTag]));
-
-// Note: It's important to define `toPrimitive` as last one, as some implementations
-// implement `toPrimitive` natively without implementing `toStringTag` (or other specified symbols)
-// And that may invoke error in definition flow:
-// See: https://github.com/medikoo/es6-symbol/issues/13#issuecomment-164146149
-defineProperty(HiddenSymbol.prototype, SymbolPolyfill.toPrimitive,
-	d('c', SymbolPolyfill.prototype[SymbolPolyfill.toPrimitive]));
-
 
 /***/ }),
 /* 2 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(3);
-__webpack_require__(19);
-module.exports = __webpack_require__(21);
-
+var sid = 0;
+function uid(key){
+  return 'Symbol(' + key + ')_' + (++sid + Math.random()).toString(36);
+}
+uid.safe = __webpack_require__(0).g.Symbol || uid;
+module.exports = uid;
 
 /***/ }),
 /* 3 */
@@ -227,135 +198,214 @@ module.exports = __webpack_require__(21);
 
 "use strict";
 
-
-module.exports = __webpack_require__(0)() ? Symbol : __webpack_require__(1);
-
+var $                 = __webpack_require__(0)
+  , ctx               = __webpack_require__(17)
+  , cof               = __webpack_require__(4)
+  , $def              = __webpack_require__(5)
+  , assertObject      = __webpack_require__(6).obj
+  , SYMBOL_ITERATOR   = __webpack_require__(1)('iterator')
+  , FF_ITERATOR       = '@@iterator'
+  , Iterators         = {}
+  , IteratorPrototype = {};
+// Safari has byggy iterators w/o `next`
+var BUGGY = 'keys' in [] && !('next' in [].keys());
+// 25.1.2.1.1 %IteratorPrototype%[@@iterator]()
+setIterator(IteratorPrototype, $.that);
+function setIterator(O, value){
+  $.hide(O, SYMBOL_ITERATOR, value);
+  // Add iterator for FF iterator protocol
+  if(FF_ITERATOR in [])$.hide(O, FF_ITERATOR, value);
+}
+function defineIterator(Constructor, NAME, value, DEFAULT){
+  var proto = Constructor.prototype
+    , iter  = proto[SYMBOL_ITERATOR] || proto[FF_ITERATOR] || DEFAULT && proto[DEFAULT] || value;
+  // Define iterator
+  if($.FW)setIterator(proto, iter);
+  if(iter !== value){
+    var iterProto = $.getProto(iter.call(new Constructor));
+    // Set @@toStringTag to native iterators
+    cof.set(iterProto, NAME + ' Iterator', true);
+    // FF fix
+    if($.FW)$.has(proto, FF_ITERATOR) && setIterator(iterProto, $.that);
+  }
+  // Plug for library
+  Iterators[NAME] = iter;
+  // FF & v8 fix
+  Iterators[NAME + ' Iterator'] = $.that;
+  return iter;
+}
+function getIterator(it){
+  var Symbol  = $.g.Symbol
+    , ext     = it[Symbol && Symbol.iterator || FF_ITERATOR]
+    , getIter = ext || it[SYMBOL_ITERATOR] || Iterators[cof.classof(it)];
+  return assertObject(getIter.call(it));
+}
+function closeIterator(iterator){
+  var ret = iterator['return'];
+  if(ret !== undefined)assertObject(ret.call(iterator));
+}
+function stepCall(iterator, fn, value, entries){
+  try {
+    return entries ? fn(assertObject(value)[0], value[1]) : fn(value);
+  } catch(e){
+    closeIterator(iterator);
+    throw e;
+  }
+}
+var $iter = module.exports = {
+  BUGGY: BUGGY,
+  Iterators: Iterators,
+  prototype: IteratorPrototype,
+  step: function(done, value){
+    return {value: value, done: !!done};
+  },
+  stepCall: stepCall,
+  close: closeIterator,
+  is: function(it){
+    var O      = Object(it)
+      , Symbol = $.g.Symbol
+      , SYM    = Symbol && Symbol.iterator || FF_ITERATOR;
+    return SYM in O || SYMBOL_ITERATOR in O || $.has(Iterators, cof.classof(O));
+  },
+  get: getIterator,
+  set: setIterator,
+  create: function(Constructor, NAME, next, proto){
+    Constructor.prototype = $.create(proto || $iter.prototype, {next: $.desc(1, next)});
+    cof.set(Constructor, NAME + ' Iterator');
+  },
+  define: defineIterator,
+  std: function(Base, NAME, Constructor, next, DEFAULT, IS_SET, FORCE){
+    function createIter(kind){
+      return function(){
+        return new Constructor(this, kind);
+      };
+    }
+    $iter.create(Constructor, NAME, next);
+    var entries = createIter('key+value')
+      , values  = createIter('value')
+      , proto   = Base.prototype
+      , methods, key;
+    if(DEFAULT == 'value')values = defineIterator(Base, NAME, values, 'values');
+    else entries = defineIterator(Base, NAME, entries, 'entries');
+    if(DEFAULT){
+      methods = {
+        entries: entries,
+        keys:    IS_SET ? values : createIter('key'),
+        values:  values
+      };
+      $def($def.P + $def.F * BUGGY, NAME, methods);
+      if(FORCE)for(key in methods){
+        if(!(key in proto))$.hide(proto, key, methods[key]);
+      }
+    }
+  },
+  forOf: function(iterable, entries, fn, that){
+    var iterator = getIterator(iterable)
+      , f = ctx(fn, that, entries ? 2 : 1)
+      , step;
+    while(!(step = iterator.next()).done){
+      if(stepCall(iterator, f, step.value, entries) === false){
+        return closeIterator(iterator);
+      }
+    }
+  }
+};
 
 /***/ }),
 /* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
-
-
-var assign        = __webpack_require__(5)
-  , normalizeOpts = __webpack_require__(12)
-  , isCallable    = __webpack_require__(13)
-  , contains      = __webpack_require__(14)
-
-  , d;
-
-d = module.exports = function (dscr, value/*, options*/) {
-	var c, e, w, options, desc;
-	if ((arguments.length < 2) || (typeof dscr !== 'string')) {
-		options = value;
-		value = dscr;
-		dscr = null;
-	} else {
-		options = arguments[2];
-	}
-	if (dscr == null) {
-		c = w = true;
-		e = false;
-	} else {
-		c = contains.call(dscr, 'c');
-		e = contains.call(dscr, 'e');
-		w = contains.call(dscr, 'w');
-	}
-
-	desc = { value: value, configurable: c, enumerable: e, writable: w };
-	return !options ? desc : assign(normalizeOpts(options), desc);
+var $        = __webpack_require__(0)
+  , TAG      = __webpack_require__(1)('toStringTag')
+  , toString = {}.toString;
+function cof(it){
+  return toString.call(it).slice(8, -1);
+}
+cof.classof = function(it){
+  var O, T;
+  return it == undefined ? it === undefined ? 'Undefined' : 'Null'
+    : typeof (T = (O = Object(it))[TAG]) == 'string' ? T : cof(O);
 };
-
-d.gs = function (dscr, get, set/*, options*/) {
-	var c, e, options, desc;
-	if (typeof dscr !== 'string') {
-		options = set;
-		set = get;
-		get = dscr;
-		dscr = null;
-	} else {
-		options = arguments[3];
-	}
-	if (get == null) {
-		get = undefined;
-	} else if (!isCallable(get)) {
-		options = get;
-		get = set = undefined;
-	} else if (set == null) {
-		set = undefined;
-	} else if (!isCallable(set)) {
-		options = set;
-		set = undefined;
-	}
-	if (dscr == null) {
-		c = true;
-		e = false;
-	} else {
-		c = contains.call(dscr, 'c');
-		e = contains.call(dscr, 'e');
-	}
-
-	desc = { get: get, set: set, configurable: c, enumerable: e };
-	return !options ? desc : assign(normalizeOpts(options), desc);
+cof.set = function(it, tag, stat){
+  if(it && !$.has(it = stat ? it : it.prototype, TAG))$.hide(it, TAG, tag);
 };
-
+module.exports = cof;
 
 /***/ }),
 /* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
-
-
-module.exports = __webpack_require__(6)()
-	? Object.assign
-	: __webpack_require__(7);
-
+var $          = __webpack_require__(0)
+  , global     = $.g
+  , core       = $.core
+  , isFunction = $.isFunction;
+function ctx(fn, that){
+  return function(){
+    return fn.apply(that, arguments);
+  };
+}
+global.core = core;
+// type bitmap
+$def.F = 1;  // forced
+$def.G = 2;  // global
+$def.S = 4;  // static
+$def.P = 8;  // proto
+$def.B = 16; // bind
+$def.W = 32; // wrap
+function $def(type, name, source){
+  var key, own, out, exp
+    , isGlobal = type & $def.G
+    , target   = isGlobal ? global : type & $def.S
+        ? global[name] : (global[name] || {}).prototype
+    , exports  = isGlobal ? core : core[name] || (core[name] = {});
+  if(isGlobal)source = name;
+  for(key in source){
+    // contains in native
+    own = !(type & $def.F) && target && key in target;
+    // export native or passed
+    out = (own ? target : source)[key];
+    // bind timers to global for call from export context
+    if(type & $def.B && own)exp = ctx(out, global);
+    else exp = type & $def.P && isFunction(out) ? ctx(Function.call, out) : out;
+    // extend global
+    if(target && !own){
+      if(isGlobal)target[key] = out;
+      else delete target[key] && $.hide(target, key, out);
+    }
+    // export
+    if(exports[key] != out)$.hide(exports, key, exp);
+  }
+}
+module.exports = $def;
 
 /***/ }),
 /* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
-
-
-module.exports = function () {
-	var assign = Object.assign, obj;
-	if (typeof assign !== 'function') return false;
-	obj = { foo: 'raz' };
-	assign(obj, { bar: 'dwa' }, { trzy: 'trzy' });
-	return (obj.foo + obj.bar + obj.trzy) === 'razdwatrzy';
+var $ = __webpack_require__(0);
+function assert(condition, msg1, msg2){
+  if(!condition)throw TypeError(msg2 ? msg1 + msg2 : msg1);
+}
+assert.def = $.assertDefined;
+assert.fn = function(it){
+  if(!$.isFunction(it))throw TypeError(it + ' is not a function!');
+  return it;
 };
-
+assert.obj = function(it){
+  if(!$.isObject(it))throw TypeError(it + ' is not an object!');
+  return it;
+};
+assert.inst = function(it, Constructor, name){
+  if(!(it instanceof Constructor))throw TypeError(name + ": use the 'new' operator!");
+  return it;
+};
+module.exports = assert;
 
 /***/ }),
 /* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
-
-
-var keys  = __webpack_require__(8)
-  , value = __webpack_require__(11)
-
-  , max = Math.max;
-
-module.exports = function (dest, src/*, …srcn*/) {
-	var error, i, l = max(arguments.length, 2), assign;
-	dest = Object(value(dest));
-	assign = function (key) {
-		try { dest[key] = src[key]; } catch (e) {
-			if (!error) error = e;
-		}
-	};
-	for (i = 1; i < l; ++i) {
-		src = arguments[i];
-		keys(src).forEach(assign);
-	}
-	if (error !== undefined) throw error;
-	return dest;
-};
+module.exports = __webpack_require__(8);
 
 
 /***/ }),
@@ -365,10 +415,34 @@ module.exports = function (dest, src/*, …srcn*/) {
 "use strict";
 
 
-module.exports = __webpack_require__(9)()
-	? Object.keys
-	: __webpack_require__(10);
+var _bigcommerce_plugin = __webpack_require__(9);
 
+var _bigcommerce_plugin2 = _interopRequireDefault(_bigcommerce_plugin);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+window.AF = window.AF || {}; // // this is done within
+// window.AddressFinderConfig = {
+//   key: "ADDRESSFINDER_NZ_DEMO_KEY"
+// }
+
+window.AF.BigCommercePlugin = _bigcommerce_plugin2.default;
+
+var _initPlugin = function _initPlugin() {
+  window.AF._plugin = new AF.BigCommercePlugin({
+    nzKey: window.AddressFinderConfig.key_nz || window.AddressFinderConfig.key || window.AddressFinderConfig.key_au,
+    auKey: window.AddressFinderConfig.key_au || window.AddressFinderConfig.key || window.AddressFinderConfig.key_nz,
+    nzWidgetOptions: window.AddressFinderConfig.nzWidgetOptions || window.AddressFinderConfig.widgetOptions || {},
+    auWidgetOptions: window.AddressFinderConfig.auWidgetOptions || window.AddressFinderConfig.widgetOptions || {},
+    debug: window.AddressFinderConfig.debug || true
+  });
+};
+
+var s = document.createElement('script');
+s.src = 'https://api.addressfinder.io/assets/v3/widget.js';
+s.async = 1;
+s.onload = _initPlugin;
+document.body.appendChild(s);
 
 /***/ }),
 /* 9 */
@@ -377,27 +451,383 @@ module.exports = __webpack_require__(9)()
 "use strict";
 
 
-module.exports = function () {
-	try {
-		Object.keys('primitive');
-		return true;
-	} catch (e) { return false; }
-};
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); // see https://github.com/zloirock/core-js
+
+
+__webpack_require__(10);
+
+__webpack_require__(14);
+
+var _form_helper = __webpack_require__(21);
+
+var _form_helper2 = _interopRequireDefault(_form_helper);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var BigCommercePlugin = function () {
+  function BigCommercePlugin(widgetConfig) {
+    _classCallCheck(this, BigCommercePlugin);
+
+    this.version = "1.1.14";
+    this.widgetConfig = widgetConfig;
+    this.layoutConfigurations = [{
+      label: "Optimized one-page checkout (Early access)",
+      layoutIdentifier: "micro-app-ng-checkout",
+      countryIdentifier: 'countryCodeInput',
+      searchIdentifier: "addressLine1Input",
+      nz: {
+        countryValue: "string:NZ",
+        elements: {
+          address1: 'addressLine1Input',
+          suburb: 'addressLine2Input',
+          city: 'cityInput',
+          region: 'provinceInput',
+          postcode: 'postCodeInput'
+        },
+        regionMappings: null
+      },
+      au: {
+        countryValue: "string:AU",
+        elements: {
+          address1: 'addressLine1Input',
+          address2: 'addressLine2Input',
+          suburb: 'cityInput',
+          state: 'provinceCodeInput',
+          postcode: 'postCodeInput'
+        },
+        stateMappings: {
+          'ACT': 'string:ACT',
+          'NSW': 'string:NSW',
+          'NT': 'string:NT',
+          'QLD': 'string:QLD',
+          'SA': 'string:SA',
+          'TAS': 'string:TAS',
+          'VIC': 'string:VIC',
+          'WA': 'string:WA'
+        }
+      }
+    }, {
+      label: "One-page checkout (Billing details)",
+      layoutIdentifier: "CheckoutStepBillingAddress",
+      countryIdentifier: 'FormField_11',
+      searchIdentifier: "FormField_8",
+      nz: {
+        countryValue: "New Zealand",
+        elements: {
+          address1: 'FormField_8',
+          suburb: 'FormField_9',
+          city: 'FormField_10',
+          region: 'FormField_12',
+          postcode: 'FormField_13'
+        },
+        regionMappings: null
+      },
+      au: {
+        countryValue: "Australia",
+        elements: {
+          address1: 'FormField_8',
+          address2: 'FormField_9',
+          suburb: 'FormField_10',
+          state: 'FormField_12',
+          postcode: 'FormField_13'
+        },
+        stateMappings: {
+          'ACT': 'Australian Capital Territory',
+          'NSW': 'New South Wales',
+          'NT': 'Northern Territory',
+          'QLD': 'Queensland',
+          'SA': 'South Australia',
+          'TAS': 'Tasmania',
+          'VIC': 'Victoria',
+          'WA': 'Western Australia'
+        }
+      }
+    }, {
+      label: "One-page checkout (Shipping details)",
+      layoutIdentifier: "CheckoutStepShippingAddress",
+      countryIdentifier: "FormField_21",
+      searchIdentifier: "FormField_18",
+      nz: {
+        countryValue: "New Zealand",
+        elements: {
+          address1: 'FormField_18',
+          suburb: 'FormField_19',
+          city: 'FormField_20',
+          region: 'FormField_22',
+          postcode: 'FormField_23'
+        },
+        regionMappings: null
+      },
+      au: {
+        countryValue: "Australia",
+        elements: {
+          address1: 'FormField_18',
+          address2: 'FormField_19',
+          suburb: 'FormField_20',
+          state: 'FormField_22',
+          postcode: 'FormField_23'
+        },
+        stateMappings: {
+          'ACT': 'Australian Capital Territory',
+          'NSW': 'New South Wales',
+          'NT': 'Northern Territory',
+          'QLD': 'Queensland',
+          'SA': 'South Australia',
+          'TAS': 'Tasmania',
+          'VIC': 'Victoria',
+          'WA': 'Western Australia'
+        }
+      }
+    }, {
+      label: "Create account",
+      layoutIdentifier: "CreateAccountForm",
+      countryIdentifier: 'FormField_11',
+      searchIdentifier: "FormField_8",
+      nz: {
+        countryValue: "New Zealand",
+        elements: {
+          address1: 'FormField_8',
+          suburb: 'FormField_9',
+          city: 'FormField_10',
+          region: 'FormField_12',
+          postcode: 'FormField_13'
+        },
+        regionMappings: null
+      },
+      au: {
+        countryValue: "Australia",
+        elements: {
+          address1: 'FormField_8',
+          address2: 'FormField_9',
+          suburb: 'FormField_10',
+          state: 'FormField_12',
+          postcode: 'FormField_13'
+        },
+        stateMappings: {
+          'ACT': 'Australian Capital Territory',
+          'NSW': 'New South Wales',
+          'NT': 'Northern Territory',
+          'QLD': 'Queensland',
+          'SA': 'South Australia',
+          'TAS': 'Tasmania',
+          'VIC': 'Victoria',
+          'WA': 'Western Australia'
+        }
+      }
+    }];
+    this.formHelpers = [];
+
+    this.identifyLayout();
+    this.monitorMutations();
+  }
+
+  _createClass(BigCommercePlugin, [{
+    key: "identifyLayout",
+    value: function identifyLayout() {
+      var _iteratorNormalCompletion = true;
+      var _didIteratorError = false;
+      var _iteratorError = undefined;
+
+      try {
+        for (var _iterator = this.layoutConfigurations[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+          var layoutConfig = _step.value;
+
+          var identifyingElement = document.getElementById(layoutConfig.layoutIdentifier);
+
+          if (identifyingElement) {
+            this.log("Identified layout named: " + layoutConfig.label);
+            this.initialiseFormHelper(layoutConfig);
+          }
+        }
+      } catch (err) {
+        _didIteratorError = true;
+        _iteratorError = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion && _iterator.return) {
+            _iterator.return();
+          }
+        } finally {
+          if (_didIteratorError) {
+            throw _iteratorError;
+          }
+        }
+      }
+    }
+  }, {
+    key: "initialiseFormHelper",
+    value: function initialiseFormHelper(layoutConfig) {
+      var searchElement = document.getElementById(layoutConfig.searchIdentifier);
+
+      if (searchElement) {
+        var formHelperConfig = {
+          countryElement: document.getElementById(layoutConfig.countryIdentifier),
+          label: layoutConfig.label,
+          layoutIdentifier: layoutConfig.layoutIdentifier,
+          nz: {
+            countryValue: layoutConfig.nz.countryValue,
+            searchElement: document.getElementById(layoutConfig.nz.elements.address1),
+            elements: {
+              address_line_1_and_2: document.getElementById(layoutConfig.nz.elements.address1),
+              address_line_1: null,
+              address_line_2: null,
+              suburb: document.getElementById(layoutConfig.nz.elements.suburb),
+              city: document.getElementById(layoutConfig.nz.elements.city),
+              region: document.getElementById(layoutConfig.nz.elements.region),
+              postcode: document.getElementById(layoutConfig.nz.elements.postcode)
+            },
+            regionMappings: null
+          },
+          au: {
+            countryValue: layoutConfig.au.countryValue,
+            searchElement: document.getElementById(layoutConfig.au.elements.address1),
+            elements: {
+              address_line_1_and_2: null,
+              address_line_1: document.getElementById(layoutConfig.au.elements.address1),
+              address_line_2: document.getElementById(layoutConfig.au.elements.address2),
+              locality_name: document.getElementById(layoutConfig.au.elements.suburb),
+              city: null,
+              state_territory: document.getElementById(layoutConfig.au.elements.state),
+              postcode: document.getElementById(layoutConfig.au.elements.postcode)
+            },
+            stateMappings: layoutConfig.au.stateMappings
+          }
+        };
+
+        var helper = new _form_helper2.default(this.widgetConfig, formHelperConfig);
+        this.formHelpers.push(helper);
+      }
+    }
+  }, {
+    key: "resetAndReloadFormHelpers",
+    value: function resetAndReloadFormHelpers() {
+      var activeFormHelpers = [];
+
+      for (var i = 0; i < this.formHelpers.length; i++) {
+        var formHelper = this.formHelpers[i];
+
+        // check that the formHelper is still intact
+        if (formHelper.areAllElementsStillInTheDOM()) {
+          this.log("formHelper " + formHelper.label + " is still active");
+          activeFormHelpers.push(formHelper);
+        } else {
+          this.log("Destroying formHelper " + formHelper.label);
+          formHelper.destroy();
+        }
+      }
+
+      this.formHelpers = activeFormHelpers;
+
+      this.identifyAdditionalLayouts();
+    }
+  }, {
+    key: "identifyAdditionalLayouts",
+    value: function identifyAdditionalLayouts() {
+      var layoutsToInitialise = [];
+
+      for (var i = 0; i < this.layoutConfigurations.length; i++) {
+        var layoutConfig = this.layoutConfigurations[i];
+        var identifierToSearchFor = layoutConfig.layoutIdentifier;
+
+        // skip if we can't find that element
+        if (!document.getElementById(identifierToSearchFor)) {
+          continue;
+        }
+
+        // Only initialise if the formHelper is new
+        if (!this.anyFormHelpersWithLayoutIdentifier(identifierToSearchFor)) {
+          this.log("Identified additional layout named: " + layoutConfig.label);
+          layoutsToInitialise.push(layoutConfig);
+        }
+      }
+
+      // initialise all the new formHelpers
+      for (var i = 0; i < layoutsToInitialise.length; i++) {
+        this.initialiseFormHelper(layoutsToInitialise[i]);
+      }
+    }
+
+    // search active formHelpers for this layoutIdentifier
+
+  }, {
+    key: "anyFormHelpersWithLayoutIdentifier",
+    value: function anyFormHelpersWithLayoutIdentifier(identifierToSearchFor) {
+      for (var j = 0; j < this.formHelpers.length; j++) {
+        var activeFormHelper = this.formHelpers[j];
+
+        if (activeFormHelper.layoutIdentifier == identifierToSearchFor) {
+          return true;
+        }
+      }
+
+      return false;
+    }
+  }, {
+    key: "mutationHandler",
+    value: function mutationHandler(mutations) {
+      // if all the mutations are "af_list" then do nothing extra
+      var allMutationsAreFromAddressFinder = true;
+
+      for (var i = 0; i < mutations.length; i++) {
+        if (!mutations[i].target.classList.contains("af_list")) {
+          allMutationsAreFromAddressFinder = false;
+          break;
+        }
+      }
+
+      if (allMutationsAreFromAddressFinder) {
+        // no need to continue, as they are all from us
+        return;
+      }
+
+      if (this._mutationTimeout) {
+        clearTimeout(this._mutationTimeout);
+      }
+
+      this._mutationTimeout = setTimeout(this.resetAndReloadFormHelpers.bind(this), 750);
+    }
+  }, {
+    key: "monitorMutations",
+    value: function monitorMutations() {
+      if (window.MutationObserver) {
+        /* for modern browsers */
+        var observer = new MutationObserver(this.mutationHandler.bind(this));
+        observer.observe(document.body, { childList: true, subtree: true });
+      } else if (window.addEventListener) {
+        /* for IE 9 and 10 */
+        document.body.addEventListener('DOMAttrModified', this.mutationHandler.bind(this), false);
+      } else {
+        if (window.console) {
+          console.info('AddressFinder Error - please use a more modern browser');
+        }
+      }
+    }
+  }, {
+    key: "log",
+    value: function log(message) {
+      if (this.widgetConfig.debug && window.console) {
+        console.log(message);
+      }
+    }
+  }]);
+
+  return BigCommercePlugin;
+}();
+
+exports.default = BigCommercePlugin;
 
 /***/ }),
 /* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
-
-
-var keys = Object.keys;
-
-module.exports = function (object) {
-	return keys(object == null ? object : Object(object));
-};
-
+__webpack_require__(11);
+module.exports = __webpack_require__(0).core.Symbol;
 
 /***/ }),
 /* 11 */
@@ -405,75 +835,163 @@ module.exports = function (object) {
 
 "use strict";
 
+// ECMAScript 6 symbols shim
+var $        = __webpack_require__(0)
+  , setTag   = __webpack_require__(4).set
+  , uid      = __webpack_require__(2)
+  , $def     = __webpack_require__(5)
+  , keyOf    = __webpack_require__(13)
+  , has      = $.has
+  , hide     = $.hide
+  , getNames = $.getNames
+  , toObject = $.toObject
+  , Symbol   = $.g.Symbol
+  , Base     = Symbol
+  , setter   = false
+  , TAG      = uid.safe('tag')
+  , SymbolRegistry = {}
+  , AllSymbols     = {};
 
-module.exports = function (value) {
-	if (value == null) throw new TypeError("Cannot use null or undefined");
-	return value;
+function wrap(tag){
+  var sym = AllSymbols[tag] = $.set($.create(Symbol.prototype), TAG, tag);
+  $.DESC && setter && $.setDesc(Object.prototype, tag, {
+    configurable: true,
+    set: function(value){
+      hide(this, tag, value);
+    }
+  });
+  return sym;
+}
+
+// 19.4.1.1 Symbol([description])
+if(!$.isFunction(Symbol)){
+  Symbol = function Symbol(description){
+    if(this instanceof Symbol)throw TypeError('Symbol is not a constructor');
+    return wrap(uid(description));
+  };
+  hide(Symbol.prototype, 'toString', function(){
+    return this[TAG];
+  });
+}
+$def($def.G + $def.W, {Symbol: Symbol});
+
+var symbolStatics = {
+  // 19.4.2.1 Symbol.for(key)
+  'for': function(key){
+    return has(SymbolRegistry, key += '')
+      ? SymbolRegistry[key]
+      : SymbolRegistry[key] = Symbol(key);
+  },
+  // 19.4.2.5 Symbol.keyFor(sym)
+  keyFor: function keyFor(key){
+    return keyOf(SymbolRegistry, key);
+  },
+  pure: uid.safe,
+  set: $.set,
+  useSetter: function(){ setter = true; },
+  useSimple: function(){ setter = false; }
 };
+// 19.4.2.2 Symbol.hasInstance
+// 19.4.2.3 Symbol.isConcatSpreadable
+// 19.4.2.4 Symbol.iterator
+// 19.4.2.6 Symbol.match
+// 19.4.2.8 Symbol.replace
+// 19.4.2.9 Symbol.search
+// 19.4.2.10 Symbol.species
+// 19.4.2.11 Symbol.split
+// 19.4.2.12 Symbol.toPrimitive
+// 19.4.2.13 Symbol.toStringTag
+// 19.4.2.14 Symbol.unscopables
+$.each.call((
+    'hasInstance,isConcatSpreadable,iterator,match,replace,search,' +
+    'species,split,toPrimitive,toStringTag,unscopables'
+  ).split(','), function(it){
+    var sym = __webpack_require__(1)(it);
+    symbolStatics[it] = Symbol === Base ? sym : wrap(sym);
+  }
+);
 
+setter = true;
+
+$def($def.S, 'Symbol', symbolStatics);
+
+$def($def.S + $def.F * (Symbol != Base), 'Object', {
+  // 19.1.2.7 Object.getOwnPropertyNames(O)
+  getOwnPropertyNames: function getOwnPropertyNames(it){
+    var names = getNames(toObject(it)), result = [], key, i = 0;
+    while(names.length > i)has(AllSymbols, key = names[i++]) || result.push(key);
+    return result;
+  },
+  // 19.1.2.8 Object.getOwnPropertySymbols(O)
+  getOwnPropertySymbols: function getOwnPropertySymbols(it){
+    var names = getNames(toObject(it)), result = [], key, i = 0;
+    while(names.length > i)has(AllSymbols, key = names[i++]) && result.push(AllSymbols[key]);
+    return result;
+  }
+});
+
+setTag(Symbol, 'Symbol');
+// 20.2.1.9 Math[@@toStringTag]
+setTag(Math, 'Math', true);
+// 24.3.3 JSON[@@toStringTag]
+setTag($.g.JSON, 'JSON', true);
 
 /***/ }),
 /* 12 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, exports) {
 
-"use strict";
-
-
-var forEach = Array.prototype.forEach, create = Object.create;
-
-var process = function (src, obj) {
-	var key;
-	for (key in src) obj[key] = src[key];
+module.exports = function($){
+  $.FW   = true;
+  $.path = $.g;
+  return $;
 };
-
-module.exports = function (options/*, …options*/) {
-	var result = create(null);
-	forEach.call(arguments, function (options) {
-		if (options == null) return;
-		process(Object(options), result);
-	});
-	return result;
-};
-
 
 /***/ }),
 /* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
-// Deprecated
-
-
-
-module.exports = function (obj) { return typeof obj === 'function'; };
-
+var $ = __webpack_require__(0);
+module.exports = function(object, el){
+  var O      = $.toObject(object)
+    , keys   = $.getKeys(O)
+    , length = keys.length
+    , index  = 0
+    , key;
+  while(length > index)if(O[key = keys[index++]] === el)return key;
+};
 
 /***/ }),
 /* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
-
-
-module.exports = __webpack_require__(15)()
-	? String.prototype.contains
-	: __webpack_require__(16);
-
+__webpack_require__(15);
+__webpack_require__(18);
+module.exports = __webpack_require__(1)('iterator');
 
 /***/ }),
 /* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
+var set   = __webpack_require__(0).set
+  , at    = __webpack_require__(16)(true)
+  , ITER  = __webpack_require__(2).safe('iter')
+  , $iter = __webpack_require__(3)
+  , step  = $iter.step;
 
-
-var str = 'razdwatrzy';
-
-module.exports = function () {
-	if (typeof str.contains !== 'function') return false;
-	return ((str.contains('dwa') === true) && (str.contains('foo') === false));
-};
-
+// 21.1.3.27 String.prototype[@@iterator]()
+$iter.std(String, 'String', function(iterated){
+  set(this, ITER, {o: String(iterated), i: 0});
+// 21.1.5.2.1 %StringIteratorPrototype%.next()
+}, function(){
+  var iter  = this[ITER]
+    , O     = iter.o
+    , index = iter.i
+    , point;
+  if(index >= O.length)return step(1);
+  point = at.call(O, index);
+  iter.i += point.length;
+  return step(0, point);
+});
 
 /***/ }),
 /* 16 */
@@ -481,79 +999,113 @@ module.exports = function () {
 
 "use strict";
 
-
-var indexOf = String.prototype.indexOf;
-
-module.exports = function (searchString/*, position*/) {
-	return indexOf.call(this, searchString, arguments[1]) > -1;
+// true  -> String#at
+// false -> String#codePointAt
+var $ = __webpack_require__(0);
+module.exports = function(TO_STRING){
+  return function(pos){
+    var s = String($.assertDefined(this))
+      , i = $.toInteger(pos)
+      , l = s.length
+      , a, b;
+    if(i < 0 || i >= l)return TO_STRING ? '' : undefined;
+    a = s.charCodeAt(i);
+    return a < 0xd800 || a > 0xdbff || i + 1 === l
+      || (b = s.charCodeAt(i + 1)) < 0xdc00 || b > 0xdfff
+        ? TO_STRING ? s.charAt(i) : a
+        : TO_STRING ? s.slice(i, i + 2) : (a - 0xd800 << 10) + (b - 0xdc00) + 0x10000;
+  };
 };
-
 
 /***/ }),
 /* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
-
-
-var isSymbol = __webpack_require__(18);
-
-module.exports = function (value) {
-	if (!isSymbol(value)) throw new TypeError(value + " is not a symbol");
-	return value;
+// Optional / simple context binding
+var assertFunction = __webpack_require__(6).fn;
+module.exports = function(fn, that, length){
+  assertFunction(fn);
+  if(~length && that === undefined)return fn;
+  switch(length){
+    case 1: return function(a){
+      return fn.call(that, a);
+    };
+    case 2: return function(a, b){
+      return fn.call(that, a, b);
+    };
+    case 3: return function(a, b, c){
+      return fn.call(that, a, b, c);
+    };
+  } return function(/* ...args */){
+      return fn.apply(that, arguments);
+    };
 };
-
 
 /***/ }),
 /* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
-
-
-module.exports = function (x) {
-	if (!x) return false;
-	if (typeof x === 'symbol') return true;
-	if (!x.constructor) return false;
-	if (x.constructor.name !== 'Symbol') return false;
-	return (x[x.constructor.toStringTag] === 'Symbol');
-};
-
+__webpack_require__(19);
+var $           = __webpack_require__(0)
+  , Iterators   = __webpack_require__(3).Iterators
+  , ITERATOR    = __webpack_require__(1)('iterator')
+  , ArrayValues = Iterators.Array
+  , NodeList    = $.g.NodeList;
+if($.FW && NodeList && !(ITERATOR in NodeList.prototype)){
+  $.hide(NodeList.prototype, ITERATOR, ArrayValues);
+}
+Iterators.NodeList = ArrayValues;
 
 /***/ }),
 /* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
-/* WEBPACK VAR INJECTION */(function(global) {!function(){"use strict";function t(t,e){if(!(t instanceof e))throw new TypeError("Cannot call a class as a function")}function e(t,e){if(!(t instanceof e))throw new TypeError("Cannot call a class as a function")}function o(t,e){if(!t)throw new ReferenceError("this hasn't been initialised - super() hasn't been called");return!e||"object"!=typeof e&&"function"!=typeof e?t:e}function r(t,e){if("function"!=typeof e&&null!==e)throw new TypeError("Super expression must either be null or a function, not "+typeof e);t.prototype=Object.create(e&&e.prototype,{constructor:{value:t,enumerable:!1,writable:!0,configurable:!0}}),e&&(Object.setPrototypeOf?Object.setPrototypeOf(t,e):t.__proto__=e)}function n(t,e){if(!(t instanceof e))throw new TypeError("Cannot call a class as a function")}function i(t,e){if(!t)throw new ReferenceError("this hasn't been initialised - super() hasn't been called");return!e||"object"!=typeof e&&"function"!=typeof e?t:e}function s(t,e){if("function"!=typeof e&&null!==e)throw new TypeError("Super expression must either be null or a function, not "+typeof e);t.prototype=Object.create(e&&e.prototype,{constructor:{value:t,enumerable:!1,writable:!0,configurable:!0}}),e&&(Object.setPrototypeOf?Object.setPrototypeOf(t,e):t.__proto__=e)}var u=void 0;try{u=self}catch(t){try{u=global}catch(t){u=window}}var c=function(){function e(o,r){t(this,e),this.cursor=0,this.collection=o,this.kind=r}return e.prototype.next=function(){this.done=this.cursor===this.collection.length;var t={done:this.done,value:this.done?void 0:"value"===this.kind||"key"===this.kind?this.collection[this.cursor]:[this.cursor,this.collection[this.cursor]]};return this.cursor++,t},e}(),a=function(t){function n(r,i){e(this,n);var s=o(this,t.call(this,r,i));return s}return r(n,t),n.prototype.toString=function(){return"[object String Iterator]"},n}(c),p=function(t){function e(o,r){n(this,e);var s=i(this,t.call(this,o,r));return s}return s(e,t),e.prototype.toString=function(){return"[object Array Iterator]"},e}(c);if("function"!=typeof Array.prototype[Symbol.iterator]){var y="values"in Array.prototype,f="entries"in Array.prototype,l="keys"in Array.prototype;y||(Array.prototype.values=function(){return new p(this,"value")}),f||(Array.prototype.entries=function(){return new p(this,"key+value")}),l||(Array.prototype.keys=function(){return new p(this,"key")}),Array.prototype[Symbol.iterator]=Array.prototype.values}if("function"!=typeof String.prototype[Symbol.iterator]&&(String.prototype[Symbol.iterator]=function(){return new a(this,"value")}),"function"!=typeof NodeList.prototype[Symbol.iterator]){var h="values"in NodeList.prototype,b="entries"in NodeList.prototype,w="keys"in NodeList.prototype;h||(NodeList.prototype.values=function(){return new p(this,"value")}),b||(NodeList.prototype.entries=function(){return new p(this,"key+value")}),w||(NodeList.prototype.keys=function(){return new p(this,"key")}),NodeList.prototype[Symbol.iterator]=Array.prototype.values}}();
+var $          = __webpack_require__(0)
+  , setUnscope = __webpack_require__(20)
+  , ITER       = __webpack_require__(2).safe('iter')
+  , $iter      = __webpack_require__(3)
+  , step       = $iter.step
+  , Iterators  = $iter.Iterators;
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(20)))
+// 22.1.3.4 Array.prototype.entries()
+// 22.1.3.13 Array.prototype.keys()
+// 22.1.3.29 Array.prototype.values()
+// 22.1.3.30 Array.prototype[@@iterator]()
+$iter.std(Array, 'Array', function(iterated, kind){
+  $.set(this, ITER, {o: $.toObject(iterated), i: 0, k: kind});
+// 22.1.5.2.1 %ArrayIteratorPrototype%.next()
+}, function(){
+  var iter  = this[ITER]
+    , O     = iter.o
+    , kind  = iter.k
+    , index = iter.i++;
+  if(!O || index >= O.length){
+    iter.o = undefined;
+    return step(1);
+  }
+  if(kind == 'key'  )return step(0, index);
+  if(kind == 'value')return step(0, O[index]);
+  return step(0, [index, O[index]]);
+}, 'value');
+
+// argumentsList[@@iterator] is %ArrayProto_values% (9.4.4.6, 9.4.4.7)
+Iterators.Arguments = Iterators.Array;
+
+setUnscope('keys');
+setUnscope('values');
+setUnscope('entries');
 
 /***/ }),
 /* 20 */
-/***/ (function(module, exports) {
+/***/ (function(module, exports, __webpack_require__) {
 
-var g;
-
-// This works in non-strict mode
-g = (function() {
-	return this;
-})();
-
-try {
-	// This works if eval is allowed (see CSP)
-	g = g || Function("return this")() || (1,eval)("this");
-} catch(e) {
-	// This works if the window reference is available
-	if(typeof window === "object")
-		g = window;
-}
-
-// g can still be undefined, but nothing to do about it...
-// We return undefined, instead of nothing here, so it's
-// easier to handle this case. if(!global) { ...}
-
-module.exports = g;
-
+// 22.1.3.31 Array.prototype[@@unscopables]
+var $           = __webpack_require__(0)
+  , UNSCOPABLES = __webpack_require__(1)('unscopables');
+if($.FW && !(UNSCOPABLES in []))$.hide(Array.prototype, UNSCOPABLES, {});
+module.exports = function(key){
+  if($.FW)[][UNSCOPABLES][key] = true;
+};
 
 /***/ }),
 /* 21 */
@@ -562,723 +1114,323 @@ module.exports = g;
 "use strict";
 
 
-// // this is done within
-// window.AddressFinderConfig = {
-//   key: "ADDRESSFINDER_NZ_DEMO_KEY"
-// }
-__webpack_require__(22);
-__webpack_require__(24);
-
-(function (d, w) {
-  var _initPlugin = function _initPlugin() {
-    w.AF = w.AF || {};
-    w.AF._plugin = new AF.BigCommercePlugin({
-      nzKey: w.AddressFinderConfig.key_nz || w.AddressFinderConfig.key || w.AddressFinderConfig.key_au,
-      auKey: w.AddressFinderConfig.key_au || w.AddressFinderConfig.key || w.AddressFinderConfig.key_nz,
-      nzWidgetOptions: w.AddressFinderConfig.nzWidgetOptions || w.AddressFinderConfig.widgetOptions || {},
-      auWidgetOptions: w.AddressFinderConfig.auWidgetOptions || w.AddressFinderConfig.widgetOptions || {},
-      debug: w.AddressFinderConfig.debug || true
-    });
-  };
-
-  var s = d.createElement('script');
-  s.src = 'https://api.addressfinder.io/assets/v3/widget.js';
-  s.async = 1;
-  s.onload = _initPlugin;
-  d.body.appendChild(s);
-})(document, window);
-
-/***/ }),
-/* 22 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-if (!__webpack_require__(0)()) {
-	Object.defineProperty(__webpack_require__(23), 'Symbol',
-		{ value: __webpack_require__(1), configurable: true, enumerable: false,
-			writable: true });
-}
-
-
-/***/ }),
-/* 23 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-module.exports = new Function("return this")();
-
-
-/***/ }),
-/* 24 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-__webpack_require__(25);
-(function (d, w) {
-  w.AF = w.AF || {};
+/**
+ * Usage:
+ *
+ * new FormHelper({
+ *   nzKey: "AAABBB111222",
+ *   auKey: "XXXYYY888999",
+ *   nzWidgetOptions: {
+ *     byline: false
+ *   },
+ *   auWidgetOptions: {},
+ *   debug: false
+ * }, {
+ *   countryElement: document.getElementById("country"),
+ *   nz: {
+ *     countryValue: "NZ",
+ *     searchElement: document.getElementById('FormField_18'),
+ *     regionMappings: {
+ *       "Auckland Region": "Auckland Region",
+ *       "Bay Of Plenty Region": "Bay of Plenty",
+ *       "Canterbury Region": "Canterbury",
+ *       "Gisborne Region": "Gisborne Region",
+ *       "Hawke's Bay Region": "Hawke's Bay",
+ *       "Manawatu-Wanganui Region": "Manawatu-Wanganui Region",
+ *       "Marlborough Region": "Marlborough",
+ *       "Nelson Region": "Nelson Region",
+ *       "Northland Region": "Northland",
+ *       "Otago Region": "Otago",
+ *       "Southland Region": "Southland",
+ *       "Taranaki Region": "Taranaki",
+ *       "Tasman Region": "Tasman",
+ *       "Waikato Region": "Waikato",
+ *       "Wellington Region": "Wellington Region",
+ *       "West Coast Region": "West Coast",
+ *       "No Region": "Chatham Islands"
+ *     },
+ *     elements: {
+ *       address_line_1_and_2: document.getElementById('FormField_18'),
+ *       address_line_1: null,
+ *       address_line_2: null,
+ *       suburb: document.getElementById('FormField_19'),
+ *       city: document.getElementById('FormField_20'),
+ *       region: document.getElementById('FormField_22'),
+ *       postcode: document.getElementById('FormField_23')
+ *     }
+ *   },
+ *   au: {
+ *     countryValue: "AU",
+ *     searchElement: document.getElementById('FormField_18'),
+ *     stateMappings: {
+ *       ACT: "Australian Capital Territory",
+ *       NSW: "New South Wales",
+ *       NT: "Northern Territory",
+ *       QLD: "Queensland",
+ *       SA: "South Australia",
+ *       TAS: "Tasmania",
+ *       VIC: "Victoria",
+ *       WA: "Western Australia"
+ *     },
+ *     elements: {
+ *       address_line_1_and_2: null,
+ *       address_line_1: document.getElementById('FormField_18'),
+ *       address_line_2: document.getElementById('FormField_19'),
+ *       locality_name: document.getElementById('FormField_20'),
+ *       state_territory: document.getElementById('FormField_22'),
+ *       postcode: document.getElementById('FormField_23')
+ *     }
+ *   }
+ * });
+ */
 
-  w.AF.BigCommercePlugin = function () {
-    function _class(widgetConfig) {
-      _classCallCheck(this, _class);
+var FormHelper = function () {
+  function FormHelper(widgetConfig, formHelperConfig) {
+    _classCallCheck(this, FormHelper);
 
-      this.version = "1.1.12";
-      this.widgetConfig = widgetConfig;
-      this.layoutConfigurations = [{
-        label: "Optimized one-page checkout (Early access)",
-        layoutIdentifier: "micro-app-ng-checkout",
-        countryIdentifier: 'countryCodeInput',
-        searchIdentifier: "addressLine1Input",
-        nz: {
-          countryValue: "string:NZ",
-          elements: {
-            address1: 'addressLine1Input',
-            suburb: 'addressLine2Input',
-            city: 'cityInput',
-            region: 'provinceInput',
-            postcode: 'postCodeInput'
-          },
-          regionMappings: null
-        },
-        au: {
-          countryValue: "string:AU",
-          elements: {
-            address1: 'addressLine1Input',
-            address2: 'addressLine2Input',
-            suburb: 'cityInput',
-            state: 'provinceCodeInput',
-            postcode: 'postCodeInput'
-          },
-          stateMappings: {
-            'ACT': 'string:ACT',
-            'NSW': 'string:NSW',
-            'NT': 'string:NT',
-            'QLD': 'string:QLD',
-            'SA': 'string:SA',
-            'TAS': 'string:TAS',
-            'VIC': 'string:VIC',
-            'WA': 'string:WA'
-          }
-        }
-      }, {
-        label: "One-page checkout (Billing details)",
-        layoutIdentifier: "CheckoutStepBillingAddress",
-        countryIdentifier: 'FormField_11',
-        searchIdentifier: "FormField_8",
-        nz: {
-          countryValue: "New Zealand",
-          elements: {
-            address1: 'FormField_8',
-            suburb: 'FormField_9',
-            city: 'FormField_10',
-            region: 'FormField_12',
-            postcode: 'FormField_13'
-          },
-          regionMappings: null
-        },
-        au: {
-          countryValue: "Australia",
-          elements: {
-            address1: 'FormField_8',
-            address2: 'FormField_9',
-            suburb: 'FormField_10',
-            state: 'FormField_12',
-            postcode: 'FormField_13'
-          },
-          stateMappings: {
-            'ACT': 'Australian Capital Territory',
-            'NSW': 'New South Wales',
-            'NT': 'Northern Territory',
-            'QLD': 'Queensland',
-            'SA': 'South Australia',
-            'TAS': 'Tasmania',
-            'VIC': 'Victoria',
-            'WA': 'Western Australia'
-          }
-        }
-      }, {
-        label: "One-page checkout (Shipping details)",
-        layoutIdentifier: "CheckoutStepShippingAddress",
-        countryIdentifier: "FormField_21",
-        searchIdentifier: "FormField_18",
-        nz: {
-          countryValue: "New Zealand",
-          elements: {
-            address1: 'FormField_18',
-            suburb: 'FormField_19',
-            city: 'FormField_20',
-            region: 'FormField_22',
-            postcode: 'FormField_23'
-          },
-          regionMappings: null
-        },
-        au: {
-          countryValue: "Australia",
-          elements: {
-            address1: 'FormField_18',
-            address2: 'FormField_19',
-            suburb: 'FormField_20',
-            state: 'FormField_22',
-            postcode: 'FormField_23'
-          },
-          stateMappings: {
-            'ACT': 'Australian Capital Territory',
-            'NSW': 'New South Wales',
-            'NT': 'Northern Territory',
-            'QLD': 'Queensland',
-            'SA': 'South Australia',
-            'TAS': 'Tasmania',
-            'VIC': 'Victoria',
-            'WA': 'Western Australia'
-          }
-        }
-      }, {
-        label: "Create account",
-        layoutIdentifier: "CreateAccountForm",
-        countryIdentifier: 'FormField_11',
-        searchIdentifier: "FormField_8",
-        nz: {
-          countryValue: "New Zealand",
-          elements: {
-            address1: 'FormField_8',
-            suburb: 'FormField_9',
-            city: 'FormField_10',
-            region: 'FormField_12',
-            postcode: 'FormField_13'
-          },
-          regionMappings: null
-        },
-        au: {
-          countryValue: "Australia",
-          elements: {
-            address1: 'FormField_8',
-            address2: 'FormField_9',
-            suburb: 'FormField_10',
-            state: 'FormField_12',
-            postcode: 'FormField_13'
-          },
-          stateMappings: {
-            'ACT': 'Australian Capital Territory',
-            'NSW': 'New South Wales',
-            'NT': 'Northern Territory',
-            'QLD': 'Queensland',
-            'SA': 'South Australia',
-            'TAS': 'Tasmania',
-            'VIC': 'Victoria',
-            'WA': 'Western Australia'
-          }
-        }
-      }];
-      this.formHelpers = [];
+    this.widgetConfig = widgetConfig;
+    this.formHelperConfig = formHelperConfig;
+    this.widgets = {};
+    this.subscriptions = {};
+    this.label = formHelperConfig.label;
+    this.layoutIdentifier = formHelperConfig.layoutIdentifier;
 
-      this.identifyLayout();
-      this.monitorMutations();
-    }
-
-    _createClass(_class, [{
-      key: "identifyLayout",
-      value: function identifyLayout() {
-        for (var i = 0; i < this.layoutConfigurations.length; i++) {
-          var layoutConfig = this.layoutConfigurations[i];
-          var identifyingElement = d.getElementById(layoutConfig.layoutIdentifier);
-
-          if (identifyingElement) {
-            this.log("Identified layout named: " + layoutConfig.label);
-            this.initialiseFormHelper(layoutConfig);
-          }
-        }
-      }
-    }, {
-      key: "initialiseFormHelper",
-      value: function initialiseFormHelper(layoutConfig) {
-        var searchElement = d.getElementById(layoutConfig.searchIdentifier);
-
-        if (searchElement) {
-          var formHelperConfig = {
-            countryElement: d.getElementById(layoutConfig.countryIdentifier),
-            label: layoutConfig.label,
-            layoutIdentifier: layoutConfig.layoutIdentifier,
-            nz: {
-              countryValue: layoutConfig.nz.countryValue,
-              searchElement: d.getElementById(layoutConfig.nz.elements.address1),
-              elements: {
-                address_line_1_and_2: d.getElementById(layoutConfig.nz.elements.address1),
-                address_line_1: null,
-                address_line_2: null,
-                suburb: d.getElementById(layoutConfig.nz.elements.suburb),
-                city: d.getElementById(layoutConfig.nz.elements.city),
-                region: d.getElementById(layoutConfig.nz.elements.region),
-                postcode: d.getElementById(layoutConfig.nz.elements.postcode)
-              },
-              regionMappings: null
-            },
-            au: {
-              countryValue: layoutConfig.au.countryValue,
-              searchElement: d.getElementById(layoutConfig.au.elements.address1),
-              elements: {
-                address_line_1_and_2: null,
-                address_line_1: d.getElementById(layoutConfig.au.elements.address1),
-                address_line_2: d.getElementById(layoutConfig.au.elements.address2),
-                locality_name: d.getElementById(layoutConfig.au.elements.suburb),
-                city: null,
-                state_territory: d.getElementById(layoutConfig.au.elements.state),
-                postcode: d.getElementById(layoutConfig.au.elements.postcode)
-              },
-              stateMappings: layoutConfig.au.stateMappings
-            }
-          };
-
-          var helper = new AF.FormHelper(this.widgetConfig, formHelperConfig);
-          this.formHelpers.push(helper);
-        }
-      }
-    }, {
-      key: "resetAndReloadFormHelpers",
-      value: function resetAndReloadFormHelpers() {
-        var activeFormHelpers = [];
-
-        for (var i = 0; i < this.formHelpers.length; i++) {
-          var formHelper = this.formHelpers[i];
-
-          // check that the formHelper is still intact
-          if (formHelper.areAllElementsStillInTheDOM()) {
-            this.log("formHelper " + formHelper.label + " is still active");
-            activeFormHelpers.push(formHelper);
-          } else {
-            this.log("Destroying formHelper " + formHelper.label);
-            formHelper.destroy();
-          }
-        }
-
-        this.formHelpers = activeFormHelpers;
-
-        this.identifyAdditionalLayouts();
-      }
-    }, {
-      key: "identifyAdditionalLayouts",
-      value: function identifyAdditionalLayouts() {
-        var layoutsToInitialise = [];
-
-        for (var i = 0; i < this.layoutConfigurations.length; i++) {
-          var layoutConfig = this.layoutConfigurations[i];
-          var identifierToSearchFor = layoutConfig.layoutIdentifier;
-
-          // skip if we can't find that element
-          if (!d.getElementById(identifierToSearchFor)) {
-            continue;
-          }
-
-          // Only initialise if the formHelper is new
-          if (!this.anyFormHelpersWithLayoutIdentifier(identifierToSearchFor)) {
-            this.log("Identified additional layout named: " + layoutConfig.label);
-            layoutsToInitialise.push(layoutConfig);
-          }
-        }
-
-        // initialise all the new formHelpers
-        for (var i = 0; i < layoutsToInitialise.length; i++) {
-          this.initialiseFormHelper(layoutsToInitialise[i]);
-        }
-      }
-
-      // search active formHelpers for this layoutIdentifier
-
-    }, {
-      key: "anyFormHelpersWithLayoutIdentifier",
-      value: function anyFormHelpersWithLayoutIdentifier(identifierToSearchFor) {
-        for (var j = 0; j < this.formHelpers.length; j++) {
-          var activeFormHelper = this.formHelpers[j];
-
-          if (activeFormHelper.layoutIdentifier == identifierToSearchFor) {
-            return true;
-          }
-        }
-
-        return false;
-      }
-    }, {
-      key: "mutationHandler",
-      value: function mutationHandler(mutations) {
-        // if all the mutations are "af_list" then do nothing extra
-        var allMutationsAreFromAddressFinder = true;
-
-        for (var i = 0; i < mutations.length; i++) {
-          if (!mutations[i].target.classList.contains("af_list")) {
-            allMutationsAreFromAddressFinder = false;
-            break;
-          }
-        }
-
-        if (allMutationsAreFromAddressFinder) {
-          // no need to continue, as they are all from us
-          return;
-        }
-
-        if (this._mutationTimeout) {
-          clearTimeout(this._mutationTimeout);
-        }
-
-        this._mutationTimeout = setTimeout(this.resetAndReloadFormHelpers.bind(this), 750);
-      }
-    }, {
-      key: "monitorMutations",
-      value: function monitorMutations() {
-        if (w.MutationObserver) {
-          /* for modern browsers */
-          var observer = new MutationObserver(this.mutationHandler.bind(this));
-          observer.observe(d.body, { childList: true, subtree: true });
-        } else if (w.addEventListener) {
-          /* for IE 9 and 10 */
-          d.body.addEventListener('DOMAttrModified', this.mutationHandler.bind(this), false);
-        } else {
-          if (w.console) {
-            console.info('AddressFinder Error - please use a more modern browser');
-          }
-        }
-      }
-    }, {
-      key: "log",
-      value: function log(message) {
-        if (this.widgetConfig.debug && w.console) {
-          console.log(message);
-        }
-      }
-    }]);
-
-    return _class;
-  }();
-})(document, window);
-
-/***/ }),
-/* 25 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-(function (d, w) {
-  w.AF = w.AF || {};
+    this._bindToForm();
+  }
 
   /**
-   * Usage:
-   *
-   * new FormHelper({
-   *   nzKey: "AAABBB111222",
-   *   auKey: "XXXYYY888999",
-   *   nzWidgetOptions: {
-   *     byline: false
-   *   },
-   *   auWidgetOptions: {},
-   *   debug: false
-   * }, {
-   *   countryElement: document.getElementById("country"),
-   *   nz: {
-   *     countryValue: "NZ",
-   *     searchElement: document.getElementById('FormField_18'),
-   *     regionMappings: {
-   *       "Auckland Region": "Auckland Region",
-   *       "Bay Of Plenty Region": "Bay of Plenty",
-   *       "Canterbury Region": "Canterbury",
-   *       "Gisborne Region": "Gisborne Region",
-   *       "Hawke's Bay Region": "Hawke's Bay",
-   *       "Manawatu-Wanganui Region": "Manawatu-Wanganui Region",
-   *       "Marlborough Region": "Marlborough",
-   *       "Nelson Region": "Nelson Region",
-   *       "Northland Region": "Northland",
-   *       "Otago Region": "Otago",
-   *       "Southland Region": "Southland",
-   *       "Taranaki Region": "Taranaki",
-   *       "Tasman Region": "Tasman",
-   *       "Waikato Region": "Waikato",
-   *       "Wellington Region": "Wellington Region",
-   *       "West Coast Region": "West Coast",
-   *       "No Region": "Chatham Islands"
-   *     },
-   *     elements: {
-   *       address_line_1_and_2: document.getElementById('FormField_18'),
-   *       address_line_1: null,
-   *       address_line_2: null,
-   *       suburb: document.getElementById('FormField_19'),
-   *       city: document.getElementById('FormField_20'),
-   *       region: document.getElementById('FormField_22'),
-   *       postcode: document.getElementById('FormField_23')
-   *     }
-   *   },
-   *   au: {
-   *     countryValue: "AU",
-   *     searchElement: document.getElementById('FormField_18'),
-   *     stateMappings: {
-   *       ACT: "Australian Capital Territory",
-   *       NSW: "New South Wales",
-   *       NT: "Northern Territory",
-   *       QLD: "Queensland",
-   *       SA: "South Australia",
-   *       TAS: "Tasmania",
-   *       VIC: "Victoria",
-   *       WA: "Western Australia"
-   *     },
-   *     elements: {
-   *       address_line_1_and_2: null,
-   *       address_line_1: document.getElementById('FormField_18'),
-   *       address_line_2: document.getElementById('FormField_19'),
-   *       locality_name: document.getElementById('FormField_20'),
-   *       state_territory: document.getElementById('FormField_22'),
-   *       postcode: document.getElementById('FormField_23')
-   *     }
-   *   }
-   * });
+   * Shuts down this form_helper by disabling the widget and any callback handlers.
    */
-  w.AF.FormHelper = function () {
-    function _class(widgetConfig, formHelperConfig) {
-      _classCallCheck(this, _class);
 
-      this.widgetConfig = widgetConfig;
-      this.formHelperConfig = formHelperConfig;
-      this.widgets = {};
-      this.subscriptions = {};
-      this.label = formHelperConfig.label;
-      this.layoutIdentifier = formHelperConfig.layoutIdentifier;
 
-      this._bindToForm();
+  _createClass(FormHelper, [{
+    key: "destroy",
+    value: function destroy() {
+      for (var widgetCountryCode in this.widgets) {
+        this.widgets[widgetCountryCode].disable();
+        this.widgets[widgetCountryCode].destroy();
+      }
+
+      this.widgets = null;
+      this.subscriptions = [];
+
+      this.formHelperConfig.countryElement.removeEventListener("change", this.boundCountryChangedListener);
     }
 
-    /**
-     * Shuts down this form_helper by disabling the widget and any callback handlers.
-     */
+    // check all of the elements in the formHelper and confirm they are still
+    // within the page DOM
 
-
-    _createClass(_class, [{
-      key: "destroy",
-      value: function destroy() {
-        for (var widgetCountryCode in this.widgets) {
-          this.widgets[widgetCountryCode].disable();
-          this.widgets[widgetCountryCode].destroy();
-        }
-
-        this.widgets = null;
-        this.subscriptions = [];
-
-        this.formHelperConfig.countryElement.removeEventListener("change", this.boundCountryChangedListener);
+  }, {
+    key: "areAllElementsStillInTheDOM",
+    value: function areAllElementsStillInTheDOM() {
+      if (!document.body.contains(this.formHelperConfig.countryElement)) {
+        this._log("Country Element is not in the DOM");
+        return false;
       }
 
-      // check all of the elements in the formHelper and confirm they are still
-      // within the page DOM
+      // TODO can we aggregate the elements to check into a single array or map?
 
-    }, {
-      key: "areAllElementsStillInTheDOM",
-      value: function areAllElementsStillInTheDOM() {
-        if (!d.body.contains(this.formHelperConfig.countryElement)) {
-          this._log("Country Element is not in the DOM");
-          return false;
-        }
+      var countryCodes = ['nz', 'au'];
+      for (var i = 0; i < countryCodes.length; i++) {
+        var countryCode = countryCodes[i];
 
-        // TODO can we aggregate the elements to check into a single array or map?
+        // check that the config for this country is supplied
+        if (this.formHelperConfig[countryCode]) {
+          if (!document.body.contains(this.formHelperConfig[countryCode].searchElement)) {
+            this._log("Search Element is not in the DOM");
+            return false;
+          }
 
-        var countryCodes = ['nz', 'au'];
-        for (var i = 0; i < countryCodes.length; i++) {
-          var countryCode = countryCodes[i];
+          for (var elementName in this.formHelperConfig[countryCode].elements) {
+            if (this.formHelperConfig[countryCode].elements.hasOwnProperty(elementName)) {
+              var element = this.formHelperConfig[countryCode].elements[elementName];
 
-          // check that the config for this country is supplied
-          if (this.formHelperConfig[countryCode]) {
-            if (!d.body.contains(this.formHelperConfig[countryCode].searchElement)) {
-              this._log("Search Element is not in the DOM");
-              return false;
-            }
-
-            for (var elementName in this.formHelperConfig[countryCode].elements) {
-              if (this.formHelperConfig[countryCode].elements.hasOwnProperty(elementName)) {
-                var element = this.formHelperConfig[countryCode].elements[elementName];
-
-                if (element && !d.body.contains(element)) {
-                  this._log("Element " + elementName + " is not in the DOM");
-                  return false;
-                }
+              if (element && !document.body.contains(element)) {
+                this._log("Element " + elementName + " is not in the DOM");
+                return false;
               }
             }
           }
         }
-
-        return true;
       }
-    }, {
-      key: "_bindToForm",
-      value: function _bindToForm() {
-        this.boundCountryChangedListener = this._countryChanged.bind(this); // save this so we can unbind in the destroy() method
-        this.formHelperConfig.countryElement.addEventListener("change", this.boundCountryChangedListener);
 
-        var nzWidget = new w.AddressFinder.Widget(this.formHelperConfig.nz.searchElement, this.widgetConfig.nzKey, "nz", this.widgetConfig.nzWidgetOptions);
-        nzWidget.on("result:select", this._nzAddressSelected.bind(this));
-        this.widgets["nz"] = nzWidget;
+      return true;
+    }
+  }, {
+    key: "_bindToForm",
+    value: function _bindToForm() {
+      this.boundCountryChangedListener = this._countryChanged.bind(this); // save this so we can unbind in the destroy() method
+      this.formHelperConfig.countryElement.addEventListener("change", this.boundCountryChangedListener);
 
-        var auWidget = new w.AddressFinder.Widget(this.formHelperConfig.au.searchElement, this.widgetConfig.auKey, "au", this.widgetConfig.auWidgetOptions);
-        auWidget.on("result:select", this._auAddressSelected.bind(this));
-        this.widgets["au"] = auWidget;
+      var nzWidget = new window.AddressFinder.Widget(this.formHelperConfig.nz.searchElement, this.widgetConfig.nzKey, "nz", this.widgetConfig.nzWidgetOptions);
+      nzWidget.on("result:select", this._nzAddressSelected.bind(this));
+      this.widgets["nz"] = nzWidget;
 
-        this.widgets["null"] = {
-          enable: function enable() {},
-          disable: function disable() {},
-          destroy: function destroy() {}
-        };
+      var auWidget = new window.AddressFinder.Widget(this.formHelperConfig.au.searchElement, this.widgetConfig.auKey, "au", this.widgetConfig.auWidgetOptions);
+      auWidget.on("result:select", this._auAddressSelected.bind(this));
+      this.widgets["au"] = auWidget;
 
-        this._countryChanged(null, true);
+      this.widgets["null"] = {
+        enable: function enable() {},
+        disable: function disable() {},
+        destroy: function destroy() {}
+      };
+
+      this._countryChanged(null, true);
+    }
+  }, {
+    key: "_countryChanged",
+    value: function _countryChanged(event, preserveValues) {
+      switch (this.formHelperConfig.countryElement.value) {
+        case this.formHelperConfig.nz.countryValue:
+          this._setActiveCountry("nz");
+
+          if (!preserveValues) {
+            this._clearElementValues("au");
+          }
+
+          break;
+        case this.formHelperConfig.au.countryValue:
+          this._setActiveCountry("au");
+
+          if (!preserveValues) {
+            this._clearElementValues("nz");
+          }
+
+          break;
+        default:
+          this._setActiveCountry("null");
+
+          if (!preserveValues) {
+            this._clearElementValues("au");
+            this._clearElementValues("nz");
+          }
       }
-    }, {
-      key: "_countryChanged",
-      value: function _countryChanged(event, preserveValues) {
-        switch (this.formHelperConfig.countryElement.value) {
-          case this.formHelperConfig.nz.countryValue:
-            this._setActiveCountry("nz");
+    }
+  }, {
+    key: "_clearElementValues",
+    value: function _clearElementValues(countryCode) {
+      for (var elementName in this.formHelperConfig[countryCode].elements) {
+        if (this.formHelperConfig[countryCode].elements.hasOwnProperty(elementName)) {
+          var element = this.formHelperConfig[countryCode].elements[elementName];
 
-            if (!preserveValues) {
-              this._clearElementValues("au");
-            }
-
-            break;
-          case this.formHelperConfig.au.countryValue:
-            this._setActiveCountry("au");
-
-            if (!preserveValues) {
-              this._clearElementValues("nz");
-            }
-
-            break;
-          default:
-            this._setActiveCountry("null");
-
-            if (!preserveValues) {
-              this._clearElementValues("au");
-              this._clearElementValues("nz");
-            }
-        }
-      }
-    }, {
-      key: "_clearElementValues",
-      value: function _clearElementValues(countryCode) {
-        for (var elementName in this.formHelperConfig[countryCode].elements) {
-          if (this.formHelperConfig[countryCode].elements.hasOwnProperty(elementName)) {
-            var element = this.formHelperConfig[countryCode].elements[elementName];
-
-            if (element) {
-              this._setElementValue(element, null, elementName);
-            }
+          if (element) {
+            this._setElementValue(element, null, elementName);
           }
         }
       }
-    }, {
-      key: "_setActiveCountry",
-      value: function _setActiveCountry(countryCode) {
-        this._log("Setting active country " + countryCode);
+    }
+  }, {
+    key: "_setActiveCountry",
+    value: function _setActiveCountry(countryCode) {
+      this._log("Setting active country " + countryCode);
 
-        for (var widgetCountryCode in this.widgets) {
-          this.widgets[widgetCountryCode].disable();
-        }
-
-        this.widgets[countryCode].enable();
+      for (var widgetCountryCode in this.widgets) {
+        this.widgets[widgetCountryCode].disable();
       }
-    }, {
-      key: "_nzAddressSelected",
-      value: function _nzAddressSelected(fullAddress, metaData) {
-        var elements = this.formHelperConfig.nz.elements;
-        var selected = new AddressFinder.NZSelectedAddress(fullAddress, metaData);
 
-        if (elements.address_line_1_and_2) {
-          this._setElementValue(elements.address_line_1_and_2, selected.address_line_1_and_2(), "address_line_1_and_2");
-        } else {
-          this._setElementValue(elements.address_line_1, selected.address_line_1(), "address_line_1");
-          this._setElementValue(elements.address_line_2, selected.address_line_2(), "address_line_2");
-        }
+      this.widgets[countryCode].enable();
+    }
+  }, {
+    key: "_nzAddressSelected",
+    value: function _nzAddressSelected(fullAddress, metaData) {
+      var elements = this.formHelperConfig.nz.elements;
+      var selected = new AddressFinder.NZSelectedAddress(fullAddress, metaData);
 
-        this._setElementValue(elements.suburb, selected.suburb(), "suburb");
-        this._setElementValue(elements.city, selected.city(), "city");
-        this._setElementValue(elements.postcode, selected.postcode(), "postcode");
-
-        if (this.formHelperConfig.nz.regionMappings) {
-          var translatedRegionValue = this.formHelperConfig.nz.regionMappings[metaData.region];
-          this._setElementValue(elements.region, translatedRegionValue, "region");
-        } else {
-          this._setElementValue(elements.region, metaData.region, "region");
-        }
+      if (elements.address_line_1_and_2) {
+        this._setElementValue(elements.address_line_1_and_2, selected.address_line_1_and_2(), "address_line_1_and_2");
+      } else {
+        this._setElementValue(elements.address_line_1, selected.address_line_1(), "address_line_1");
+        this._setElementValue(elements.address_line_2, selected.address_line_2(), "address_line_2");
       }
-    }, {
-      key: "_auAddressSelected",
-      value: function _auAddressSelected(fullAddress, metaData) {
-        var elements = this.formHelperConfig.au.elements;
 
-        if (elements.address_line_1_and_2) {
-          var combined = [metaData.address_line_1, metaData.address_line_2].filter(function (a) {
-            return a != null;
-          }).join(", ");
+      this._setElementValue(elements.suburb, selected.suburb(), "suburb");
+      this._setElementValue(elements.city, selected.city(), "city");
+      this._setElementValue(elements.postcode, selected.postcode(), "postcode");
 
-          this._setElementValue(elements.address_line_1_and_2, combined, "address_line_1_and_2");
-        } else {
-          this._setElementValue(elements.address_line_1, metaData.address_line_1, "address_line_1");
-          this._setElementValue(elements.address_line_2, metaData.address_line_2, "address_line_2");
-        }
-
-        this._setElementValue(elements.locality_name, metaData.locality_name, "suburb");
-        this._setElementValue(elements.postcode, metaData.postcode, "postcode");
-
-        if (this.formHelperConfig.au.stateMappings) {
-          var translatedStateValue = this.formHelperConfig.au.stateMappings[metaData.state_territory];
-          this._setElementValue(elements.state_territory, translatedStateValue, "state_territory");
-        } else {
-          this._setElementValue(elements.state_territory, metaData.state_territory, "state_territory");
-        }
+      if (this.formHelperConfig.nz.regionMappings) {
+        var translatedRegionValue = this.formHelperConfig.nz.regionMappings[metaData.region];
+        this._setElementValue(elements.region, translatedRegionValue, "region");
+      } else {
+        this._setElementValue(elements.region, metaData.region, "region");
       }
-    }, {
-      key: "_setElementValue",
-      value: function _setElementValue(element, value, elementName) {
-        if (element) {
-          element.value = value;
+    }
+  }, {
+    key: "_auAddressSelected",
+    value: function _auAddressSelected(fullAddress, metaData) {
+      var elements = this.formHelperConfig.au.elements;
 
-          var event = document.createEvent('HTMLEvents');
-          event.initEvent('change', true, false);
-          element.dispatchEvent(event);
+      if (elements.address_line_1_and_2) {
+        var combined = [metaData.address_line_1, metaData.address_line_2].filter(function (a) {
+          return a != null;
+        }).join(", ");
 
-          var options = element.options;
-          if (options) {
-            for (var i = 0; i < options.length; i++) {
-              if (element.options[i].value == value) {
-                element.options[i].dispatchEvent(event);
-                break;
-              }
+        this._setElementValue(elements.address_line_1_and_2, combined, "address_line_1_and_2");
+      } else {
+        this._setElementValue(elements.address_line_1, metaData.address_line_1, "address_line_1");
+        this._setElementValue(elements.address_line_2, metaData.address_line_2, "address_line_2");
+      }
+
+      this._setElementValue(elements.locality_name, metaData.locality_name, "suburb");
+      this._setElementValue(elements.postcode, metaData.postcode, "postcode");
+
+      if (this.formHelperConfig.au.stateMappings) {
+        var translatedStateValue = this.formHelperConfig.au.stateMappings[metaData.state_territory];
+        this._setElementValue(elements.state_territory, translatedStateValue, "state_territory");
+      } else {
+        this._setElementValue(elements.state_territory, metaData.state_territory, "state_territory");
+      }
+    }
+  }, {
+    key: "_setElementValue",
+    value: function _setElementValue(element, value, elementName) {
+      if (element) {
+        element.value = value;
+
+        var event = document.createEvent('HTMLEvents');
+        event.initEvent('change', true, false);
+        element.dispatchEvent(event);
+
+        var options = element.options;
+        if (options) {
+          for (var i = 0; i < options.length; i++) {
+            if (element.options[i].value == value) {
+              element.options[i].dispatchEvent(event);
+              break;
             }
           }
-
-          return;
         }
 
-        var errorMessage = 'AddressFinder Error: ' + 'Attempted to update value for element that could not be found.\n' + '\nElement: ' + elementName + '\nValue: ' + value;
-
-        if (w.console) {
-          console.warn(errorMessage);
-        }
+        return;
       }
-    }, {
-      key: "_log",
-      value: function _log(message) {
-        if (this.widgetConfig.debug && w.console) {
-          console.log("FormHelper for layout " + this.formHelperConfig.label + ": " + message);
-        }
-      }
-    }]);
 
-    return _class;
-  }();
-})(document, window);
+      var errorMessage = 'AddressFinder Error: ' + 'Attempted to update value for element that could not be found.\n' + '\nElement: ' + elementName + '\nValue: ' + value;
+
+      if (window.console) {
+        console.warn(errorMessage);
+      }
+    }
+  }, {
+    key: "_log",
+    value: function _log(message) {
+      if (this.widgetConfig.debug && window.console) {
+        console.log("FormHelper for layout " + this.formHelperConfig.label + ": " + message);
+      }
+    }
+  }]);
+
+  return FormHelper;
+}();
+
+exports.default = FormHelper;
 
 /***/ })
 /******/ ]);
