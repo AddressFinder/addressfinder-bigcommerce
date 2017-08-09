@@ -22,7 +22,7 @@ BigCommerce stores.
 
 #### Compatibility
 
-Addressfinder-BigCommerce requires IE9 or higher, Chrome, Safari, or Firefox.
+Addressfinder-BigCommerce requires IE10, IE11, Edge, Chrome, Safari, or Firefox.
 
 ## Installation
 
