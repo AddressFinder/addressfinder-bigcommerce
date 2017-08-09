@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 7);
+/******/ 	return __webpack_require__(__webpack_require__.s = 9);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -117,7 +117,7 @@ function assertDefined(it){
   return it;
 }
 
-var $ = module.exports = __webpack_require__(12)({
+var $ = module.exports = __webpack_require__(14)({
   g: global,
   core: core,
   html: global.document && document.documentElement,
@@ -196,13 +196,60 @@ module.exports = uid;
 /* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
+var $          = __webpack_require__(0)
+  , global     = $.g
+  , core       = $.core
+  , isFunction = $.isFunction;
+function ctx(fn, that){
+  return function(){
+    return fn.apply(that, arguments);
+  };
+}
+global.core = core;
+// type bitmap
+$def.F = 1;  // forced
+$def.G = 2;  // global
+$def.S = 4;  // static
+$def.P = 8;  // proto
+$def.B = 16; // bind
+$def.W = 32; // wrap
+function $def(type, name, source){
+  var key, own, out, exp
+    , isGlobal = type & $def.G
+    , target   = isGlobal ? global : type & $def.S
+        ? global[name] : (global[name] || {}).prototype
+    , exports  = isGlobal ? core : core[name] || (core[name] = {});
+  if(isGlobal)source = name;
+  for(key in source){
+    // contains in native
+    own = !(type & $def.F) && target && key in target;
+    // export native or passed
+    out = (own ? target : source)[key];
+    // bind timers to global for call from export context
+    if(type & $def.B && own)exp = ctx(out, global);
+    else exp = type & $def.P && isFunction(out) ? ctx(Function.call, out) : out;
+    // extend global
+    if(target && !own){
+      if(isGlobal)target[key] = out;
+      else delete target[key] && $.hide(target, key, out);
+    }
+    // export
+    if(exports[key] != out)$.hide(exports, key, exp);
+  }
+}
+module.exports = $def;
+
+/***/ }),
+/* 4 */
+/***/ (function(module, exports, __webpack_require__) {
+
 "use strict";
 
 var $                 = __webpack_require__(0)
-  , ctx               = __webpack_require__(17)
-  , cof               = __webpack_require__(4)
-  , $def              = __webpack_require__(5)
-  , assertObject      = __webpack_require__(6).obj
+  , ctx               = __webpack_require__(7)
+  , cof               = __webpack_require__(6)
+  , $def              = __webpack_require__(3)
+  , assertObject      = __webpack_require__(8).obj
   , SYMBOL_ITERATOR   = __webpack_require__(1)('iterator')
   , FF_ITERATOR       = '@@iterator'
   , Iterators         = {}
@@ -312,7 +359,19 @@ var $iter = module.exports = {
 };
 
 /***/ }),
-/* 4 */
+/* 5 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// 22.1.3.31 Array.prototype[@@unscopables]
+var $           = __webpack_require__(0)
+  , UNSCOPABLES = __webpack_require__(1)('unscopables');
+if($.FW && !(UNSCOPABLES in []))$.hide(Array.prototype, UNSCOPABLES, {});
+module.exports = function(key){
+  if($.FW)[][UNSCOPABLES][key] = true;
+};
+
+/***/ }),
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var $        = __webpack_require__(0)
@@ -332,54 +391,31 @@ cof.set = function(it, tag, stat){
 module.exports = cof;
 
 /***/ }),
-/* 5 */
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var $          = __webpack_require__(0)
-  , global     = $.g
-  , core       = $.core
-  , isFunction = $.isFunction;
-function ctx(fn, that){
-  return function(){
-    return fn.apply(that, arguments);
-  };
-}
-global.core = core;
-// type bitmap
-$def.F = 1;  // forced
-$def.G = 2;  // global
-$def.S = 4;  // static
-$def.P = 8;  // proto
-$def.B = 16; // bind
-$def.W = 32; // wrap
-function $def(type, name, source){
-  var key, own, out, exp
-    , isGlobal = type & $def.G
-    , target   = isGlobal ? global : type & $def.S
-        ? global[name] : (global[name] || {}).prototype
-    , exports  = isGlobal ? core : core[name] || (core[name] = {});
-  if(isGlobal)source = name;
-  for(key in source){
-    // contains in native
-    own = !(type & $def.F) && target && key in target;
-    // export native or passed
-    out = (own ? target : source)[key];
-    // bind timers to global for call from export context
-    if(type & $def.B && own)exp = ctx(out, global);
-    else exp = type & $def.P && isFunction(out) ? ctx(Function.call, out) : out;
-    // extend global
-    if(target && !own){
-      if(isGlobal)target[key] = out;
-      else delete target[key] && $.hide(target, key, out);
-    }
-    // export
-    if(exports[key] != out)$.hide(exports, key, exp);
-  }
-}
-module.exports = $def;
+// Optional / simple context binding
+var assertFunction = __webpack_require__(8).fn;
+module.exports = function(fn, that, length){
+  assertFunction(fn);
+  if(~length && that === undefined)return fn;
+  switch(length){
+    case 1: return function(a){
+      return fn.call(that, a);
+    };
+    case 2: return function(a, b){
+      return fn.call(that, a, b);
+    };
+    case 3: return function(a, b, c){
+      return fn.call(that, a, b, c);
+    };
+  } return function(/* ...args */){
+      return fn.apply(that, arguments);
+    };
+};
 
 /***/ }),
-/* 6 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var $ = __webpack_require__(0);
@@ -402,20 +438,20 @@ assert.inst = function(it, Constructor, name){
 module.exports = assert;
 
 /***/ }),
-/* 7 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(8);
+module.exports = __webpack_require__(10);
 
 
 /***/ }),
-/* 8 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var _bigcommerce_plugin = __webpack_require__(9);
+var _bigcommerce_plugin = __webpack_require__(11);
 
 var _bigcommerce_plugin2 = _interopRequireDefault(_bigcommerce_plugin);
 
@@ -445,7 +481,7 @@ s.onload = _initPlugin;
 document.body.appendChild(s);
 
 /***/ }),
-/* 9 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -458,11 +494,15 @@ Object.defineProperty(exports, "__esModule", {
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); // see https://github.com/zloirock/core-js
 
 
-__webpack_require__(10);
+__webpack_require__(12);
 
-__webpack_require__(14);
+__webpack_require__(16);
 
-var _form_helper = __webpack_require__(21);
+__webpack_require__(21);
+
+__webpack_require__(24);
+
+var _form_helper = __webpack_require__(27);
 
 var _form_helper2 = _interopRequireDefault(_form_helper);
 
@@ -707,50 +747,61 @@ var BigCommercePlugin = function () {
   }, {
     key: "resetAndReloadFormHelpers",
     value: function resetAndReloadFormHelpers() {
-      var activeFormHelpers = [];
+      var inactiveFormHelpers = this._inactiveFormHelpers();
 
-      for (var i = 0; i < this.formHelpers.length; i++) {
-        var formHelper = this.formHelpers[i];
+      var _iteratorNormalCompletion2 = true;
+      var _didIteratorError2 = false;
+      var _iteratorError2 = undefined;
 
-        // check that the formHelper is still intact
-        if (formHelper.areAllElementsStillInTheDOM()) {
-          this.log("formHelper " + formHelper.label + " is still active");
-          activeFormHelpers.push(formHelper);
-        } else {
-          this.log("Destroying formHelper " + formHelper.label);
+      try {
+        for (var _iterator2 = inactiveFormHelpers[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+          var formHelper = _step2.value;
+
           formHelper.destroy();
+        }
+      } catch (err) {
+        _didIteratorError2 = true;
+        _iteratorError2 = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion2 && _iterator2.return) {
+            _iterator2.return();
+          }
+        } finally {
+          if (_didIteratorError2) {
+            throw _iteratorError2;
+          }
         }
       }
 
-      this.formHelpers = activeFormHelpers;
+      var activeFormHelpers = function activeFormHelpers(formHelper) {
+        return !inactiveFormHelpers.includes(formHelper);
+      };
+      this.formHelpers = this.formHelpers.filter(activeFormHelpers);
 
       this.identifyAdditionalLayouts();
     }
   }, {
+    key: "_inactiveFormHelpers",
+    value: function _inactiveFormHelpers() {
+      var isInactive = function isInactive(formHelper) {
+        return !formHelper.areAllElementsStillInTheDOM();
+      };
+      return this.formHelpers.filter(isInactive);
+    }
+  }, {
     key: "identifyAdditionalLayouts",
     value: function identifyAdditionalLayouts() {
-      var layoutsToInitialise = [];
+      var _this = this;
 
-      for (var i = 0; i < this.layoutConfigurations.length; i++) {
-        var layoutConfig = this.layoutConfigurations[i];
-        var identifierToSearchFor = layoutConfig.layoutIdentifier;
+      var layoutIdentifierExists = function layoutIdentifierExists(config) {
+        return document.getElementById(config.layoutIdentifier);
+      };
+      var isNewFormHelper = function isNewFormHelper(config) {
+        return !_this.anyFormHelpersWithLayoutIdentifier(config.layoutIdentifier);
+      };
 
-        // skip if we can't find that element
-        if (!document.getElementById(identifierToSearchFor)) {
-          continue;
-        }
-
-        // Only initialise if the formHelper is new
-        if (!this.anyFormHelpersWithLayoutIdentifier(identifierToSearchFor)) {
-          this.log("Identified additional layout named: " + layoutConfig.label);
-          layoutsToInitialise.push(layoutConfig);
-        }
-      }
-
-      // initialise all the new formHelpers
-      for (var i = 0; i < layoutsToInitialise.length; i++) {
-        this.initialiseFormHelper(layoutsToInitialise[i]);
-      }
+      this.layoutConfigurations.filter(layoutIdentifierExists).filter(isNewFormHelper).forEach(this.initialiseFormHelper.bind(this));
     }
 
     // search active formHelpers for this layoutIdentifier
@@ -758,11 +809,30 @@ var BigCommercePlugin = function () {
   }, {
     key: "anyFormHelpersWithLayoutIdentifier",
     value: function anyFormHelpersWithLayoutIdentifier(identifierToSearchFor) {
-      for (var j = 0; j < this.formHelpers.length; j++) {
-        var activeFormHelper = this.formHelpers[j];
+      var _iteratorNormalCompletion3 = true;
+      var _didIteratorError3 = false;
+      var _iteratorError3 = undefined;
 
-        if (activeFormHelper.layoutIdentifier == identifierToSearchFor) {
-          return true;
+      try {
+        for (var _iterator3 = this.formHelpers[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+          var activeFormHelper = _step3.value;
+
+          if (activeFormHelper.layoutIdentifier == identifierToSearchFor) {
+            return true;
+          }
+        }
+      } catch (err) {
+        _didIteratorError3 = true;
+        _iteratorError3 = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion3 && _iterator3.return) {
+            _iterator3.return();
+          }
+        } finally {
+          if (_didIteratorError3) {
+            throw _iteratorError3;
+          }
         }
       }
 
@@ -771,18 +841,11 @@ var BigCommercePlugin = function () {
   }, {
     key: "mutationHandler",
     value: function mutationHandler(mutations) {
-      // if all the mutations are "af_list" then do nothing extra
-      var allMutationsAreFromAddressFinder = true;
+      var nonAddressFinderChange = function nonAddressFinderChange(mutation) {
+        !mutation.target.classList.contains("af_list");
+      };
 
-      for (var i = 0; i < mutations.length; i++) {
-        if (!mutations[i].target.classList.contains("af_list")) {
-          allMutationsAreFromAddressFinder = false;
-          break;
-        }
-      }
-
-      if (allMutationsAreFromAddressFinder) {
-        // no need to continue, as they are all from us
+      if (mutations.find(nonAddressFinderChange)) {
         return;
       }
 
@@ -823,24 +886,24 @@ var BigCommercePlugin = function () {
 exports.default = BigCommercePlugin;
 
 /***/ }),
-/* 10 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(11);
+__webpack_require__(13);
 module.exports = __webpack_require__(0).core.Symbol;
 
 /***/ }),
-/* 11 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 // ECMAScript 6 symbols shim
 var $        = __webpack_require__(0)
-  , setTag   = __webpack_require__(4).set
+  , setTag   = __webpack_require__(6).set
   , uid      = __webpack_require__(2)
-  , $def     = __webpack_require__(5)
-  , keyOf    = __webpack_require__(13)
+  , $def     = __webpack_require__(3)
+  , keyOf    = __webpack_require__(15)
   , has      = $.has
   , hide     = $.hide
   , getNames = $.getNames
@@ -937,7 +1000,7 @@ setTag(Math, 'Math', true);
 setTag($.g.JSON, 'JSON', true);
 
 /***/ }),
-/* 12 */
+/* 14 */
 /***/ (function(module, exports) {
 
 module.exports = function($){
@@ -947,7 +1010,7 @@ module.exports = function($){
 };
 
 /***/ }),
-/* 13 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var $ = __webpack_require__(0);
@@ -961,21 +1024,21 @@ module.exports = function(object, el){
 };
 
 /***/ }),
-/* 14 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(15);
-__webpack_require__(18);
+__webpack_require__(17);
+__webpack_require__(19);
 module.exports = __webpack_require__(1)('iterator');
 
 /***/ }),
-/* 15 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var set   = __webpack_require__(0).set
-  , at    = __webpack_require__(16)(true)
+  , at    = __webpack_require__(18)(true)
   , ITER  = __webpack_require__(2).safe('iter')
-  , $iter = __webpack_require__(3)
+  , $iter = __webpack_require__(4)
   , step  = $iter.step;
 
 // 21.1.3.27 String.prototype[@@iterator]()
@@ -994,7 +1057,7 @@ $iter.std(String, 'String', function(iterated){
 });
 
 /***/ }),
-/* 16 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1018,36 +1081,12 @@ module.exports = function(TO_STRING){
 };
 
 /***/ }),
-/* 17 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
-// Optional / simple context binding
-var assertFunction = __webpack_require__(6).fn;
-module.exports = function(fn, that, length){
-  assertFunction(fn);
-  if(~length && that === undefined)return fn;
-  switch(length){
-    case 1: return function(a){
-      return fn.call(that, a);
-    };
-    case 2: return function(a, b){
-      return fn.call(that, a, b);
-    };
-    case 3: return function(a, b, c){
-      return fn.call(that, a, b, c);
-    };
-  } return function(/* ...args */){
-      return fn.apply(that, arguments);
-    };
-};
-
-/***/ }),
-/* 18 */
-/***/ (function(module, exports, __webpack_require__) {
-
-__webpack_require__(19);
+__webpack_require__(20);
 var $           = __webpack_require__(0)
-  , Iterators   = __webpack_require__(3).Iterators
+  , Iterators   = __webpack_require__(4).Iterators
   , ITERATOR    = __webpack_require__(1)('iterator')
   , ArrayValues = Iterators.Array
   , NodeList    = $.g.NodeList;
@@ -1057,13 +1096,13 @@ if($.FW && NodeList && !(ITERATOR in NodeList.prototype)){
 Iterators.NodeList = ArrayValues;
 
 /***/ }),
-/* 19 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var $          = __webpack_require__(0)
-  , setUnscope = __webpack_require__(20)
+  , setUnscope = __webpack_require__(5)
   , ITER       = __webpack_require__(2).safe('iter')
-  , $iter      = __webpack_require__(3)
+  , $iter      = __webpack_require__(4)
   , step       = $iter.step
   , Iterators  = $iter.Iterators;
 
@@ -1096,19 +1135,114 @@ setUnscope('values');
 setUnscope('entries');
 
 /***/ }),
-/* 20 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
-// 22.1.3.31 Array.prototype[@@unscopables]
-var $           = __webpack_require__(0)
-  , UNSCOPABLES = __webpack_require__(1)('unscopables');
-if($.FW && !(UNSCOPABLES in []))$.hide(Array.prototype, UNSCOPABLES, {});
-module.exports = function(key){
-  if($.FW)[][UNSCOPABLES][key] = true;
+__webpack_require__(22);
+module.exports = __webpack_require__(0).core.Array.find;
+
+/***/ }),
+/* 22 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var $def = __webpack_require__(3);
+$def($def.P, 'Array', {
+  // 22.1.3.8 Array.prototype.find(predicate, thisArg = undefined)
+  find: __webpack_require__(23)(5)
+});
+__webpack_require__(5)('find');
+
+/***/ }),
+/* 23 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+// 0 -> Array#forEach
+// 1 -> Array#map
+// 2 -> Array#filter
+// 3 -> Array#some
+// 4 -> Array#every
+// 5 -> Array#find
+// 6 -> Array#findIndex
+var $   = __webpack_require__(0)
+  , ctx = __webpack_require__(7);
+module.exports = function(TYPE){
+  var IS_MAP        = TYPE == 1
+    , IS_FILTER     = TYPE == 2
+    , IS_SOME       = TYPE == 3
+    , IS_EVERY      = TYPE == 4
+    , IS_FIND_INDEX = TYPE == 6
+    , NO_HOLES      = TYPE == 5 || IS_FIND_INDEX;
+  return function(callbackfn/*, that = undefined */){
+    var O      = Object($.assertDefined(this))
+      , self   = $.ES5Object(O)
+      , f      = ctx(callbackfn, arguments[1], 3)
+      , length = $.toLength(self.length)
+      , index  = 0
+      , result = IS_MAP ? Array(length) : IS_FILTER ? [] : undefined
+      , val, res;
+    for(;length > index; index++)if(NO_HOLES || index in self){
+      val = self[index];
+      res = f(val, index, O);
+      if(TYPE){
+        if(IS_MAP)result[index] = res;            // map
+        else if(res)switch(TYPE){
+          case 3: return true;                    // some
+          case 5: return val;                     // find
+          case 6: return index;                   // findIndex
+          case 2: result.push(val);               // filter
+        } else if(IS_EVERY)return false;          // every
+      }
+    }
+    return IS_FIND_INDEX ? -1 : IS_SOME || IS_EVERY ? IS_EVERY : result;
+  };
 };
 
 /***/ }),
-/* 21 */
+/* 24 */
+/***/ (function(module, exports, __webpack_require__) {
+
+__webpack_require__(25);
+module.exports = __webpack_require__(0).core.Array.includes;
+
+/***/ }),
+/* 25 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// https://github.com/domenic/Array.prototype.includes
+var $def = __webpack_require__(3);
+$def($def.P, 'Array', {
+  includes: __webpack_require__(26)(true)
+});
+__webpack_require__(5)('includes');
+
+/***/ }),
+/* 26 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+// false -> Array#indexOf
+// true  -> Array#includes
+var $ = __webpack_require__(0);
+module.exports = function(IS_INCLUDES){
+  return function(el /*, fromIndex = 0 */){
+    var O      = $.toObject(this)
+      , length = $.toLength(O.length)
+      , index  = $.toIndex(arguments[1], length)
+      , value;
+    if(IS_INCLUDES && el != el)while(length > index){
+      value = O[index++];
+      if(value != value)return true;
+    } else for(;length > index; index++)if(IS_INCLUDES || index in O){
+      if(O[index] === el)return IS_INCLUDES || index;
+    } return !IS_INCLUDES && -1;
+  };
+};
+
+/***/ }),
+/* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";

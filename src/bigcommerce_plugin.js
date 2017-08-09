@@ -1,5 +1,7 @@
 import "core-js/fn/symbol" // see https://github.com/zloirock/core-js
 import "core-js/fn/symbol/iterator"
+import "core-js/fn/array/find"
+import "core-js/fn/array/includes"
 import FormHelper from "./form_helper"
 
 export default class BigCommercePlugin {
@@ -218,55 +220,35 @@ export default class BigCommercePlugin {
   }
 
   resetAndReloadFormHelpers(){
-    let activeFormHelpers = []
+    const inactiveFormHelpers = this._inactiveFormHelpers()
 
-    for (var i = 0; i < this.formHelpers.length; i++) {
-      const formHelper = this.formHelpers[i]
-
-      // check that the formHelper is still intact
-      if (formHelper.areAllElementsStillInTheDOM()) {
-        this.log(`formHelper ${formHelper.label} is still active`)
-        activeFormHelpers.push(formHelper)
-      }
-      else {
-        this.log(`Destroying formHelper ${formHelper.label}`)
-        formHelper.destroy()
-      }
+    for (const formHelper of inactiveFormHelpers) {
+      formHelper.destroy()
     }
 
-    this.formHelpers = activeFormHelpers
+    const activeFormHelpers = formHelper => !inactiveFormHelpers.includes(formHelper)
+    this.formHelpers = this.formHelpers.filter(activeFormHelpers)
 
     this.identifyAdditionalLayouts()
   }
 
+  _inactiveFormHelpers(){
+    const isInactive = formHelper => !formHelper.areAllElementsStillInTheDOM()
+    return this.formHelpers.filter(isInactive)
+  }
+
   identifyAdditionalLayouts(){
-    let layoutsToInitialise = []
+    const layoutIdentifierExists = config => document.getElementById(config.layoutIdentifier)
+    const isNewFormHelper = config => !this.anyFormHelpersWithLayoutIdentifier(config.layoutIdentifier)
 
-    for (var i = 0; i < this.layoutConfigurations.length; i++) {
-      let layoutConfig = this.layoutConfigurations[i]
-      let identifierToSearchFor = layoutConfig.layoutIdentifier
-
-      // skip if we can't find that element
-      if (!document.getElementById(identifierToSearchFor)) { continue }
-
-      // Only initialise if the formHelper is new
-      if (!this.anyFormHelpersWithLayoutIdentifier(identifierToSearchFor)) {
-        this.log(`Identified additional layout named: ${layoutConfig.label}`)
-        layoutsToInitialise.push(layoutConfig)
-      }
-    }
-
-    // initialise all the new formHelpers
-    for (var i = 0; i < layoutsToInitialise.length; i++) {
-      this.initialiseFormHelper(layoutsToInitialise[i])
-    }
+    this.layoutConfigurations.filter(layoutIdentifierExists)
+                             .filter(isNewFormHelper)
+                             .forEach(this.initialiseFormHelper.bind(this))
   }
 
   // search active formHelpers for this layoutIdentifier
   anyFormHelpersWithLayoutIdentifier(identifierToSearchFor){
-    for (var j = 0; j < this.formHelpers.length; j++) {
-      let activeFormHelper = this.formHelpers[j]
-
+    for (const activeFormHelper of this.formHelpers) {
       if (activeFormHelper.layoutIdentifier == identifierToSearchFor) {
         return true
       }
@@ -276,18 +258,11 @@ export default class BigCommercePlugin {
   }
 
   mutationHandler(mutations){
-    // if all the mutations are "af_list" then do nothing extra
-    let allMutationsAreFromAddressFinder = true
-
-    for (var i = 0; i < mutations.length; i++) {
-      if (!mutations[i].target.classList.contains("af_list")) {
-        allMutationsAreFromAddressFinder = false
-        break
-      }
+    const nonAddressFinderChange = mutation => {
+      !mutation.target.classList.contains("af_list")
     }
 
-    if (allMutationsAreFromAddressFinder) {
-      // no need to continue, as they are all from us
+    if (mutations.find(nonAddressFinderChange)) {
       return
     }
 
