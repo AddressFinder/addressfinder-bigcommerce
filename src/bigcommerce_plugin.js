@@ -273,6 +273,10 @@ export default class BigCommercePlugin {
     this._mutationTimeout = setTimeout(this.resetAndReloadFormHelpers.bind(this), 750)
   }
 
+  domAttrModifiedHandler(event){
+    this.mutationHandler([event])
+  }
+
   monitorMutations(){
     if (window.MutationObserver) {
       /* for modern browsers */
@@ -281,7 +285,7 @@ export default class BigCommercePlugin {
 
     } else if (window.addEventListener) {
         /* for IE 9 and 10 */
-      document.body.addEventListener('DOMAttrModified', this.mutationHandler.bind(this), false);
+      document.body.addEventListener('DOMAttrModified', this.domAttrModifiedHandler.bind(this), false);
     } else {
         if (window.console) {
           console.info('AddressFinder Error - please use a more modern browser')

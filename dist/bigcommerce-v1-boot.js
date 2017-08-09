@@ -856,6 +856,11 @@ var BigCommercePlugin = function () {
       this._mutationTimeout = setTimeout(this.resetAndReloadFormHelpers.bind(this), 750);
     }
   }, {
+    key: "domAttrModifiedHandler",
+    value: function domAttrModifiedHandler(event) {
+      this.mutationHandler([event]);
+    }
+  }, {
     key: "monitorMutations",
     value: function monitorMutations() {
       if (window.MutationObserver) {
@@ -864,7 +869,7 @@ var BigCommercePlugin = function () {
         observer.observe(document.body, { childList: true, subtree: true });
       } else if (window.addEventListener) {
         /* for IE 9 and 10 */
-        document.body.addEventListener('DOMAttrModified', this.mutationHandler.bind(this), false);
+        document.body.addEventListener('DOMAttrModified', this.domAttrModifiedHandler.bind(this), false);
       } else {
         if (window.console) {
           console.info('AddressFinder Error - please use a more modern browser');
