@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 9);
+/******/ 	return __webpack_require__(__webpack_require__.s = 13);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -117,7 +117,7 @@ function assertDefined(it){
   return it;
 }
 
-var $ = module.exports = __webpack_require__(14)({
+var $ = module.exports = __webpack_require__(17)({
   g: global,
   core: core,
   html: global.document && document.documentElement,
@@ -246,10 +246,10 @@ module.exports = $def;
 "use strict";
 
 var $                 = __webpack_require__(0)
-  , ctx               = __webpack_require__(7)
-  , cof               = __webpack_require__(6)
+  , ctx               = __webpack_require__(9)
+  , cof               = __webpack_require__(7)
   , $def              = __webpack_require__(3)
-  , assertObject      = __webpack_require__(8).obj
+  , assertObject      = __webpack_require__(10).obj
   , SYMBOL_ITERATOR   = __webpack_require__(1)('iterator')
   , FF_ITERATOR       = '@@iterator'
   , Iterators         = {}
@@ -374,6 +374,13 @@ module.exports = function(key){
 /* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
+__webpack_require__(16);
+module.exports = __webpack_require__(0).core.Symbol;
+
+/***/ }),
+/* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
 var $        = __webpack_require__(0)
   , TAG      = __webpack_require__(1)('toStringTag')
   , toString = {}.toString;
@@ -391,11 +398,19 @@ cof.set = function(it, tag, stat){
 module.exports = cof;
 
 /***/ }),
-/* 7 */
+/* 8 */
+/***/ (function(module, exports, __webpack_require__) {
+
+__webpack_require__(19);
+__webpack_require__(21);
+module.exports = __webpack_require__(1)('iterator');
+
+/***/ }),
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // Optional / simple context binding
-var assertFunction = __webpack_require__(8).fn;
+var assertFunction = __webpack_require__(10).fn;
 module.exports = function(fn, that, length){
   assertFunction(fn);
   if(~length && that === undefined)return fn;
@@ -415,7 +430,7 @@ module.exports = function(fn, that, length){
 };
 
 /***/ }),
-/* 8 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var $ = __webpack_require__(0);
@@ -438,20 +453,34 @@ assert.inst = function(it, Constructor, name){
 module.exports = assert;
 
 /***/ }),
-/* 9 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(10);
+__webpack_require__(23);
+module.exports = __webpack_require__(0).core.Array.find;
+
+/***/ }),
+/* 12 */
+/***/ (function(module, exports, __webpack_require__) {
+
+__webpack_require__(25);
+module.exports = __webpack_require__(0).core.Array.includes;
+
+/***/ }),
+/* 13 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__(14);
 
 
 /***/ }),
-/* 10 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var _bigcommerce_plugin = __webpack_require__(11);
+var _bigcommerce_plugin = __webpack_require__(15);
 
 var _bigcommerce_plugin2 = _interopRequireDefault(_bigcommerce_plugin);
 
@@ -481,7 +510,7 @@ s.onload = _initPlugin;
 document.body.appendChild(s);
 
 /***/ }),
-/* 11 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -494,13 +523,13 @@ Object.defineProperty(exports, "__esModule", {
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); // see https://github.com/zloirock/core-js
 
 
+__webpack_require__(6);
+
+__webpack_require__(8);
+
+__webpack_require__(11);
+
 __webpack_require__(12);
-
-__webpack_require__(16);
-
-__webpack_require__(21);
-
-__webpack_require__(24);
 
 var _form_helper = __webpack_require__(27);
 
@@ -891,24 +920,17 @@ var BigCommercePlugin = function () {
 exports.default = BigCommercePlugin;
 
 /***/ }),
-/* 12 */
-/***/ (function(module, exports, __webpack_require__) {
-
-__webpack_require__(13);
-module.exports = __webpack_require__(0).core.Symbol;
-
-/***/ }),
-/* 13 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 // ECMAScript 6 symbols shim
 var $        = __webpack_require__(0)
-  , setTag   = __webpack_require__(6).set
+  , setTag   = __webpack_require__(7).set
   , uid      = __webpack_require__(2)
   , $def     = __webpack_require__(3)
-  , keyOf    = __webpack_require__(15)
+  , keyOf    = __webpack_require__(18)
   , has      = $.has
   , hide     = $.hide
   , getNames = $.getNames
@@ -1005,7 +1027,7 @@ setTag(Math, 'Math', true);
 setTag($.g.JSON, 'JSON', true);
 
 /***/ }),
-/* 14 */
+/* 17 */
 /***/ (function(module, exports) {
 
 module.exports = function($){
@@ -1015,7 +1037,7 @@ module.exports = function($){
 };
 
 /***/ }),
-/* 15 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var $ = __webpack_require__(0);
@@ -1029,19 +1051,11 @@ module.exports = function(object, el){
 };
 
 /***/ }),
-/* 16 */
-/***/ (function(module, exports, __webpack_require__) {
-
-__webpack_require__(17);
-__webpack_require__(19);
-module.exports = __webpack_require__(1)('iterator');
-
-/***/ }),
-/* 17 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var set   = __webpack_require__(0).set
-  , at    = __webpack_require__(18)(true)
+  , at    = __webpack_require__(20)(true)
   , ITER  = __webpack_require__(2).safe('iter')
   , $iter = __webpack_require__(4)
   , step  = $iter.step;
@@ -1062,7 +1076,7 @@ $iter.std(String, 'String', function(iterated){
 });
 
 /***/ }),
-/* 18 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1086,10 +1100,10 @@ module.exports = function(TO_STRING){
 };
 
 /***/ }),
-/* 19 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(20);
+__webpack_require__(22);
 var $           = __webpack_require__(0)
   , Iterators   = __webpack_require__(4).Iterators
   , ITERATOR    = __webpack_require__(1)('iterator')
@@ -1101,7 +1115,7 @@ if($.FW && NodeList && !(ITERATOR in NodeList.prototype)){
 Iterators.NodeList = ArrayValues;
 
 /***/ }),
-/* 20 */
+/* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var $          = __webpack_require__(0)
@@ -1140,25 +1154,18 @@ setUnscope('values');
 setUnscope('entries');
 
 /***/ }),
-/* 21 */
-/***/ (function(module, exports, __webpack_require__) {
-
-__webpack_require__(22);
-module.exports = __webpack_require__(0).core.Array.find;
-
-/***/ }),
-/* 22 */
+/* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var $def = __webpack_require__(3);
 $def($def.P, 'Array', {
   // 22.1.3.8 Array.prototype.find(predicate, thisArg = undefined)
-  find: __webpack_require__(23)(5)
+  find: __webpack_require__(24)(5)
 });
 __webpack_require__(5)('find');
 
 /***/ }),
-/* 23 */
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1171,7 +1178,7 @@ __webpack_require__(5)('find');
 // 5 -> Array#find
 // 6 -> Array#findIndex
 var $   = __webpack_require__(0)
-  , ctx = __webpack_require__(7);
+  , ctx = __webpack_require__(9);
 module.exports = function(TYPE){
   var IS_MAP        = TYPE == 1
     , IS_FILTER     = TYPE == 2
@@ -1203,13 +1210,6 @@ module.exports = function(TYPE){
     return IS_FIND_INDEX ? -1 : IS_SOME || IS_EVERY ? IS_EVERY : result;
   };
 };
-
-/***/ }),
-/* 24 */
-/***/ (function(module, exports, __webpack_require__) {
-
-__webpack_require__(25);
-module.exports = __webpack_require__(0).core.Array.includes;
 
 /***/ }),
 /* 25 */
@@ -1257,7 +1257,16 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); // see https://github.com/zloirock/core-js
+
+
+__webpack_require__(6);
+
+__webpack_require__(8);
+
+__webpack_require__(11);
+
+__webpack_require__(12);
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -1345,12 +1354,17 @@ var FormHelper = function () {
     this._bindToForm();
   }
 
-  /**
-   * Shuts down this form_helper by disabling the widget and any callback handlers.
-   */
-
-
   _createClass(FormHelper, [{
+    key: "filter",
+    value: function filter(f, x) {
+      Array.prototype.filter.call(x, f);
+    }
+
+    /**
+     * Shuts down this form_helper by disabling the widget and any callback handlers.
+     */
+
+  }, {
     key: "destroy",
     value: function destroy() {
       for (var widgetCountryCode in this.widgets) {
@@ -1370,7 +1384,11 @@ var FormHelper = function () {
   }, {
     key: "areAllElementsStillInTheDOM",
     value: function areAllElementsStillInTheDOM() {
-      if (!document.body.contains(this.formHelperConfig.countryElement)) {
+      var doesntContainElement = function doesntContainElement(element) {
+        return !document.body.contains(element);
+      };
+
+      if (doesntContainElement(this.formHelperConfig.countryElement)) {
         this._log("Country Element is not in the DOM");
         return false;
       }
@@ -1383,7 +1401,7 @@ var FormHelper = function () {
 
         // check that the config for this country is supplied
         if (this.formHelperConfig[countryCode]) {
-          if (!document.body.contains(this.formHelperConfig[countryCode].searchElement)) {
+          if (doesntContainElement(this.formHelperConfig[countryCode].searchElement)) {
             this._log("Search Element is not in the DOM");
             return false;
           }
@@ -1392,7 +1410,7 @@ var FormHelper = function () {
             if (this.formHelperConfig[countryCode].elements.hasOwnProperty(elementName)) {
               var element = this.formHelperConfig[countryCode].elements[elementName];
 
-              if (element && !document.body.contains(element)) {
+              if (element && doesntContainElement(element)) {
                 this._log("Element " + elementName + " is not in the DOM");
                 return false;
               }
@@ -1457,6 +1475,7 @@ var FormHelper = function () {
   }, {
     key: "_clearElementValues",
     value: function _clearElementValues(countryCode) {
+
       for (var elementName in this.formHelperConfig[countryCode].elements) {
         if (this.formHelperConfig[countryCode].elements.hasOwnProperty(elementName)) {
           var element = this.formHelperConfig[countryCode].elements[elementName];
@@ -1540,15 +1559,12 @@ var FormHelper = function () {
 
         var options = element.options;
         if (options) {
-          for (var i = 0; i < options.length; i++) {
-            if (element.options[i].value == value) {
-              element.options[i].dispatchEvent(event);
-              break;
-            }
-          }
+          var isValue = function isValue(options) {
+            return options.value == value;
+          };
+          var option = this.filter(isValue, options);
+          if (option) element.dispatchEvent(event);
         }
-
-        return;
       }
 
       var errorMessage = 'AddressFinder Error: ' + 'Attempted to update value for element that could not be found.\n' + '\nElement: ' + elementName + '\nValue: ' + value;

@@ -1,3 +1,8 @@
+import "core-js/fn/symbol" // see https://github.com/zloirock/core-js
+import "core-js/fn/symbol/iterator"
+import "core-js/fn/array/find"
+import "core-js/fn/array/includes"
+
 /**
  * Usage:
  *
@@ -80,6 +85,8 @@ export default class FormHelper {
     this._bindToForm()
   }
 
+  filter(f, x) { Array.prototype.filter.call(x, f) }
+
   /**
    * Shuts down this form_helper by disabling the widget and any callback handlers.
    */
@@ -98,7 +105,9 @@ export default class FormHelper {
   // check all of the elements in the formHelper and confirm they are still
   // within the page DOM
   areAllElementsStillInTheDOM(){
-    if(!document.body.contains(this.formHelperConfig.countryElement)){
+    const doesntContainElement = element => !document.body.contains(element)
+
+    if( doesntContainElement(this.formHelperConfig.countryElement)){
       this._log("Country Element is not in the DOM")
       return false
     }
@@ -111,7 +120,7 @@ export default class FormHelper {
 
       // check that the config for this country is supplied
       if (this.formHelperConfig[countryCode]) {
-        if(!document.body.contains(this.formHelperConfig[countryCode].searchElement)){
+        if( doesntContainElement(this.formHelperConfig[countryCode].searchElement )){
           this._log("Search Element is not in the DOM")
           return false
         }
@@ -120,7 +129,7 @@ export default class FormHelper {
           if (this.formHelperConfig[countryCode].elements.hasOwnProperty(elementName)) {
             const element = this.formHelperConfig[countryCode].elements[elementName];
 
-            if(element && !document.body.contains(element)){
+            if(element && doesntContainElement(element)){
               this._log(`Element ${elementName} is not in the DOM`)
               return false
             }
@@ -182,6 +191,7 @@ export default class FormHelper {
   }
 
   _clearElementValues(countryCode){
+
     for (var elementName in this.formHelperConfig[countryCode].elements) {
       if (this.formHelperConfig[countryCode].elements.hasOwnProperty(elementName)) {
         const element = this.formHelperConfig[countryCode].elements[elementName];
@@ -263,18 +273,13 @@ export default class FormHelper {
       event.initEvent('change', true, false);
       element.dispatchEvent(event);
 
-      var options = element.options;
-      if (options) {
-        for (var i = 0; i < options.length; i++) {
-          if (element.options[i].value == value) {
-            element.options[i].dispatchEvent(event);
-            break;
-          }
+      if (element.options) {
+        const isValue = options => options.value == value
+
+        const option = this.filter(isValue, element.options)
+        if (option) element.dispatchEvent(event);
         }
       }
-
-      return;
-    }
 
     var errorMessage = 'AddressFinder Error: '
                        + 'Attempted to update value for element that could not be found.\n'
