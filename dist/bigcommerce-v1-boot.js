@@ -1415,9 +1415,9 @@ var FormHelper = function () {
 
           for (var elementName in this.formHelperConfig[countryCode].elements) {
             if (this.formHelperConfig[countryCode].elements.hasOwnProperty(elementName)) {
-              var element = this.formHelperConfig[countryCode].elements[elementName];
+              var _element = this.formHelperConfig[countryCode].elements[elementName];
 
-              if (element && doesntContainElement(element)) {
+              if (_element && doesntContainElement(_element)) {
                 this._log("Element " + elementName + " is not in the DOM");
                 return false;
               }
@@ -1450,35 +1450,6 @@ var FormHelper = function () {
 
       this._countryChanged(null, true);
     }
-
-    // _countryChanged(event, preserveValues){
-    //   switch (this.formHelperConfig.countryElement.value) {
-    //     case this.formHelperConfig.nz.countryValue:
-    //       this._setActiveCountry("nz")
-    //
-    //       if(!preserveValues){
-    //         this._clearElementValues("au")
-    //       }
-    //
-    //       break
-    //     case this.formHelperConfig.au.countryValue:
-    //       this._setActiveCountry("au")
-    //
-    //       if(!preserveValues){
-    //         this._clearElementValues("nz")
-    //       }
-    //
-    //       break
-    //     default:
-    //       this._setActiveCountry("null")
-    //
-    //       if(!preserveValues){
-    //         this._clearElementValues("au")
-    //         this._clearElementValues("nz")
-    //       }
-    //   }
-    // }
-
   }, {
     key: "setWidgetCountry",
     value: function setWidgetCountry(activeCountryCode, inactiveCountryCodes, preserveValues) {
@@ -1506,27 +1477,18 @@ var FormHelper = function () {
   }, {
     key: "_clearElementValues",
     value: function _clearElementValues(countryCode) {
-
-      for (var elementName in this.formHelperConfig[countryCode].elements) {
-        if (this.formHelperConfig[countryCode].elements.hasOwnProperty(elementName)) {
-          var element = this.formHelperConfig[countryCode].elements[elementName];
-
-          if (element) {
-            this._setElementValue(element, null, elementName);
-          }
-        }
-      }
+      var elements = this.formHelperConfig[countryCode].elements;
+      elementName in elements ? element = elements[elementName] : element = '';
+      if (element) this._setElementValue(element, null, elementName);
     }
   }, {
     key: "_setActiveCountry",
     value: function _setActiveCountry(countryCode) {
-      console.log(countryCode);
       this._log("Setting active country " + countryCode);
 
       for (var widgetCountryCode in this.widgets) {
         this.widgets[widgetCountryCode].disable();
       }
-
       this.widgets[countryCode].enable();
     }
   }, {

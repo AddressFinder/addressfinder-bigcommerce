@@ -163,34 +163,6 @@ export default class FormHelper {
     this._countryChanged(null, true)
   }
 
-  // _countryChanged(event, preserveValues){
-  //   switch (this.formHelperConfig.countryElement.value) {
-  //     case this.formHelperConfig.nz.countryValue:
-  //       this._setActiveCountry("nz")
-  //
-  //       if(!preserveValues){
-  //         this._clearElementValues("au")
-  //       }
-  //
-  //       break
-  //     case this.formHelperConfig.au.countryValue:
-  //       this._setActiveCountry("au")
-  //
-  //       if(!preserveValues){
-  //         this._clearElementValues("nz")
-  //       }
-  //
-  //       break
-  //     default:
-  //       this._setActiveCountry("null")
-  //
-  //       if(!preserveValues){
-  //         this._clearElementValues("au")
-  //         this._clearElementValues("nz")
-  //       }
-  //   }
-  // }
-
   setWidgetCountry(activeCountryCode, inactiveCountryCodes, preserveValues) {
       this._setActiveCountry(activeCountryCode)
       if(!preserveValues) inactiveCountryCodes.forEach(this._clearElementValues.bind(this))
@@ -210,29 +182,21 @@ export default class FormHelper {
     )
   }
 
-
-
   _clearElementValues(countryCode){
-
-    for (var elementName in this.formHelperConfig[countryCode].elements) {
-      if (this.formHelperConfig[countryCode].elements.hasOwnProperty(elementName)) {
-        const element = this.formHelperConfig[countryCode].elements[elementName];
-
-        if(element){
-          this._setElementValue(element, null, elementName);
-        }
-      }
+    const elements = this.formHelperConfig[countryCode].elements
+    for (var elementName in elements) {
+      const element = elements[elementName];
+      if (element) this._setElementValue(element, null, elementName);
     }
   }
 
+
   _setActiveCountry(countryCode){
-    console.log(countryCode)
     this._log(`Setting active country ${countryCode}`)
 
     for (var widgetCountryCode in this.widgets) {
       this.widgets[widgetCountryCode].disable()
     }
-
     this.widgets[countryCode].enable()
   }
 
