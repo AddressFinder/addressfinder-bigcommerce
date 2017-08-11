@@ -86,6 +86,7 @@ export default class FormHelper {
   }
 
   filter(f, x) { Array.prototype.filter.call(x, f) }
+  map(f, x) { Array.prototype.map.call(x, f) }
 
   /**
    * Shuts down this form_helper by disabling the widget and any callback handlers.
@@ -162,33 +163,54 @@ export default class FormHelper {
     this._countryChanged(null, true)
   }
 
-  _countryChanged(event, preserveValues){
-    switch (this.formHelperConfig.countryElement.value) {
-      case this.formHelperConfig.nz.countryValue:
-        this._setActiveCountry("nz")
+  // _countryChanged(event, preserveValues){
+  //   switch (this.formHelperConfig.countryElement.value) {
+  //     case this.formHelperConfig.nz.countryValue:
+  //       this._setActiveCountry("nz")
+  //
+  //       if(!preserveValues){
+  //         this._clearElementValues("au")
+  //       }
+  //
+  //       break
+  //     case this.formHelperConfig.au.countryValue:
+  //       this._setActiveCountry("au")
+  //
+  //       if(!preserveValues){
+  //         this._clearElementValues("nz")
+  //       }
+  //
+  //       break
+  //     default:
+  //       this._setActiveCountry("null")
+  //
+  //       if(!preserveValues){
+  //         this._clearElementValues("au")
+  //         this._clearElementValues("nz")
+  //       }
+  //   }
+  // }
 
-        if(!preserveValues){
-          this._clearElementValues("au")
-        }
-
-        break
-      case this.formHelperConfig.au.countryValue:
-        this._setActiveCountry("au")
-
-        if(!preserveValues){
-          this._clearElementValues("nz")
-        }
-
-        break
-      default:
-        this._setActiveCountry("null")
-
-        if(!preserveValues){
-          this._clearElementValues("au")
-          this._clearElementValues("nz")
-        }
-    }
+  setWidgetCountry(activeCountryCode, inactiveCountryCodes, preserveValues) {
+      this._setActiveCountry(activeCountryCode)
+      if(!preserveValues) inactiveCountryCodes.forEach(this._clearElementValues.bind(this))
   }
+
+  _countryChanged(event, preserveValues) {
+
+    function switchcase(cases, defaultCase, key) {
+      key in cases ? cases[key]() : defaultCase()
+    }
+
+    switchcase (
+      { [this.formHelperConfig.nz.countryValue]: () => this.setWidgetCountry("nz", ["au"], preserveValues),
+        [this.formHelperConfig.au.countryValue]: () => this.setWidgetCountry("au", ["nz"], preserveValues)
+      }, () => this.setWidgetCountry("null", ["au", "nz"], preserveValues),
+         this.formHelperConfig.countryElement.value
+    )
+  }
+
+
 
   _clearElementValues(countryCode){
 
@@ -204,6 +226,7 @@ export default class FormHelper {
   }
 
   _setActiveCountry(countryCode){
+    console.log(countryCode)
     this._log(`Setting active country ${countryCode}`)
 
     for (var widgetCountryCode in this.widgets) {

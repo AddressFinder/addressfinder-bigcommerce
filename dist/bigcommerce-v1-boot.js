@@ -1268,6 +1268,8 @@ __webpack_require__(11);
 
 __webpack_require__(12);
 
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 /**
@@ -1359,6 +1361,11 @@ var FormHelper = function () {
     value: function filter(f, x) {
       Array.prototype.filter.call(x, f);
     }
+  }, {
+    key: "map",
+    value: function map(f, x) {
+      Array.prototype.map.call(x, f);
+    }
 
     /**
      * Shuts down this form_helper by disabling the widget and any callback handlers.
@@ -1443,34 +1450,58 @@ var FormHelper = function () {
 
       this._countryChanged(null, true);
     }
+
+    // _countryChanged(event, preserveValues){
+    //   switch (this.formHelperConfig.countryElement.value) {
+    //     case this.formHelperConfig.nz.countryValue:
+    //       this._setActiveCountry("nz")
+    //
+    //       if(!preserveValues){
+    //         this._clearElementValues("au")
+    //       }
+    //
+    //       break
+    //     case this.formHelperConfig.au.countryValue:
+    //       this._setActiveCountry("au")
+    //
+    //       if(!preserveValues){
+    //         this._clearElementValues("nz")
+    //       }
+    //
+    //       break
+    //     default:
+    //       this._setActiveCountry("null")
+    //
+    //       if(!preserveValues){
+    //         this._clearElementValues("au")
+    //         this._clearElementValues("nz")
+    //       }
+    //   }
+    // }
+
+  }, {
+    key: "setWidgetCountry",
+    value: function setWidgetCountry(activeCountryCode, inactiveCountryCodes, preserveValues) {
+      this._setActiveCountry(activeCountryCode);
+      if (!preserveValues) inactiveCountryCodes.forEach(this._clearElementValues.bind(this));
+    }
   }, {
     key: "_countryChanged",
     value: function _countryChanged(event, preserveValues) {
-      switch (this.formHelperConfig.countryElement.value) {
-        case this.formHelperConfig.nz.countryValue:
-          this._setActiveCountry("nz");
+      var _this = this,
+          _switchcase;
 
-          if (!preserveValues) {
-            this._clearElementValues("au");
-          }
-
-          break;
-        case this.formHelperConfig.au.countryValue:
-          this._setActiveCountry("au");
-
-          if (!preserveValues) {
-            this._clearElementValues("nz");
-          }
-
-          break;
-        default:
-          this._setActiveCountry("null");
-
-          if (!preserveValues) {
-            this._clearElementValues("au");
-            this._clearElementValues("nz");
-          }
+      function switchcase(cases, defaultCase, key) {
+        key in cases ? cases[key]() : defaultCase();
       }
+
+      switchcase((_switchcase = {}, _defineProperty(_switchcase, this.formHelperConfig.nz.countryValue, function () {
+        return _this.setWidgetCountry("nz", ["au"], preserveValues);
+      }), _defineProperty(_switchcase, this.formHelperConfig.au.countryValue, function () {
+        return _this.setWidgetCountry("au", ["nz"], preserveValues);
+      }), _switchcase), function () {
+        return _this.setWidgetCountry("null", ["au", "nz"], preserveValues);
+      }, this.formHelperConfig.countryElement.value);
     }
   }, {
     key: "_clearElementValues",
@@ -1489,6 +1520,7 @@ var FormHelper = function () {
   }, {
     key: "_setActiveCountry",
     value: function _setActiveCountry(countryCode) {
+      console.log(countryCode);
       this._log("Setting active country " + countryCode);
 
       for (var widgetCountryCode in this.widgets) {
@@ -1557,12 +1589,12 @@ var FormHelper = function () {
         event.initEvent('change', true, false);
         element.dispatchEvent(event);
 
-        var options = element.options;
-        if (options) {
+        if (element.options) {
           var isValue = function isValue(options) {
             return options.value == value;
           };
-          var option = this.filter(isValue, options);
+
+          var option = this.filter(isValue, element.options);
           if (option) element.dispatchEvent(event);
         }
       }
