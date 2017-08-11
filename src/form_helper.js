@@ -118,17 +118,17 @@ export default class FormHelper {
     const countryCodes = ['nz', 'au']
     for (var i = 0; i < countryCodes.length; i++) {
       const countryCode = countryCodes[i]
+      const formConfig = this.formHelperConfig[countryCode]
 
       // check that the config for this country is supplied
-      if (this.formHelperConfig[countryCode]) {
-        if( doesntContainElement(this.formHelperConfig[countryCode].searchElement )){
+      if (formConfig) {
+        if( doesntContainElement(formConfig.searchElement )){
           this._log("Search Element is not in the DOM")
           return false
         }
 
-        for (var elementName in this.formHelperConfig[countryCode].elements) {
-          if (this.formHelperConfig[countryCode].elements.hasOwnProperty(elementName)) {
-            const element = this.formHelperConfig[countryCode].elements[elementName];
+        for (var elementName in formConfig.elements) {
+            const element = formConfig.elements[elementName];
 
             if(element && doesntContainElement(element)){
               this._log(`Element ${elementName} is not in the DOM`)
@@ -137,8 +137,6 @@ export default class FormHelper {
           }
         }
       }
-    }
-
     return true
   }
 
@@ -163,23 +161,27 @@ export default class FormHelper {
     this._countryChanged(null, true)
   }
 
-  setWidgetCountry(activeCountryCode, inactiveCountryCodes, preserveValues) {
-      this._setActiveCountry(activeCountryCode)
-      if(!preserveValues) inactiveCountryCodes.forEach(this._clearElementValues.bind(this))
-  }
-
-  _countryChanged(event, preserveValues) {
-
-    function switchcase(cases, defaultCase, key) {
-      key in cases ? cases[key]() : defaultCase()
+  _countryChanged(event, preserveValues){
+    var activeCountry;
+    switch (this.formHelperConfig.countryElement.value) {
+      case this.formHelperConfig.nz.countryValue:
+      activeCountry = "nz"
+      break;
+    case this.formHelperConfig.au.countryValue:
+      activeCountry = "au"
+      break;
+    default:
+      activeCountry = "null";
     }
 
-    switchcase (
-      { [this.formHelperConfig.nz.countryValue]: () => this.setWidgetCountry("nz", ["au"], preserveValues),
-        [this.formHelperConfig.au.countryValue]: () => this.setWidgetCountry("au", ["nz"], preserveValues)
-      }, () => this.setWidgetCountry("null", ["au", "nz"], preserveValues),
-         this.formHelperConfig.countryElement.value
-    )
+    this._setActiveCountry(activeCountry)
+    if(!preserveValues) {
+      const countryCodes = ["au", "nz"]
+      const isInactiveCountry = countryCode => countryCode != activeCountry
+      for (var i = 0; i < countryCodes.length; i++) {
+        if (isInactiveCountry(countryCodes[i])) this._clearElementValues(countryCodes[i])
+      }
+    }
   }
 
   _clearElementValues(countryCode){
@@ -203,6 +205,7 @@ export default class FormHelper {
   _nzAddressSelected(fullAddress, metaData){
     let elements = this.formHelperConfig.nz.elements
     let selected = new AddressFinder.NZSelectedAddress(fullAddress, metaData);
+    const doesElementExist = elementName => element.elementName
 
     if(elements.address_line_1_and_2){
       this._setElementValue(elements.address_line_1_and_2, selected.address_line_1_and_2(), "address_line_1_and_2")

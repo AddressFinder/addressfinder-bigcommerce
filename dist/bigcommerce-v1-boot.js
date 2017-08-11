@@ -1268,8 +1268,6 @@ __webpack_require__(11);
 
 __webpack_require__(12);
 
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 /**
@@ -1405,27 +1403,25 @@ var FormHelper = function () {
       var countryCodes = ['nz', 'au'];
       for (var i = 0; i < countryCodes.length; i++) {
         var countryCode = countryCodes[i];
+        var formConfig = this.formHelperConfig[countryCode];
 
         // check that the config for this country is supplied
-        if (this.formHelperConfig[countryCode]) {
-          if (doesntContainElement(this.formHelperConfig[countryCode].searchElement)) {
+        if (formConfig) {
+          if (doesntContainElement(formConfig.searchElement)) {
             this._log("Search Element is not in the DOM");
             return false;
           }
 
-          for (var elementName in this.formHelperConfig[countryCode].elements) {
-            if (this.formHelperConfig[countryCode].elements.hasOwnProperty(elementName)) {
-              var _element = this.formHelperConfig[countryCode].elements[elementName];
+          for (var elementName in formConfig.elements) {
+            var _element = formConfig.elements[elementName];
 
-              if (_element && doesntContainElement(_element)) {
-                this._log("Element " + elementName + " is not in the DOM");
-                return false;
-              }
+            if (_element && doesntContainElement(_element)) {
+              this._log("Element " + elementName + " is not in the DOM");
+              return false;
             }
           }
         }
       }
-
       return true;
     }
   }, {
@@ -1451,35 +1447,39 @@ var FormHelper = function () {
       this._countryChanged(null, true);
     }
   }, {
-    key: "setWidgetCountry",
-    value: function setWidgetCountry(activeCountryCode, inactiveCountryCodes, preserveValues) {
-      this._setActiveCountry(activeCountryCode);
-      if (!preserveValues) inactiveCountryCodes.forEach(this._clearElementValues.bind(this));
-    }
-  }, {
     key: "_countryChanged",
     value: function _countryChanged(event, preserveValues) {
-      var _this = this,
-          _switchcase;
-
-      function switchcase(cases, defaultCase, key) {
-        key in cases ? cases[key]() : defaultCase();
+      var activeCountry;
+      switch (this.formHelperConfig.countryElement.value) {
+        case this.formHelperConfig.nz.countryValue:
+          activeCountry = "nz";
+          break;
+        case this.formHelperConfig.au.countryValue:
+          activeCountry = "au";
+          break;
+        default:
+          activeCountry = "null";
       }
 
-      switchcase((_switchcase = {}, _defineProperty(_switchcase, this.formHelperConfig.nz.countryValue, function () {
-        return _this.setWidgetCountry("nz", ["au"], preserveValues);
-      }), _defineProperty(_switchcase, this.formHelperConfig.au.countryValue, function () {
-        return _this.setWidgetCountry("au", ["nz"], preserveValues);
-      }), _switchcase), function () {
-        return _this.setWidgetCountry("null", ["au", "nz"], preserveValues);
-      }, this.formHelperConfig.countryElement.value);
+      this._setActiveCountry(activeCountry);
+      if (!preserveValues) {
+        var countryCodes = ["au", "nz"];
+        var isInactiveCountry = function isInactiveCountry(countryCode) {
+          return countryCode != activeCountry;
+        };
+        for (var i = 0; i < countryCodes.length; i++) {
+          if (isInactiveCountry(countryCodes[i])) this._clearElementValues(countryCodes[i]);
+        }
+      }
     }
   }, {
     key: "_clearElementValues",
     value: function _clearElementValues(countryCode) {
       var elements = this.formHelperConfig[countryCode].elements;
-      elementName in elements ? element = elements[elementName] : element = '';
-      if (element) this._setElementValue(element, null, elementName);
+      for (var elementName in elements) {
+        var _element2 = elements[elementName];
+        if (_element2) this._setElementValue(_element2, null, elementName);
+      }
     }
   }, {
     key: "_setActiveCountry",
@@ -1496,6 +1496,9 @@ var FormHelper = function () {
     value: function _nzAddressSelected(fullAddress, metaData) {
       var elements = this.formHelperConfig.nz.elements;
       var selected = new AddressFinder.NZSelectedAddress(fullAddress, metaData);
+      var doesElementExist = function doesElementExist(elementName) {
+        return element.elementName;
+      };
 
       if (elements.address_line_1_and_2) {
         this._setElementValue(elements.address_line_1_and_2, selected.address_line_1_and_2(), "address_line_1_and_2");
