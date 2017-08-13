@@ -1,7 +1,5 @@
-import "core-js/fn/symbol" // see https://github.com/zloirock/core-js
-import "core-js/fn/symbol/iterator"
-import "core-js/fn/array/find"
-import "core-js/fn/array/includes"
+import "core-js/fn/array/map"
+import "core-js/fn/array/filter"
 
 /**
  * Usage:
@@ -85,9 +83,6 @@ export default class FormHelper {
     this._bindToForm()
   }
 
-  filter(f, x) { Array.prototype.filter.call(x, f) }
-  map(f, x) { Array.prototype.map.call(x, f) }
-
   /**
    * Shuts down this form_helper by disabling the widget and any callback handlers.
    */
@@ -113,11 +108,8 @@ export default class FormHelper {
       return false
     }
 
-    // TODO can we aggregate the elements to check into a single array or map?
-
     const countryCodes = ['nz', 'au']
-    for (var i = 0; i < countryCodes.length; i++) {
-      const countryCode = countryCodes[i]
+    countryCodes.map((countryCode) => {
       const formConfig = this.formHelperConfig[countryCode]
 
       // check that the config for this country is supplied
@@ -128,15 +120,14 @@ export default class FormHelper {
         }
 
         for (var elementName in formConfig.elements) {
-            const element = formConfig.elements[elementName];
-
-            if(element && doesntContainElement(element)){
-              this._log(`Element ${elementName} is not in the DOM`)
-              return false
-            }
+          const element = formConfig.elements[elementName];
+          if(element && doesntContainElement(element)) {
+            this._log(`Element ${elementName} is not in the DOM`)
+            return false
           }
         }
       }
+    });
     return true
   }
 
@@ -178,9 +169,9 @@ export default class FormHelper {
     if(!preserveValues) {
       const countryCodes = ["au", "nz"]
       const isInactiveCountry = countryCode => countryCode != activeCountry
-      for (var i = 0; i < countryCodes.length; i++) {
-        if (isInactiveCountry(countryCodes[i])) this._clearElementValues(countryCodes[i])
-      }
+      countryCodes.map((countryCode) => {
+        if (isInactiveCountry(countryCode)) this._clearElementValues(countryCode)
+      })
     }
   }
 
@@ -205,7 +196,6 @@ export default class FormHelper {
   _nzAddressSelected(fullAddress, metaData){
     let elements = this.formHelperConfig.nz.elements
     let selected = new AddressFinder.NZSelectedAddress(fullAddress, metaData);
-    const doesElementExist = elementName => element.elementName
 
     if(elements.address_line_1_and_2){
       this._setElementValue(elements.address_line_1_and_2, selected.address_line_1_and_2(), "address_line_1_and_2")
@@ -232,10 +222,8 @@ export default class FormHelper {
     let elements = this.formHelperConfig.au.elements
 
     if(elements.address_line_1_and_2){
-      const combined = [
-        metaData.address_line_1, metaData.address_line_2
-      ].filter(function(a){return a != null}).join(", ")
-
+      const addressisNotNull = array => array != null
+      const combined = [metaData.address_line_1, metaData.address_line_2].filter(addressisNotNull).join(", ")
       this._setElementValue(elements.address_line_1_and_2, combined, "address_line_1_and_2")
     }
     else {
@@ -256,6 +244,7 @@ export default class FormHelper {
   }
 
   _setElementValue(element, value, elementName){
+    function filter(f, x) { Array.prototype.filter.call(x, f) }
     if (element) {
       element.value = value;
 
@@ -264,10 +253,11 @@ export default class FormHelper {
       element.dispatchEvent(event);
 
       if (element.options) {
-        const isValue = options => options.value == value
-
-        const option = this.filter(isValue, element.options)
-        if (option) element.dispatchEvent(event);
+        const isValue = option => {
+          if (option.value == value) return option
+        }
+        const option = filter(isValue, element.options)
+        if (option) element.option.dispatchEvent(event);
         }
       }
 
