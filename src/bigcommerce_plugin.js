@@ -258,18 +258,28 @@ export default class BigCommercePlugin {
   }
 
   mutationHandler(mutations){
-    const nonAddressFinderChange = mutation => {
-      !mutation.target.classList.contains("af_list")
-    }
+    const changedNodes = mutations.reduce((nodes, mutation) => {
+      // ignore this mutation if the target is the AddressFinder UL element
+      if (mutation.target && mutation.target.classList && mutation.target.classList.contains("af_list")) {
+        return nodes
+      }
 
-    if (mutations.find(nonAddressFinderChange)) {
-      return
+      return nodes.concat([...mutation.addedNodes]).concat([...mutation.removedNodes])
+    }, [])
+
+    const anyBigCommerceChanges = changedNodes.find((node) => {
+      return !(node.classList && node.classList.contains("af_list"))
+    })
+
+    if (!anyBigCommerceChanges) {
+      return // ignore AddressFinder changes
     }
 
     if (this._mutationTimeout) {
-      clearTimeout(this._mutationTimeout)
+      clearTimeout(this._mutationTimeout) // reset previous timeout
     }
 
+    // ignore any further changes for the next 750 mS
     this._mutationTimeout = setTimeout(this.resetAndReloadFormHelpers.bind(this), 750)
   }
 

@@ -80,6 +80,7 @@ export default class FormHelper {
     this.subscriptions = {}
     this.label = formHelperConfig.label
     this.layoutIdentifier = formHelperConfig.layoutIdentifier
+    this.countryCodes = ["au", "nz"]
 
     this._bindToForm()
   }
@@ -88,6 +89,8 @@ export default class FormHelper {
    * Shuts down this form_helper by disabling the widget and any callback handlers.
    */
   destroy(){
+    this._log(`Destroying widget: ${this.label}`)
+
     for (var widgetCountryCode in this.widgets) {
       this.widgets[widgetCountryCode].disable()
       this.widgets[widgetCountryCode].destroy()
@@ -102,34 +105,46 @@ export default class FormHelper {
   // check all of the elements in the formHelper and confirm they are still
   // within the page DOM
   areAllElementsStillInTheDOM(){
-    const doesntContainElement = element => !document.body.contains(element)
 
-    if( doesntContainElement(this.formHelperConfig.countryElement)){
+    if( this._bodyDoesntContainElement(this.formHelperConfig.countryElement)){
       this._log("Country Element is not in the DOM")
       return false
     }
 
-    const countryCodes = ['nz', 'au']
-    countryCodes.map((countryCode) => {
-      const formConfig = this.formHelperConfig[countryCode]
+    const allPresent = this.countryCodes.find((countryCode) => {
+      !this.areAllElementsStillInTheDOMForCountryCode(countryCode)
+    })
 
-      // check that the config for this country is supplied
-      if (formConfig) {
-        if( doesntContainElement(formConfig.searchElement )){
-          this._log("Search Element is not in the DOM")
-          return false
-        }
+    return allPresent
+  }
 
-        for (var elementName in formConfig.elements) {
-          const element = formConfig.elements[elementName];
-          if(element && doesntContainElement(element)) {
-            this._log(`Element ${elementName} is not in the DOM`)
-            return false
-          }
-        }
-      }
-    });
+  areAllElementsStillInTheDOMForCountryCode(countryCode) {
+    const formConfig = this.formHelperConfig[countryCode]
+
+    // if config is not supplied then no need to check elements
+    if (!formConfig) {
+      return true
+    }
+
+    if( this._bodyDoesntContainElement(formConfig.searchElement )){
+      this._log("Search Element is not in the DOM")
+      return false
+    }
+
+    const findElement = elementName => formConfig.elements[elementName]
+    const isPresent = element => element
+    const missingElement = Array.prototype.map.call(formConfig.elements, findElement).filter(isPresent).find(this._bodyDoesntContainElement)
+
+    if (missingElement) {
+      this._log(`Element ${elementName} is not in the DOM`)
+      return false
+    }
+
     return true
+  }
+
+  _bodyDoesntContainElement(element) {
+    !document.body.contains(element)
   }
 
   _bindToForm(){
@@ -168,11 +183,8 @@ export default class FormHelper {
 
     this._setActiveCountry(activeCountry)
     if(!preserveValues) {
-      const countryCodes = ["au", "nz"]
       const isInactiveCountry = countryCode => countryCode != activeCountry
-      countryCodes.map((countryCode) => {
-        if (isInactiveCountry(countryCode)) this._clearElementValues(countryCode)
-      })
+      this.countryCodes.filter(isInactiveCountry).forEach(this._clearElementValues.bind(this))
     }
   }
 
@@ -183,7 +195,6 @@ export default class FormHelper {
       if (element) this._setElementValue(element, null, elementName);
     }
   }
-
 
   _setActiveCountry(countryCode){
     this._log(`Setting active country ${countryCode}`)
@@ -223,8 +234,8 @@ export default class FormHelper {
     let elements = this.formHelperConfig.au.elements
 
     if(elements.address_line_1_and_2){
-      const addressisNotNull = array => array != null
-      const combined = [metaData.address_line_1, metaData.address_line_2].filter(addressisNotNull).join(", ")
+      const addressIsPresent = array => array != null
+      const combined = [metaData.address_line_1, metaData.address_line_2].filter(addressIsPresent).join(", ")
       this._setElementValue(elements.address_line_1_and_2, combined, "address_line_1_and_2")
     }
     else {
@@ -246,39 +257,35 @@ export default class FormHelper {
 
   _setElementValue(element, value, elementName){
     if (!element) {
-      this.logErrorMessage(element, value, elementName)
-   }
+      var errorMessage = 'AddressFinder Error: '
+                         + 'Attempted to update value for element that could not be found.\n'
+                         + '\nElement: ' + elementName
+                         + '\nValue: ' + value;
 
-   else if (element.options) {
-      const find = (f, x) => Array.prototype.find.call(x, f)
+      if (window.console) {
+        console.warn(errorMessage);
+      }
+
+      return
+    }
+
+    if (element.options) {
       const checkOptionMatchesValue = option => option.value == value
+      const selectedOption = Array.prototype.find.call(element.options, checkOptionMatchesValue)
+      if (selectedOption) this._dispatchChangeEvent(selectedOption)
 
-      const foundElement = find(checkOptionMatchesValue, element.options)
-      if (foundElement) this.createEvent(foundElement)
+      return
     }
 
-    else {
-      element.value = value;
-      this.createEvent(element)
-    }
+    element.value = value;
+    this._dispatchChangeEvent(element)
   }
 
-  logErrorMessage() {
-    var errorMessage = 'AddressFinder Error: '
-                       + 'Attempted to update value for element that could not be found.\n'
-                       + '\nElement: ' + elementName
-                       + '\nValue: ' + value;
-   if (window.console) {
-     console.warn(errorMessage);
-   }
-  }
-
-  createEvent(element) {
+  _dispatchChangeEvent(element) {
     var event = document.createEvent('HTMLEvents');
     event.initEvent('change', true, false);
     element.dispatchEvent(event);
   }
-
 
   _log(message){
     if (this.widgetConfig.debug && window.console) {

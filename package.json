@@ -14,7 +14,9 @@
     "uglify-js": "^3.0.27",
     "webpack": "^3.5.1"
   },
-  "dependencies": {},
+  "dependencies": {
+    "core-js": "^2.5.0"
+  },
   "scripts": {
     "watch": "webpack -w --config webpack.config.js",
     "build": "webpack --config webpack.config.js",
