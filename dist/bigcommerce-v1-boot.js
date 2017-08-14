@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 10);
+/******/ 	return __webpack_require__(__webpack_require__.s = 11);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -117,7 +117,7 @@ function assertDefined(it){
   return it;
 }
 
-var $ = module.exports = __webpack_require__(15)({
+var $ = module.exports = __webpack_require__(16)({
   g: global,
   core: core,
   html: global.document && document.documentElement,
@@ -441,6 +441,13 @@ module.exports = assert;
 /* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
+__webpack_require__(23);
+module.exports = __webpack_require__(0).core.Array.find;
+
+/***/ }),
+/* 10 */
+/***/ (function(module, exports, __webpack_require__) {
+
 // JavaScript 1.6 / Strawman array statics shim
 var $       = __webpack_require__(0)
   , $def    = __webpack_require__(2)
@@ -459,20 +466,20 @@ setStatics('join,slice,concat,push,splice,unshift,sort,lastIndexOf,' +
 $def($def.S, 'Array', statics);
 
 /***/ }),
-/* 10 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(11);
+module.exports = __webpack_require__(12);
 
 
 /***/ }),
-/* 11 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var _bigcommerce_plugin = __webpack_require__(12);
+var _bigcommerce_plugin = __webpack_require__(13);
 
 var _bigcommerce_plugin2 = _interopRequireDefault(_bigcommerce_plugin);
 
@@ -502,7 +509,7 @@ s.onload = _initPlugin;
 document.body.appendChild(s);
 
 /***/ }),
-/* 12 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -515,11 +522,11 @@ Object.defineProperty(exports, "__esModule", {
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); // see https://github.com/zloirock/core-js
 
 
-__webpack_require__(13);
+__webpack_require__(14);
 
-__webpack_require__(17);
+__webpack_require__(18);
 
-__webpack_require__(22);
+__webpack_require__(9);
 
 __webpack_require__(25);
 
@@ -912,14 +919,14 @@ var BigCommercePlugin = function () {
 exports.default = BigCommercePlugin;
 
 /***/ }),
-/* 13 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(14);
+__webpack_require__(15);
 module.exports = __webpack_require__(0).core.Symbol;
 
 /***/ }),
-/* 14 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -929,7 +936,7 @@ var $        = __webpack_require__(0)
   , setTag   = __webpack_require__(7).set
   , uid      = __webpack_require__(3)
   , $def     = __webpack_require__(2)
-  , keyOf    = __webpack_require__(16)
+  , keyOf    = __webpack_require__(17)
   , has      = $.has
   , hide     = $.hide
   , getNames = $.getNames
@@ -1026,7 +1033,7 @@ setTag(Math, 'Math', true);
 setTag($.g.JSON, 'JSON', true);
 
 /***/ }),
-/* 15 */
+/* 16 */
 /***/ (function(module, exports) {
 
 module.exports = function($){
@@ -1036,7 +1043,7 @@ module.exports = function($){
 };
 
 /***/ }),
-/* 16 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var $ = __webpack_require__(0);
@@ -1050,19 +1057,19 @@ module.exports = function(object, el){
 };
 
 /***/ }),
-/* 17 */
-/***/ (function(module, exports, __webpack_require__) {
-
-__webpack_require__(18);
-__webpack_require__(20);
-module.exports = __webpack_require__(1)('iterator');
-
-/***/ }),
 /* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
+__webpack_require__(19);
+__webpack_require__(21);
+module.exports = __webpack_require__(1)('iterator');
+
+/***/ }),
+/* 19 */
+/***/ (function(module, exports, __webpack_require__) {
+
 var set   = __webpack_require__(0).set
-  , at    = __webpack_require__(19)(true)
+  , at    = __webpack_require__(20)(true)
   , ITER  = __webpack_require__(3).safe('iter')
   , $iter = __webpack_require__(4)
   , step  = $iter.step;
@@ -1083,7 +1090,7 @@ $iter.std(String, 'String', function(iterated){
 });
 
 /***/ }),
-/* 19 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1107,10 +1114,10 @@ module.exports = function(TO_STRING){
 };
 
 /***/ }),
-/* 20 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(21);
+__webpack_require__(22);
 var $           = __webpack_require__(0)
   , Iterators   = __webpack_require__(4).Iterators
   , ITERATOR    = __webpack_require__(1)('iterator')
@@ -1122,7 +1129,7 @@ if($.FW && NodeList && !(ITERATOR in NodeList.prototype)){
 Iterators.NodeList = ArrayValues;
 
 /***/ }),
-/* 21 */
+/* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var $          = __webpack_require__(0)
@@ -1159,13 +1166,6 @@ Iterators.Arguments = Iterators.Array;
 setUnscope('keys');
 setUnscope('values');
 setUnscope('entries');
-
-/***/ }),
-/* 22 */
-/***/ (function(module, exports, __webpack_require__) {
-
-__webpack_require__(23);
-module.exports = __webpack_require__(0).core.Array.find;
 
 /***/ }),
 /* 23 */
@@ -1283,6 +1283,8 @@ var _createClass = function () { function defineProperties(target, props) { for 
 __webpack_require__(29);
 
 __webpack_require__(30);
+
+__webpack_require__(9);
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -1550,30 +1552,37 @@ var FormHelper = function () {
   }, {
     key: "_setElementValue",
     value: function _setElementValue(element, value, elementName) {
-      function filter(f, x) {
-        Array.prototype.filter.call(x, f);
-      }
-      if (element) {
+      if (!element) {
+        this.logErrorMessage(element, value, elementName);
+      } else if (element.options) {
+        var find = function find(f, x) {
+          return Array.prototype.find.call(x, f);
+        };
+        var checkOptionMatchesValue = function checkOptionMatchesValue(option) {
+          return option.value == value;
+        };
+
+        var foundElement = find(checkOptionMatchesValue, element.options);
+        if (foundElement) this.createEvent(foundElement);
+      } else {
         element.value = value;
-
-        var event = document.createEvent('HTMLEvents');
-        event.initEvent('change', true, false);
-        element.dispatchEvent(event);
-
-        if (element.options) {
-          var isValue = function isValue(option) {
-            if (option.value == value) return option;
-          };
-          var option = filter(isValue, element.options);
-          if (option) element.option.dispatchEvent(event);
-        }
+        this.createEvent(element);
       }
-
+    }
+  }, {
+    key: "logErrorMessage",
+    value: function logErrorMessage() {
       var errorMessage = 'AddressFinder Error: ' + 'Attempted to update value for element that could not be found.\n' + '\nElement: ' + elementName + '\nValue: ' + value;
-
       if (window.console) {
         console.warn(errorMessage);
       }
+    }
+  }, {
+    key: "createEvent",
+    value: function createEvent(element) {
+      var event = document.createEvent('HTMLEvents');
+      event.initEvent('change', true, false);
+      element.dispatchEvent(event);
     }
   }, {
     key: "_log",
@@ -1593,14 +1602,14 @@ exports.default = FormHelper;
 /* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(9);
+__webpack_require__(10);
 module.exports = __webpack_require__(0).core.Array.map;
 
 /***/ }),
 /* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(9);
+__webpack_require__(10);
 module.exports = __webpack_require__(0).core.Array.filter;
 
 /***/ })

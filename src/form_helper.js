@@ -1,5 +1,6 @@
 import "core-js/fn/array/map"
 import "core-js/fn/array/filter"
+import "core-js/fn/array/find"
 
 /**
  * Usage:
@@ -244,32 +245,40 @@ export default class FormHelper {
   }
 
   _setElementValue(element, value, elementName){
-    function filter(f, x) { Array.prototype.filter.call(x, f) }
-    if (element) {
+    if (!element) {
+      this.logErrorMessage(element, value, elementName)
+   }
+
+   else if (element.options) {
+      const find = (f, x) => Array.prototype.find.call(x, f)
+      const checkOptionMatchesValue = option => option.value == value
+
+      const foundElement = find(checkOptionMatchesValue, element.options)
+      if (foundElement) this.createEvent(foundElement)
+    }
+
+    else {
       element.value = value;
+      this.createEvent(element)
+    }
+  }
 
-      var event = document.createEvent('HTMLEvents');
-      event.initEvent('change', true, false);
-      element.dispatchEvent(event);
-
-      if (element.options) {
-        const isValue = option => {
-          if (option.value == value) return option
-        }
-        const option = filter(isValue, element.options)
-        if (option) element.option.dispatchEvent(event);
-        }
-      }
-
+  logErrorMessage() {
     var errorMessage = 'AddressFinder Error: '
                        + 'Attempted to update value for element that could not be found.\n'
                        + '\nElement: ' + elementName
                        + '\nValue: ' + value;
-
-    if (window.console) {
-      console.warn(errorMessage);
-    }
+   if (window.console) {
+     console.warn(errorMessage);
+   }
   }
+
+  createEvent(element) {
+    var event = document.createEvent('HTMLEvents');
+    event.initEvent('change', true, false);
+    element.dispatchEvent(event);
+  }
+
 
   _log(message){
     if (this.widgetConfig.debug && window.console) {
