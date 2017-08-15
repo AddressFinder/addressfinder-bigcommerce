@@ -247,7 +247,7 @@ module.exports = uid;
 
 var $                 = __webpack_require__(0)
   , ctx               = __webpack_require__(5)
-  , cof               = __webpack_require__(7)
+  , cof               = __webpack_require__(6)
   , $def              = __webpack_require__(2)
   , assertObject      = __webpack_require__(9).obj
   , SYMBOL_ITERATOR   = __webpack_require__(1)('iterator')
@@ -386,18 +386,6 @@ module.exports = function(fn, that, length){
 /* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
-// 22.1.3.31 Array.prototype[@@unscopables]
-var $           = __webpack_require__(0)
-  , UNSCOPABLES = __webpack_require__(1)('unscopables');
-if($.FW && !(UNSCOPABLES in []))$.hide(Array.prototype, UNSCOPABLES, {});
-module.exports = function(key){
-  if($.FW)[][UNSCOPABLES][key] = true;
-};
-
-/***/ }),
-/* 7 */
-/***/ (function(module, exports, __webpack_require__) {
-
 var $        = __webpack_require__(0)
   , TAG      = __webpack_require__(1)('toStringTag')
   , toString = {}.toString;
@@ -413,6 +401,18 @@ cof.set = function(it, tag, stat){
   if(it && !$.has(it = stat ? it : it.prototype, TAG))$.hide(it, TAG, tag);
 };
 module.exports = cof;
+
+/***/ }),
+/* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// 22.1.3.31 Array.prototype[@@unscopables]
+var $           = __webpack_require__(0)
+  , UNSCOPABLES = __webpack_require__(1)('unscopables');
+if($.FW && !(UNSCOPABLES in []))$.hide(Array.prototype, UNSCOPABLES, {});
+module.exports = function(key){
+  if($.FW)[][UNSCOPABLES][key] = true;
+};
 
 /***/ }),
 /* 8 */
@@ -570,7 +570,9 @@ __webpack_require__(11);
 
 __webpack_require__(28);
 
-var _form_helper = __webpack_require__(31);
+__webpack_require__(31);
+
+var _form_helper = __webpack_require__(33);
 
 var _form_helper2 = _interopRequireDefault(_form_helper);
 
@@ -938,11 +940,11 @@ var BigCommercePlugin = function () {
   }, {
     key: "domNodeModifiedHandler",
     value: function domNodeModifiedHandler(event) {
-      if (event.target.classList && event.target.classList.contains("af_list")) {
+      if (event.target.className && event.target.className.includes("af_list")) {
         return; // ignore AddressFinder changes
       }
 
-      if (event.relatedNode && event.relatedNode.classList && event.relatedNode.classList.contains("af_list")) {
+      if (event.relatedNode && event.relatedNode.className && event.relatedNode.className.includes("af_list")) {
         return; // ignore AddressFinder changes
       }
 
@@ -999,7 +1001,7 @@ module.exports = __webpack_require__(0).core.Symbol;
 
 // ECMAScript 6 symbols shim
 var $        = __webpack_require__(0)
-  , setTag   = __webpack_require__(7).set
+  , setTag   = __webpack_require__(6).set
   , uid      = __webpack_require__(3)
   , $def     = __webpack_require__(2)
   , keyOf    = __webpack_require__(19)
@@ -1174,7 +1176,7 @@ Iterators.NodeList = ArrayValues;
 /***/ (function(module, exports, __webpack_require__) {
 
 var $          = __webpack_require__(0)
-  , setUnscope = __webpack_require__(6)
+  , setUnscope = __webpack_require__(7)
   , ITER       = __webpack_require__(3).safe('iter')
   , $iter      = __webpack_require__(4)
   , step       = $iter.step
@@ -1217,7 +1219,7 @@ $def($def.P, 'Array', {
   // 22.1.3.8 Array.prototype.find(predicate, thisArg = undefined)
   find: __webpack_require__(25)(5)
 });
-__webpack_require__(6)('find');
+__webpack_require__(7)('find');
 
 /***/ }),
 /* 25 */
@@ -1343,7 +1345,7 @@ var $def = __webpack_require__(2);
 $def($def.P, 'Array', {
   includes: __webpack_require__(30)(true)
 });
-__webpack_require__(6)('includes');
+__webpack_require__(7)('includes');
 
 /***/ }),
 /* 30 */
@@ -1373,6 +1375,31 @@ module.exports = function(IS_INCLUDES){
 /* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
+__webpack_require__(32);
+module.exports = __webpack_require__(0).core.String.includes;
+
+/***/ }),
+/* 32 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var $    = __webpack_require__(0)
+  , cof  = __webpack_require__(6)
+  , $def = __webpack_require__(2);
+
+$def($def.P, 'String', {
+  // 21.1.3.7 String.prototype.includes(searchString, position = 0)
+  includes: function includes(searchString /*, position = 0 */){
+    if(cof(searchString) == 'RegExp')throw TypeError();
+    return !!~String($.assertDefined(this)).indexOf(searchString, arguments[1]);
+  }
+});
+
+/***/ }),
+/* 33 */
+/***/ (function(module, exports, __webpack_require__) {
+
 "use strict";
 
 
@@ -1382,9 +1409,9 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-__webpack_require__(32);
+__webpack_require__(34);
 
-__webpack_require__(33);
+__webpack_require__(35);
 
 __webpack_require__(10);
 
@@ -1716,14 +1743,14 @@ var FormHelper = function () {
 exports.default = FormHelper;
 
 /***/ }),
-/* 32 */
+/* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(12);
 module.exports = __webpack_require__(0).core.Array.map;
 
 /***/ }),
-/* 33 */
+/* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(12);
