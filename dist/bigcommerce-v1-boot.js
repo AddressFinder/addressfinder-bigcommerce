@@ -2418,6 +2418,8 @@ var FormHelper = function () {
           return option.value == value;
         };
         var selectedOption = Array.prototype.find.call(element.options, checkOptionMatchesValue);
+
+        element.value = value;
         if (selectedOption) this._dispatchChangeEvent(selectedOption);
 
         return;
