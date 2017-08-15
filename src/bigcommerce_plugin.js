@@ -1,12 +1,13 @@
 import "core-js/fn/symbol" // see https://github.com/zloirock/core-js
 import "core-js/fn/symbol/iterator"
 import "core-js/fn/array/find"
+import "core-js/fn/array/from"
 import "core-js/fn/array/includes"
 import FormHelper from "./form_helper"
 
 export default class BigCommercePlugin {
   constructor(widgetConfig){
-    this.version = "1.2.1"
+    this.version = "1.2.2"
     this.widgetConfig = widgetConfig
     this.layoutConfigurations = [
       {
@@ -283,8 +284,21 @@ export default class BigCommercePlugin {
     this._mutationTimeout = setTimeout(this.resetAndReloadFormHelpers.bind(this), 750)
   }
 
-  domAttrModifiedHandler(event){
-    this.mutationHandler([event])
+  domNodeModifiedHandler(event){
+    if (event.target.classList && event.target.classList.contains("af_list")) {
+      return // ignore AddressFinder changes
+    }
+
+    if (event.relatedNode && event.relatedNode.classList && event.relatedNode.classList.contains("af_list")) {
+      return // ignore AddressFinder changes
+    }
+
+    if (this._mutationTimeout) {
+      clearTimeout(this._mutationTimeout) // reset previous timeout
+    }
+
+    // ignore any further changes for the next 750 mS
+    this._mutationTimeout = setTimeout(this.resetAndReloadFormHelpers.bind(this), 750)
   }
 
   monitorMutations(){
@@ -294,8 +308,9 @@ export default class BigCommercePlugin {
       observer.observe(document.body, {childList: true, subtree: true});
 
     } else if (window.addEventListener) {
-        /* for IE 9 and 10 */
-      document.body.addEventListener('DOMAttrModified', this.domAttrModifiedHandler.bind(this), false);
+      /* for IE 9 and 10 */
+      document.body.addEventListener('DOMNodeInserted', this.domNodeModifiedHandler.bind(this), false);
+      document.body.addEventListener('DOMNodeRemoved', this.domNodeModifiedHandler.bind(this), false);
     } else {
         if (window.console) {
           console.info('AddressFinder Error - please use a more modern browser')
