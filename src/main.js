@@ -1,6 +1,11 @@
-// // this is done within
+// this is configured using:
+//
 // window.AddressFinderConfig = {
-//   key: "ADDRESSFINDER_NZ_DEMO_KEY"
+//   key: "ADDRESSFINDER_NZ_DEMO_KEY",
+//   widgetOptions: {
+//     byline: false
+//   },
+//   debug: true
 // }
 
 import BigCommercePlugin from './bigcommerce_plugin'
@@ -14,7 +19,7 @@ let _initPlugin = function(){
     auKey: window.AddressFinderConfig.key_au || window.AddressFinderConfig.key || window.AddressFinderConfig.key_nz,
     nzWidgetOptions: window.AddressFinderConfig.nzWidgetOptions || window.AddressFinderConfig.widgetOptions || {},
     auWidgetOptions: window.AddressFinderConfig.auWidgetOptions || window.AddressFinderConfig.widgetOptions || {},
-    debug: window.AddressFinderConfig.debug || true
+    debug: window.AddressFinderConfig.debug || false
   })
 }
 

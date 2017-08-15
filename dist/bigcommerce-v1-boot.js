@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 9);
+/******/ 	return __webpack_require__(__webpack_require__.s = 13);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -117,7 +117,7 @@ function assertDefined(it){
   return it;
 }
 
-var $ = module.exports = __webpack_require__(14)({
+var $ = module.exports = __webpack_require__(18)({
   g: global,
   core: core,
   html: global.document && document.documentElement,
@@ -178,22 +178,11 @@ var global = __webpack_require__(0).g
   , store  = {};
 module.exports = function(name){
   return store[name] || (store[name] =
-    global.Symbol && global.Symbol[name] || __webpack_require__(2).safe('Symbol.' + name));
+    global.Symbol && global.Symbol[name] || __webpack_require__(3).safe('Symbol.' + name));
 };
 
 /***/ }),
 /* 2 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var sid = 0;
-function uid(key){
-  return 'Symbol(' + key + ')_' + (++sid + Math.random()).toString(36);
-}
-uid.safe = __webpack_require__(0).g.Symbol || uid;
-module.exports = uid;
-
-/***/ }),
-/* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var $          = __webpack_require__(0)
@@ -240,16 +229,27 @@ function $def(type, name, source){
 module.exports = $def;
 
 /***/ }),
+/* 3 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var sid = 0;
+function uid(key){
+  return 'Symbol(' + key + ')_' + (++sid + Math.random()).toString(36);
+}
+uid.safe = __webpack_require__(0).g.Symbol || uid;
+module.exports = uid;
+
+/***/ }),
 /* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 var $                 = __webpack_require__(0)
-  , ctx               = __webpack_require__(7)
-  , cof               = __webpack_require__(6)
-  , $def              = __webpack_require__(3)
-  , assertObject      = __webpack_require__(8).obj
+  , ctx               = __webpack_require__(5)
+  , cof               = __webpack_require__(7)
+  , $def              = __webpack_require__(2)
+  , assertObject      = __webpack_require__(9).obj
   , SYMBOL_ITERATOR   = __webpack_require__(1)('iterator')
   , FF_ITERATOR       = '@@iterator'
   , Iterators         = {}
@@ -362,40 +362,8 @@ var $iter = module.exports = {
 /* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
-// 22.1.3.31 Array.prototype[@@unscopables]
-var $           = __webpack_require__(0)
-  , UNSCOPABLES = __webpack_require__(1)('unscopables');
-if($.FW && !(UNSCOPABLES in []))$.hide(Array.prototype, UNSCOPABLES, {});
-module.exports = function(key){
-  if($.FW)[][UNSCOPABLES][key] = true;
-};
-
-/***/ }),
-/* 6 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var $        = __webpack_require__(0)
-  , TAG      = __webpack_require__(1)('toStringTag')
-  , toString = {}.toString;
-function cof(it){
-  return toString.call(it).slice(8, -1);
-}
-cof.classof = function(it){
-  var O, T;
-  return it == undefined ? it === undefined ? 'Undefined' : 'Null'
-    : typeof (T = (O = Object(it))[TAG]) == 'string' ? T : cof(O);
-};
-cof.set = function(it, tag, stat){
-  if(it && !$.has(it = stat ? it : it.prototype, TAG))$.hide(it, TAG, tag);
-};
-module.exports = cof;
-
-/***/ }),
-/* 7 */
-/***/ (function(module, exports, __webpack_require__) {
-
 // Optional / simple context binding
-var assertFunction = __webpack_require__(8).fn;
+var assertFunction = __webpack_require__(9).fn;
 module.exports = function(fn, that, length){
   assertFunction(fn);
   if(~length && that === undefined)return fn;
@@ -415,7 +383,64 @@ module.exports = function(fn, that, length){
 };
 
 /***/ }),
+/* 6 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// 22.1.3.31 Array.prototype[@@unscopables]
+var $           = __webpack_require__(0)
+  , UNSCOPABLES = __webpack_require__(1)('unscopables');
+if($.FW && !(UNSCOPABLES in []))$.hide(Array.prototype, UNSCOPABLES, {});
+module.exports = function(key){
+  if($.FW)[][UNSCOPABLES][key] = true;
+};
+
+/***/ }),
+/* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var $        = __webpack_require__(0)
+  , TAG      = __webpack_require__(1)('toStringTag')
+  , toString = {}.toString;
+function cof(it){
+  return toString.call(it).slice(8, -1);
+}
+cof.classof = function(it){
+  var O, T;
+  return it == undefined ? it === undefined ? 'Undefined' : 'Null'
+    : typeof (T = (O = Object(it))[TAG]) == 'string' ? T : cof(O);
+};
+cof.set = function(it, tag, stat){
+  if(it && !$.has(it = stat ? it : it.prototype, TAG))$.hide(it, TAG, tag);
+};
+module.exports = cof;
+
+/***/ }),
 /* 8 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var set   = __webpack_require__(0).set
+  , at    = __webpack_require__(21)(true)
+  , ITER  = __webpack_require__(3).safe('iter')
+  , $iter = __webpack_require__(4)
+  , step  = $iter.step;
+
+// 21.1.3.27 String.prototype[@@iterator]()
+$iter.std(String, 'String', function(iterated){
+  set(this, ITER, {o: String(iterated), i: 0});
+// 21.1.5.2.1 %StringIteratorPrototype%.next()
+}, function(){
+  var iter  = this[ITER]
+    , O     = iter.o
+    , index = iter.i
+    , point;
+  if(index >= O.length)return step(1);
+  point = at.call(O, index);
+  iter.i += point.length;
+  return step(0, point);
+});
+
+/***/ }),
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var $ = __webpack_require__(0);
@@ -438,28 +463,69 @@ assert.inst = function(it, Constructor, name){
 module.exports = assert;
 
 /***/ }),
-/* 9 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(10);
+__webpack_require__(24);
+module.exports = __webpack_require__(0).core.Array.find;
+
+/***/ }),
+/* 11 */
+/***/ (function(module, exports, __webpack_require__) {
+
+__webpack_require__(8);
+__webpack_require__(26);
+module.exports = __webpack_require__(0).core.Array.from;
+
+/***/ }),
+/* 12 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// JavaScript 1.6 / Strawman array statics shim
+var $       = __webpack_require__(0)
+  , $def    = __webpack_require__(2)
+  , $Array  = $.core.Array || Array
+  , statics = {};
+function setStatics(keys, length){
+  $.each.call(keys.split(','), function(key){
+    if(length == undefined && key in $Array)statics[key] = $Array[key];
+    else if(key in [])statics[key] = __webpack_require__(5)(Function.call, [][key], length);
+  });
+}
+setStatics('pop,reverse,shift,keys,values,entries', 1);
+setStatics('indexOf,every,some,forEach,map,filter,find,findIndex,includes', 3);
+setStatics('join,slice,concat,push,splice,unshift,sort,lastIndexOf,' +
+           'reduce,reduceRight,copyWithin,fill,turn');
+$def($def.S, 'Array', statics);
+
+/***/ }),
+/* 13 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__(14);
 
 
 /***/ }),
-/* 10 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var _bigcommerce_plugin = __webpack_require__(11);
+var _bigcommerce_plugin = __webpack_require__(15);
 
 var _bigcommerce_plugin2 = _interopRequireDefault(_bigcommerce_plugin);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-window.AF = window.AF || {}; // // this is done within
+window.AF = window.AF || {}; // this is configured using:
+//
 // window.AddressFinderConfig = {
-//   key: "ADDRESSFINDER_NZ_DEMO_KEY"
+//   key: "ADDRESSFINDER_NZ_DEMO_KEY",
+//   widgetOptions: {
+//     byline: false
+//   },
+//   debug: true
 // }
 
 window.AF.BigCommercePlugin = _bigcommerce_plugin2.default;
@@ -470,7 +536,7 @@ var _initPlugin = function _initPlugin() {
     auKey: window.AddressFinderConfig.key_au || window.AddressFinderConfig.key || window.AddressFinderConfig.key_nz,
     nzWidgetOptions: window.AddressFinderConfig.nzWidgetOptions || window.AddressFinderConfig.widgetOptions || {},
     auWidgetOptions: window.AddressFinderConfig.auWidgetOptions || window.AddressFinderConfig.widgetOptions || {},
-    debug: window.AddressFinderConfig.debug || true
+    debug: window.AddressFinderConfig.debug || false
   });
 };
 
@@ -481,7 +547,7 @@ s.onload = _initPlugin;
 document.body.appendChild(s);
 
 /***/ }),
-/* 11 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -494,19 +560,23 @@ Object.defineProperty(exports, "__esModule", {
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); // see https://github.com/zloirock/core-js
 
 
-__webpack_require__(12);
-
 __webpack_require__(16);
 
-__webpack_require__(21);
+__webpack_require__(20);
 
-__webpack_require__(24);
+__webpack_require__(10);
 
-var _form_helper = __webpack_require__(27);
+__webpack_require__(11);
+
+__webpack_require__(28);
+
+var _form_helper = __webpack_require__(31);
 
 var _form_helper2 = _interopRequireDefault(_form_helper);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -514,7 +584,7 @@ var BigCommercePlugin = function () {
   function BigCommercePlugin(widgetConfig) {
     _classCallCheck(this, BigCommercePlugin);
 
-    this.version = "1.2.1";
+    this.version = "1.2.2";
     this.widgetConfig = widgetConfig;
     this.layoutConfigurations = [{
       label: "Optimized one-page checkout (Early access)",
@@ -841,24 +911,47 @@ var BigCommercePlugin = function () {
   }, {
     key: "mutationHandler",
     value: function mutationHandler(mutations) {
-      var nonAddressFinderChange = function nonAddressFinderChange(mutation) {
-        !mutation.target.classList.contains("af_list");
-      };
+      var changedNodes = mutations.reduce(function (nodes, mutation) {
+        // ignore this mutation if the target is the AddressFinder UL element
+        if (mutation.target && mutation.target.classList && mutation.target.classList.contains("af_list")) {
+          return nodes;
+        }
 
-      if (mutations.find(nonAddressFinderChange)) {
-        return;
+        return nodes.concat([].concat(_toConsumableArray(mutation.addedNodes))).concat([].concat(_toConsumableArray(mutation.removedNodes)));
+      }, []);
+
+      var anyBigCommerceChanges = changedNodes.find(function (node) {
+        return !(node.classList && node.classList.contains("af_list"));
+      });
+
+      if (!anyBigCommerceChanges) {
+        return; // ignore AddressFinder changes
       }
 
       if (this._mutationTimeout) {
-        clearTimeout(this._mutationTimeout);
+        clearTimeout(this._mutationTimeout); // reset previous timeout
       }
 
+      // ignore any further changes for the next 750 mS
       this._mutationTimeout = setTimeout(this.resetAndReloadFormHelpers.bind(this), 750);
     }
   }, {
-    key: "domAttrModifiedHandler",
-    value: function domAttrModifiedHandler(event) {
-      this.mutationHandler([event]);
+    key: "domNodeModifiedHandler",
+    value: function domNodeModifiedHandler(event) {
+      if (event.target.classList && event.target.classList.contains("af_list")) {
+        return; // ignore AddressFinder changes
+      }
+
+      if (event.relatedNode && event.relatedNode.classList && event.relatedNode.classList.contains("af_list")) {
+        return; // ignore AddressFinder changes
+      }
+
+      if (this._mutationTimeout) {
+        clearTimeout(this._mutationTimeout); // reset previous timeout
+      }
+
+      // ignore any further changes for the next 750 mS
+      this._mutationTimeout = setTimeout(this.resetAndReloadFormHelpers.bind(this), 750);
     }
   }, {
     key: "monitorMutations",
@@ -869,7 +962,8 @@ var BigCommercePlugin = function () {
         observer.observe(document.body, { childList: true, subtree: true });
       } else if (window.addEventListener) {
         /* for IE 9 and 10 */
-        document.body.addEventListener('DOMAttrModified', this.domAttrModifiedHandler.bind(this), false);
+        document.body.addEventListener('DOMNodeInserted', this.domNodeModifiedHandler.bind(this), false);
+        document.body.addEventListener('DOMNodeRemoved', this.domNodeModifiedHandler.bind(this), false);
       } else {
         if (window.console) {
           console.info('AddressFinder Error - please use a more modern browser');
@@ -891,24 +985,24 @@ var BigCommercePlugin = function () {
 exports.default = BigCommercePlugin;
 
 /***/ }),
-/* 12 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(13);
+__webpack_require__(17);
 module.exports = __webpack_require__(0).core.Symbol;
 
 /***/ }),
-/* 13 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 // ECMAScript 6 symbols shim
 var $        = __webpack_require__(0)
-  , setTag   = __webpack_require__(6).set
-  , uid      = __webpack_require__(2)
-  , $def     = __webpack_require__(3)
-  , keyOf    = __webpack_require__(15)
+  , setTag   = __webpack_require__(7).set
+  , uid      = __webpack_require__(3)
+  , $def     = __webpack_require__(2)
+  , keyOf    = __webpack_require__(19)
   , has      = $.has
   , hide     = $.hide
   , getNames = $.getNames
@@ -1005,7 +1099,7 @@ setTag(Math, 'Math', true);
 setTag($.g.JSON, 'JSON', true);
 
 /***/ }),
-/* 14 */
+/* 18 */
 /***/ (function(module, exports) {
 
 module.exports = function($){
@@ -1015,7 +1109,7 @@ module.exports = function($){
 };
 
 /***/ }),
-/* 15 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var $ = __webpack_require__(0);
@@ -1029,40 +1123,15 @@ module.exports = function(object, el){
 };
 
 /***/ }),
-/* 16 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(17);
-__webpack_require__(19);
+__webpack_require__(8);
+__webpack_require__(22);
 module.exports = __webpack_require__(1)('iterator');
 
 /***/ }),
-/* 17 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var set   = __webpack_require__(0).set
-  , at    = __webpack_require__(18)(true)
-  , ITER  = __webpack_require__(2).safe('iter')
-  , $iter = __webpack_require__(4)
-  , step  = $iter.step;
-
-// 21.1.3.27 String.prototype[@@iterator]()
-$iter.std(String, 'String', function(iterated){
-  set(this, ITER, {o: String(iterated), i: 0});
-// 21.1.5.2.1 %StringIteratorPrototype%.next()
-}, function(){
-  var iter  = this[ITER]
-    , O     = iter.o
-    , index = iter.i
-    , point;
-  if(index >= O.length)return step(1);
-  point = at.call(O, index);
-  iter.i += point.length;
-  return step(0, point);
-});
-
-/***/ }),
-/* 18 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1086,10 +1155,10 @@ module.exports = function(TO_STRING){
 };
 
 /***/ }),
-/* 19 */
+/* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(20);
+__webpack_require__(23);
 var $           = __webpack_require__(0)
   , Iterators   = __webpack_require__(4).Iterators
   , ITERATOR    = __webpack_require__(1)('iterator')
@@ -1101,12 +1170,12 @@ if($.FW && NodeList && !(ITERATOR in NodeList.prototype)){
 Iterators.NodeList = ArrayValues;
 
 /***/ }),
-/* 20 */
+/* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var $          = __webpack_require__(0)
-  , setUnscope = __webpack_require__(5)
-  , ITER       = __webpack_require__(2).safe('iter')
+  , setUnscope = __webpack_require__(6)
+  , ITER       = __webpack_require__(3).safe('iter')
   , $iter      = __webpack_require__(4)
   , step       = $iter.step
   , Iterators  = $iter.Iterators;
@@ -1140,25 +1209,18 @@ setUnscope('values');
 setUnscope('entries');
 
 /***/ }),
-/* 21 */
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(22);
-module.exports = __webpack_require__(0).core.Array.find;
-
-/***/ }),
-/* 22 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var $def = __webpack_require__(3);
+var $def = __webpack_require__(2);
 $def($def.P, 'Array', {
   // 22.1.3.8 Array.prototype.find(predicate, thisArg = undefined)
-  find: __webpack_require__(23)(5)
+  find: __webpack_require__(25)(5)
 });
-__webpack_require__(5)('find');
+__webpack_require__(6)('find');
 
 /***/ }),
-/* 23 */
+/* 25 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1171,7 +1233,7 @@ __webpack_require__(5)('find');
 // 5 -> Array#find
 // 6 -> Array#findIndex
 var $   = __webpack_require__(0)
-  , ctx = __webpack_require__(7);
+  , ctx = __webpack_require__(5);
 module.exports = function(TYPE){
   var IS_MAP        = TYPE == 1
     , IS_FILTER     = TYPE == 2
@@ -1205,25 +1267,86 @@ module.exports = function(TYPE){
 };
 
 /***/ }),
-/* 24 */
+/* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(25);
+var $     = __webpack_require__(0)
+  , ctx   = __webpack_require__(5)
+  , $def  = __webpack_require__(2)
+  , $iter = __webpack_require__(4)
+  , stepCall = $iter.stepCall;
+$def($def.S + $def.F * !__webpack_require__(27)(function(iter){ Array.from(iter); }), 'Array', {
+  // 22.1.2.1 Array.from(arrayLike, mapfn = undefined, thisArg = undefined)
+  from: function from(arrayLike/*, mapfn = undefined, thisArg = undefined*/){
+    var O       = Object($.assertDefined(arrayLike))
+      , mapfn   = arguments[1]
+      , mapping = mapfn !== undefined
+      , f       = mapping ? ctx(mapfn, arguments[2], 2) : undefined
+      , index   = 0
+      , length, result, step, iterator;
+    if($iter.is(O)){
+      iterator = $iter.get(O);
+      // strange IE quirks mode bug -> use typeof instead of isFunction
+      result   = new (typeof this == 'function' ? this : Array);
+      for(; !(step = iterator.next()).done; index++){
+        result[index] = mapping ? stepCall(iterator, f, [step.value, index], true) : step.value;
+      }
+    } else {
+      // strange IE quirks mode bug -> use typeof instead of isFunction
+      result = new (typeof this == 'function' ? this : Array)(length = $.toLength(O.length));
+      for(; length > index; index++){
+        result[index] = mapping ? f(O[index], index) : O[index];
+      }
+    }
+    result.length = index;
+    return result;
+  }
+});
+
+/***/ }),
+/* 27 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var SYMBOL_ITERATOR = __webpack_require__(1)('iterator')
+  , SAFE_CLOSING    = false;
+try {
+  var riter = [7][SYMBOL_ITERATOR]();
+  riter['return'] = function(){ SAFE_CLOSING = true; };
+  Array.from(riter, function(){ throw 2; });
+} catch(e){ /* empty */ }
+module.exports = function(exec){
+  if(!SAFE_CLOSING)return false;
+  var safe = false;
+  try {
+    var arr  = [7]
+      , iter = arr[SYMBOL_ITERATOR]();
+    iter.next = function(){ safe = true; };
+    arr[SYMBOL_ITERATOR] = function(){ return iter; };
+    exec(arr);
+  } catch(e){ /* empty */ }
+  return safe;
+};
+
+/***/ }),
+/* 28 */
+/***/ (function(module, exports, __webpack_require__) {
+
+__webpack_require__(29);
 module.exports = __webpack_require__(0).core.Array.includes;
 
 /***/ }),
-/* 25 */
+/* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // https://github.com/domenic/Array.prototype.includes
-var $def = __webpack_require__(3);
+var $def = __webpack_require__(2);
 $def($def.P, 'Array', {
-  includes: __webpack_require__(26)(true)
+  includes: __webpack_require__(30)(true)
 });
-__webpack_require__(5)('includes');
+__webpack_require__(6)('includes');
 
 /***/ }),
-/* 26 */
+/* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1247,7 +1370,7 @@ module.exports = function(IS_INCLUDES){
 };
 
 /***/ }),
-/* 27 */
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1258,6 +1381,14 @@ Object.defineProperty(exports, "__esModule", {
 });
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+__webpack_require__(32);
+
+__webpack_require__(33);
+
+__webpack_require__(10);
+
+__webpack_require__(11);
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -1341,6 +1472,7 @@ var FormHelper = function () {
     this.subscriptions = {};
     this.label = formHelperConfig.label;
     this.layoutIdentifier = formHelperConfig.layoutIdentifier;
+    this.countryCodes = ["au", "nz"];
 
     this._bindToForm();
   }
@@ -1353,6 +1485,8 @@ var FormHelper = function () {
   _createClass(FormHelper, [{
     key: "destroy",
     value: function destroy() {
+      this._log("Destroying widget: " + this.label);
+
       for (var widgetCountryCode in this.widgets) {
         this.widgets[widgetCountryCode].disable();
         this.widgets[widgetCountryCode].destroy();
@@ -1370,38 +1504,53 @@ var FormHelper = function () {
   }, {
     key: "areAllElementsStillInTheDOM",
     value: function areAllElementsStillInTheDOM() {
-      if (!document.body.contains(this.formHelperConfig.countryElement)) {
+      var _this = this;
+
+      if (this._bodyDoesntContainElement(this.formHelperConfig.countryElement)) {
         this._log("Country Element is not in the DOM");
         return false;
       }
 
-      // TODO can we aggregate the elements to check into a single array or map?
+      var allPresent = this.countryCodes.find(function (countryCode) {
+        !_this.areAllElementsStillInTheDOMForCountryCode(countryCode);
+      });
 
-      var countryCodes = ['nz', 'au'];
-      for (var i = 0; i < countryCodes.length; i++) {
-        var countryCode = countryCodes[i];
+      return allPresent;
+    }
+  }, {
+    key: "areAllElementsStillInTheDOMForCountryCode",
+    value: function areAllElementsStillInTheDOMForCountryCode(countryCode) {
+      var formConfig = this.formHelperConfig[countryCode];
 
-        // check that the config for this country is supplied
-        if (this.formHelperConfig[countryCode]) {
-          if (!document.body.contains(this.formHelperConfig[countryCode].searchElement)) {
-            this._log("Search Element is not in the DOM");
-            return false;
-          }
+      // if config is not supplied then no need to check elements
+      if (!formConfig) {
+        return true;
+      }
 
-          for (var elementName in this.formHelperConfig[countryCode].elements) {
-            if (this.formHelperConfig[countryCode].elements.hasOwnProperty(elementName)) {
-              var element = this.formHelperConfig[countryCode].elements[elementName];
+      if (this._bodyDoesntContainElement(formConfig.searchElement)) {
+        this._log("Search Element is not in the DOM");
+        return false;
+      }
 
-              if (element && !document.body.contains(element)) {
-                this._log("Element " + elementName + " is not in the DOM");
-                return false;
-              }
-            }
-          }
-        }
+      var findElement = function findElement(elementName) {
+        return formConfig.elements[elementName];
+      };
+      var isPresent = function isPresent(element) {
+        return element;
+      };
+      var missingElement = Array.prototype.map.call(formConfig.elements, findElement).filter(isPresent).find(this._bodyDoesntContainElement);
+
+      if (missingElement) {
+        this._log("Element " + elementName + " is not in the DOM");
+        return false;
       }
 
       return true;
+    }
+  }, {
+    key: "_bodyDoesntContainElement",
+    value: function _bodyDoesntContainElement(element) {
+      !document.body.contains(element);
     }
   }, {
     key: "_bindToForm",
@@ -1428,43 +1577,33 @@ var FormHelper = function () {
   }, {
     key: "_countryChanged",
     value: function _countryChanged(event, preserveValues) {
+      var activeCountry;
       switch (this.formHelperConfig.countryElement.value) {
         case this.formHelperConfig.nz.countryValue:
-          this._setActiveCountry("nz");
-
-          if (!preserveValues) {
-            this._clearElementValues("au");
-          }
-
+          activeCountry = "nz";
           break;
         case this.formHelperConfig.au.countryValue:
-          this._setActiveCountry("au");
-
-          if (!preserveValues) {
-            this._clearElementValues("nz");
-          }
-
+          activeCountry = "au";
           break;
         default:
-          this._setActiveCountry("null");
+          activeCountry = "null";
+      }
 
-          if (!preserveValues) {
-            this._clearElementValues("au");
-            this._clearElementValues("nz");
-          }
+      this._setActiveCountry(activeCountry);
+      if (!preserveValues) {
+        var isInactiveCountry = function isInactiveCountry(countryCode) {
+          return countryCode != activeCountry;
+        };
+        this.countryCodes.filter(isInactiveCountry).forEach(this._clearElementValues.bind(this));
       }
     }
   }, {
     key: "_clearElementValues",
     value: function _clearElementValues(countryCode) {
-      for (var elementName in this.formHelperConfig[countryCode].elements) {
-        if (this.formHelperConfig[countryCode].elements.hasOwnProperty(elementName)) {
-          var element = this.formHelperConfig[countryCode].elements[elementName];
-
-          if (element) {
-            this._setElementValue(element, null, elementName);
-          }
-        }
+      var elements = this.formHelperConfig[countryCode].elements;
+      for (var elementName in elements) {
+        var element = elements[elementName];
+        if (element) this._setElementValue(element, null, elementName);
       }
     }
   }, {
@@ -1475,7 +1614,6 @@ var FormHelper = function () {
       for (var widgetCountryCode in this.widgets) {
         this.widgets[widgetCountryCode].disable();
       }
-
       this.widgets[countryCode].enable();
     }
   }, {
@@ -1508,10 +1646,10 @@ var FormHelper = function () {
       var elements = this.formHelperConfig.au.elements;
 
       if (elements.address_line_1_and_2) {
-        var combined = [metaData.address_line_1, metaData.address_line_2].filter(function (a) {
-          return a != null;
-        }).join(", ");
-
+        var addressIsPresent = function addressIsPresent(array) {
+          return array != null;
+        };
+        var combined = [metaData.address_line_1, metaData.address_line_2].filter(addressIsPresent).join(", ");
         this._setElementValue(elements.address_line_1_and_2, combined, "address_line_1_and_2");
       } else {
         this._setElementValue(elements.address_line_1, metaData.address_line_1, "address_line_1");
@@ -1531,31 +1669,37 @@ var FormHelper = function () {
   }, {
     key: "_setElementValue",
     value: function _setElementValue(element, value, elementName) {
-      if (element) {
-        element.value = value;
+      if (!element) {
+        var errorMessage = 'AddressFinder Error: ' + 'Attempted to update value for element that could not be found.\n' + '\nElement: ' + elementName + '\nValue: ' + value;
 
-        var event = document.createEvent('HTMLEvents');
-        event.initEvent('change', true, false);
-        element.dispatchEvent(event);
-
-        var options = element.options;
-        if (options) {
-          for (var i = 0; i < options.length; i++) {
-            if (element.options[i].value == value) {
-              element.options[i].dispatchEvent(event);
-              break;
-            }
-          }
+        if (window.console) {
+          console.warn(errorMessage);
         }
 
         return;
       }
 
-      var errorMessage = 'AddressFinder Error: ' + 'Attempted to update value for element that could not be found.\n' + '\nElement: ' + elementName + '\nValue: ' + value;
+      if (element.options) {
+        var checkOptionMatchesValue = function checkOptionMatchesValue(option) {
+          return option.value == value;
+        };
+        var selectedOption = Array.prototype.find.call(element.options, checkOptionMatchesValue);
 
-      if (window.console) {
-        console.warn(errorMessage);
+        element.value = value;
+        if (selectedOption) this._dispatchChangeEvent(selectedOption);
+
+        return;
       }
+
+      element.value = value;
+      this._dispatchChangeEvent(element);
+    }
+  }, {
+    key: "_dispatchChangeEvent",
+    value: function _dispatchChangeEvent(element) {
+      var event = document.createEvent('HTMLEvents');
+      event.initEvent('change', true, false);
+      element.dispatchEvent(event);
     }
   }, {
     key: "_log",
@@ -1570,6 +1714,20 @@ var FormHelper = function () {
 }();
 
 exports.default = FormHelper;
+
+/***/ }),
+/* 32 */
+/***/ (function(module, exports, __webpack_require__) {
+
+__webpack_require__(12);
+module.exports = __webpack_require__(0).core.Array.map;
+
+/***/ }),
+/* 33 */
+/***/ (function(module, exports, __webpack_require__) {
+
+__webpack_require__(12);
+module.exports = __webpack_require__(0).core.Array.filter;
 
 /***/ })
 /******/ ]);
