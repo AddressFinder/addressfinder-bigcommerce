@@ -114,7 +114,7 @@ export default class FormHelper {
 
     const allPresent = this.countryCodes.find((countryCode) => {
       !this.areAllElementsStillInTheDOMForCountryCode(countryCode)
-    })
+    });
 
     return allPresent
   }

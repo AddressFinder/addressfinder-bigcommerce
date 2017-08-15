@@ -235,7 +235,7 @@ export default class BigCommercePlugin {
   }
 
   _inactiveFormHelpers(){
-    const isInactive = formHelper => !formHelper.areAllElementsStillInTheDOM()
+    const isInactive = formHelper => formHelper.areAllElementsStillInTheDOM()
     return this.formHelpers.filter(isInactive)
   }
 
