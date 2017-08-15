@@ -3,6 +3,7 @@ import "core-js/fn/symbol/iterator"
 import "core-js/fn/array/find"
 import "core-js/fn/array/from"
 import "core-js/fn/array/includes"
+import "core-js/fn/string/includes"
 import FormHelper from "./form_helper"
 
 export default class BigCommercePlugin {
@@ -234,7 +235,7 @@ export default class BigCommercePlugin {
   }
 
   _inactiveFormHelpers(){
-    const isInactive = formHelper => !formHelper.areAllElementsStillInTheDOM()
+    const isInactive = formHelper => formHelper.areAllElementsStillInTheDOM()
     return this.formHelpers.filter(isInactive)
   }
 
@@ -285,11 +286,11 @@ export default class BigCommercePlugin {
   }
 
   domNodeModifiedHandler(event){
-    if (event.target.classList && event.target.classList.contains("af_list")) {
+    if (event.target.className && event.target.className.includes("af_list")) {
       return // ignore AddressFinder changes
     }
 
-    if (event.relatedNode && event.relatedNode.classList && event.relatedNode.classList.contains("af_list")) {
+    if (event.relatedNode && event.relatedNode.className && event.relatedNode.className.includes("af_list")) {
       return // ignore AddressFinder changes
     }
 
