@@ -2,6 +2,7 @@ import "core-js/fn/array/map"
 import "core-js/fn/array/filter"
 import "core-js/fn/array/find"
 import "core-js/fn/array/from"
+import "core-js/fn/object/values"
 
 /**
  * Usage:
@@ -90,7 +91,7 @@ export default class FormHelper {
    * Shuts down this form_helper by disabling the widget and any callback handlers.
    */
   destroy(){
-    this._log(`Destroying widget: ${this.label}`)
+    this._log("Destroying widget", this.label)
 
     for (var widgetCountryCode in this.widgets) {
       this.widgets[widgetCountryCode].disable()
@@ -112,11 +113,18 @@ export default class FormHelper {
       return false
     }
 
-    const allPresent = this.countryCodes.find((countryCode) => {
-      !this.areAllElementsStillInTheDOMForCountryCode(countryCode)
+    const countryCodeWithMissingElements = this.countryCodes.find((countryCode) => {
+      if (this.areAllElementsStillInTheDOMForCountryCode(countryCode)) {
+        return false // not missing
+      } else {
+        return true // missing an element
+      }
     });
 
-    return allPresent
+    const allElementsStillInTheDOM = !countryCodeWithMissingElements
+    this._log('areAllElementsStillInTheDOM?', allElementsStillInTheDOM)
+    
+    return allElementsStillInTheDOM
   }
 
   areAllElementsStillInTheDOMForCountryCode(countryCode) {
@@ -127,25 +135,28 @@ export default class FormHelper {
       return true
     }
 
-    if( this._bodyDoesntContainElement(formConfig.searchElement )){
+    if (this._bodyDoesntContainElement(formConfig.searchElement)){
       this._log("Search Element is not in the DOM")
       return false
     }
+    // const findElement = elementName => formConfig.elements[elementName]
+    const isPresent = element => element != undefined
 
-    const findElement = elementName => formConfig.elements[elementName]
-    const isPresent = element => element
-    const missingElement = Array.prototype.map.call(formConfig.elements, findElement).filter(isPresent).find(this._bodyDoesntContainElement)
+    const elementNotInDOM = Object.values(formConfig.elements)
+                                  .filter(isPresent)
+                                  .find(this._bodyDoesntContainElement)
 
-    if (missingElement) {
-      this._log(`Element ${elementName} is not in the DOM`)
+    if (elementNotInDOM) {
+      this._log("Element is not in the DOM", elementNotInDOM)
       return false
     }
 
+    // all elements are still in the DOM
     return true
   }
 
   _bodyDoesntContainElement(element) {
-    !document.body.contains(element)
+    return !document.body.contains(element)
   }
 
   _bindToForm(){
@@ -198,7 +209,7 @@ export default class FormHelper {
   }
 
   _setActiveCountry(countryCode){
-    this._log(`Setting active country ${countryCode}`)
+    this._log("Setting active country", countryCode)
 
     for (var widgetCountryCode in this.widgets) {
       this.widgets[widgetCountryCode].disable()
@@ -290,9 +301,14 @@ export default class FormHelper {
     element.dispatchEvent(event);
   }
 
-  _log(message){
+  _log(message, object1=undefined){
     if (this.widgetConfig.debug && window.console) {
-      console.log(`FormHelper for layout ${this.formHelperConfig.label}: ${message}`)
+      if (object1 != undefined) {
+        console.log(`FormHelper for layout ${this.formHelperConfig.label}: ${message}`, object1)
+      }
+      else {
+        console.log(`FormHelper for layout ${this.formHelperConfig.label}: ${message}`)
+      }
     }
   }
 }

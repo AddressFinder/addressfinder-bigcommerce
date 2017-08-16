@@ -8,7 +8,7 @@ import FormHelper from "./form_helper"
 
 export default class BigCommercePlugin {
   constructor(widgetConfig){
-    this.version = "1.2.2"
+    this.version = "1.2.3"
     this.widgetConfig = widgetConfig
     this.layoutConfigurations = [
       {
@@ -172,7 +172,7 @@ export default class BigCommercePlugin {
       let identifyingElement = document.getElementById(layoutConfig.layoutIdentifier)
 
       if (identifyingElement) {
-        this.log(`Identified layout named: ${layoutConfig.label}`)
+        this._log(`Identified layout named: ${layoutConfig.label}`)
         this.initialiseFormHelper(layoutConfig)
       }
     }
@@ -222,21 +222,22 @@ export default class BigCommercePlugin {
   }
 
   resetAndReloadFormHelpers(){
-    const inactiveFormHelpers = this._inactiveFormHelpers()
+    const formHelpersToDestroy = this._formHelpersWithMissingElements()
 
-    for (const formHelper of inactiveFormHelpers) {
+    for (const formHelper of formHelpersToDestroy) {
       formHelper.destroy()
     }
 
-    const activeFormHelpers = formHelper => !inactiveFormHelpers.includes(formHelper)
-    this.formHelpers = this.formHelpers.filter(activeFormHelpers)
+    const isStillActive = formHelper => !formHelpersToDestroy.includes(formHelper)
+    this.formHelpers = this.formHelpers.filter(isStillActive)
 
     this.identifyAdditionalLayouts()
   }
 
-  _inactiveFormHelpers(){
-    const isInactive = formHelper => formHelper.areAllElementsStillInTheDOM()
-    return this.formHelpers.filter(isInactive)
+  _formHelpersWithMissingElements(){
+    const hasMissingElements = formHelper => !formHelper.areAllElementsStillInTheDOM()
+
+    return this.formHelpers.filter(hasMissingElements)
   }
 
   identifyAdditionalLayouts(){
@@ -319,9 +320,14 @@ export default class BigCommercePlugin {
     }
   }
 
-  log(message){
+  _log(message, object1=null){
     if (this.widgetConfig.debug && window.console) {
-      console.log(message)
+      if (object1) {
+        console.log(message, object1)
+      }
+      else {
+        console.log(message)
+      }
     }
   }
 }
