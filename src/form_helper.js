@@ -123,7 +123,7 @@ export default class FormHelper {
 
     const allElementsStillInTheDOM = !countryCodeWithMissingElements
     this._log('areAllElementsStillInTheDOM?', allElementsStillInTheDOM)
-    
+
     return allElementsStillInTheDOM
   }
 
@@ -204,7 +204,7 @@ export default class FormHelper {
     const elements = this.formHelperConfig[countryCode].elements
     for (var elementName in elements) {
       const element = elements[elementName];
-      if (element) this._setElementValue(element, null, elementName);
+      if (element) this._setElementValue(element, "", elementName);
     }
   }
 

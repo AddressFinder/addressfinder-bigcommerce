@@ -2592,7 +2592,7 @@ var FormHelper = function () {
       var elements = this.formHelperConfig[countryCode].elements;
       for (var elementName in elements) {
         var element = elements[elementName];
-        if (element) this._setElementValue(element, null, elementName);
+        if (element) this._setElementValue(element, "", elementName);
       }
     }
   }, {
