@@ -252,6 +252,10 @@ export default class FormHelper {
     }
     else {
       this._setElementValue(elements.address_line_1, metaData.address_line_1, "address_line_1")
+
+      if (metaData.address_line_2 == null) {
+        metaData.address_line_2 = ""
+      }
       this._setElementValue(elements.address_line_2, metaData.address_line_2, "address_line_2")
     }
 
