@@ -20,6 +20,15 @@ BigCommerce stores.
 * [Australia](https://addressfinder.com.au/?utm_source=bigcommerce%20plugin&utm_medium=plugin&utm_campaign=plugin&utm_term=Australia&utm_content=Supported%20Countries)
 * [New Zealand](https://addressfinder.nz/?utm_source=bigcommerce%20plugin&utm_medium=plugin&utm_campaign=plugin&utm_term=New%20Zealand&utm_content=Supported%20Countries)
 
+Register for a free AddressFinder account at one of these links:
+
+* [Free Account for Australia](https://portal.addressfinder.io/signup/au?utm_source=bigcommerce%20plugin&utm_medium=plugin&utm_campaign=plugin&utm_term=Australia&utm_content=Free%20Account%20for%20Australia)
+* [Free Account for New Zealand](https://portal.addressfinder.io/signup/nz?utm_source=bigcommerce%20plugin&utm_medium=plugin&utm_campaign=plugin&utm_term=New%20Zealand&utm_content=Free%20Account%20for%20New%20Zealand)
+
+Existing users can obtain their API key from the [AddressFinder Portal](https://portal.addressfinder.io/?utm_source=bigcommerce%20plugin&utm_medium=plugin&utm_campaign=plugin&utm_term=AddressFinder%20portal&utm_content=exisiting%20users).
+
+Read more on the AddressFinder [BigCommerce Plugin](https://addressfinder.nz/docs/bigcommerce?utm_source=bigcommerce%20plugin&utm_medium=plugin&utm_campaign=plugin&utm_term=Bigcommerce%20Plugin&utm_content=Read%20More) page.
+
 #### Compatibility
 
 Addressfinder-BigCommerce requires IE10, IE11, Edge, Chrome, Safari, or Firefox.
