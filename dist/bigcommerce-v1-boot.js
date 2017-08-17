@@ -993,7 +993,7 @@ var BigCommercePlugin = function () {
   function BigCommercePlugin(widgetConfig) {
     _classCallCheck(this, BigCommercePlugin);
 
-    this.version = "1.2.5";
+    this.version = "1.2.6";
     this.widgetConfig = widgetConfig;
     this.layoutConfigurations = [{
       label: "Optimized one-page checkout (Early access)",
@@ -2642,11 +2642,8 @@ var FormHelper = function () {
         this._setElementValue(elements.address_line_1_and_2, combined, "address_line_1_and_2");
       } else {
         this._setElementValue(elements.address_line_1, metaData.address_line_1, "address_line_1");
-
-        if (metaData.address_line_2 == null) {
-          metaData.address_line_2 = "";
-        }
-        this._setElementValue(elements.address_line_2, metaData.address_line_2, "address_line_2");
+        var address_line_2 = metaData.address_line_2 || "";
+        this._setElementValue(elements.address_line_2, address_line_2, "address_line_2");
       }
 
       this._setElementValue(elements.locality_name, metaData.locality_name, "suburb");
