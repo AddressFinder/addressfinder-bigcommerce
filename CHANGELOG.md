@@ -1,3 +1,9 @@
+# AddressFinder 1.2.2 (August 15, 2017)
+* Internet Explorer v9 fixes
+
+# AddressFinder 1.2.1 (August 10, 2017)
+* Better handling of mutation events
+
 # AddressFinder 1.1.12 (July 27, 2017)
 * Support create_account page
 * Add a debug option
