@@ -55,7 +55,7 @@ If you are using a Blueprint theme you can find the alternate setup instructions
         <script>
         (function(d,w){
           w.AddressFinderConfig = {
-            key: "ADDRESSFINDER_NZ_DEMO_KEY",
+            key: "ADDRESSFINDER_DEMO_KEY",
             debug: false
           }
           w.addEventListener('DOMContentLoaded', function(){
@@ -67,7 +67,7 @@ If you are using a Blueprint theme you can find the alternate setup instructions
         })(document, window);
         </script>
         ```
-6. Replace the `ADDRESSFINDER_NZ_DEMO_KEY` placeholder in the snippet you added in the previous step with your own AddressFinder key and save.
+6. Replace the `ADDRESSFINDER_DEMO_KEY` placeholder in the snippet you added in the previous step with your own AddressFinder key and save.
 
 #### Obtaining a licence key
 
@@ -84,8 +84,8 @@ If you want to adjust the default behaviour of the widget you may add additional
 
 ```
   w.AddressFinderPlugin = {
-    key_nz: "ADDRESSFINDER_NZ_DEMO_KEY",
-    key_au: "ADDRESSFINDER_AU_DEMO_KEY",
+    key_nz: "ADDRESSFINDER_DEMO_KEY",
+    key_au: "ADDRESSFINDER_DEMO_KEY",
     widgetOptions: {
       byline: false
     }
@@ -96,8 +96,8 @@ If you need to add different options for each country you can enter them in obje
 
 ```
   w.AddressFinderPlugin = {
-    key_nz: "ADDRESSFINDER_NZ_DEMO_KEY",
-    key_au: "ADDRESSFINDER_AU_DEMO_KEY",
+    key_nz: "ADDRESSFINDER_DEMO_KEY",
+    key_au: "ADDRESSFINDER_DEMO_KEY",
     nzWidgetOptions: {
       byline: false
     },
