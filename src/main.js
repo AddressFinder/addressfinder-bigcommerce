@@ -1,7 +1,7 @@
 // this is configured using:
 //
 // window.AddressFinderConfig = {
-//   key: "ADDRESSFINDER_NZ_DEMO_KEY",
+//   key: "ADDRESSFINDER_DEMO_KEY",
 //   widgetOptions: {
 //     byline: false
 //   },
