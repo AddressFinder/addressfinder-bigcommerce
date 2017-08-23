@@ -20,6 +20,15 @@ BigCommerce stores.
 * [Australia](https://addressfinder.com.au/?utm_source=bigcommerce%20plugin&utm_medium=plugin&utm_campaign=plugin&utm_term=Australia&utm_content=Supported%20Countries)
 * [New Zealand](https://addressfinder.nz/?utm_source=bigcommerce%20plugin&utm_medium=plugin&utm_campaign=plugin&utm_term=New%20Zealand&utm_content=Supported%20Countries)
 
+Register for a free AddressFinder account at one of these links:
+
+* [Free Account for Australia](https://portal.addressfinder.io/signup/au/free?utm_source=bigcommerce%20plugin&utm_medium=plugin&utm_campaign=plugin&utm_term=Australia&utm_content=Free%20Account%20for%20Australia)
+* [Free Account for New Zealand](https://portal.addressfinder.io/signup/nz/free?utm_source=bigcommerce%20plugin&utm_medium=plugin&utm_campaign=plugin&utm_term=New%20Zealand&utm_content=Free%20Account%20for%20New%20Zealand)
+
+Existing users can obtain their API key from the [AddressFinder Portal](https://portal.addressfinder.io/?utm_source=bigcommerce%20plugin&utm_medium=plugin&utm_campaign=plugin&utm_term=AddressFinder%20portal&utm_content=exisiting%20users).
+
+Read more on the AddressFinder [BigCommerce Plugin](https://addressfinder.nz/docs/bigcommerce?utm_source=bigcommerce%20plugin&utm_medium=plugin&utm_campaign=plugin&utm_term=Bigcommerce%20Plugin&utm_content=Read%20More) page.
+
 #### Compatibility
 
 Addressfinder-BigCommerce requires IE10, IE11, Edge, Chrome, Safari, or Firefox.
@@ -46,7 +55,7 @@ If you are using a Blueprint theme you can find the alternate setup instructions
         <script>
         (function(d,w){
           w.AddressFinderConfig = {
-            key: "ADDRESSFINDER_NZ_DEMO_KEY",
+            key: "ADDRESSFINDER_DEMO_KEY",
             debug: false
           }
           w.addEventListener('DOMContentLoaded', function(){
@@ -58,7 +67,7 @@ If you are using a Blueprint theme you can find the alternate setup instructions
         })(document, window);
         </script>
         ```
-6. Replace the `ADDRESSFINDER_NZ_DEMO_KEY` placeholder in the snippet you added in the previous step with your own AddressFinder key and save.
+6. Replace the `ADDRESSFINDER_DEMO_KEY` placeholder in the snippet you added in the previous step with your own AddressFinder key and save.
 
 #### Obtaining a licence key
 
@@ -75,8 +84,8 @@ If you want to adjust the default behaviour of the widget you may add additional
 
 ```
   w.AddressFinderPlugin = {
-    key_nz: "ADDRESSFINDER_NZ_DEMO_KEY",
-    key_au: "ADDRESSFINDER_AU_DEMO_KEY",
+    key_nz: "ADDRESSFINDER_DEMO_KEY",
+    key_au: "ADDRESSFINDER_DEMO_KEY",
     widgetOptions: {
       byline: false
     }
@@ -87,8 +96,8 @@ If you need to add different options for each country you can enter them in obje
 
 ```
   w.AddressFinderPlugin = {
-    key_nz: "ADDRESSFINDER_NZ_DEMO_KEY",
-    key_au: "ADDRESSFINDER_AU_DEMO_KEY",
+    key_nz: "ADDRESSFINDER_DEMO_KEY",
+    key_au: "ADDRESSFINDER_DEMO_KEY",
     nzWidgetOptions: {
       byline: false
     },
@@ -108,19 +117,3 @@ See [BUILD.md](BUILD.md) for instructions on how to build this plugin from sourc
 ## Software License
 
 The AddressFinder plugin for BigCommerce is released under the permissive free software [MIT License](https://github.com/AbleTech/addressfinder-bigcommerce/blob/master/LICENCE.md).
-
-
-<!-- "scripts": {
-  "compile": "babel src --source-maps --out-dir lib",
-  "concat": "concat lib/*.js -o dist/bigcommerce-v1-boot.js",
-  "minify": "uglifyjs dist/bigcommerce-v1-boot.js -m -o dist/bigcommerce-v1-boot.min.js",
-  "build": "npm run compile && npm run concat",
-  "build:production": "npm run build && npm run minify",
-  "watch": "watch 'npm run build' src/"
-} -->
-
-<!-- "scripts": {
-  "build:test": "webpack --config webpack.config.js",
-  "build:production": "NODE_ENV=production webpack --config webpack.config.js",
-  "build:development": "webpack -w --config webpack.config.js"
-} -->

@@ -928,7 +928,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 window.AF = window.AF || {}; // this is configured using:
 //
 // window.AddressFinderConfig = {
-//   key: "ADDRESSFINDER_NZ_DEMO_KEY",
+//   key: "ADDRESSFINDER_DEMO_KEY",
 //   widgetOptions: {
 //     byline: false
 //   },
@@ -993,7 +993,7 @@ var BigCommercePlugin = function () {
   function BigCommercePlugin(widgetConfig) {
     _classCallCheck(this, BigCommercePlugin);
 
-    this.version = "1.2.6";
+    this.version = "1.2.7";
     this.widgetConfig = widgetConfig;
     this.layoutConfigurations = [{
       label: "Optimized one-page checkout (Early access)",
