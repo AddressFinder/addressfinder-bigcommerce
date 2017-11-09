@@ -198,7 +198,7 @@ export default class BigCommercePlugin {
       },
       {
         label: "Create account (Stencil)",
-        layoutSelector: "form[data-create-account-form]"
+        layoutSelector: "form[data-create-account-form]",
         countryIdentifier: 'FormField_11_select',
         searchIdentifier: "FormField_8_input",
         nz: {
