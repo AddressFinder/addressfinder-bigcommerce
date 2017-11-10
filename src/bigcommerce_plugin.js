@@ -8,7 +8,7 @@ import FormHelper from "./form_helper"
 
 export default class BigCommercePlugin {
   constructor(widgetConfig){
-    this.version = "1.2.7"
+    this.version = "1.3.0"
     this.widgetConfig = widgetConfig
     this.layoutConfigurations = [
       {
