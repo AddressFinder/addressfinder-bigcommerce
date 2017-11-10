@@ -8,12 +8,12 @@ import FormHelper from "./form_helper"
 
 export default class BigCommercePlugin {
   constructor(widgetConfig){
-    this.version = "1.2.7"
+    this.version = "1.3.0"
     this.widgetConfig = widgetConfig
     this.layoutConfigurations = [
       {
         label: "Optimized one-page checkout (Early access)",
-        layoutIdentifier: "micro-app-ng-checkout",
+        layoutSelector: "#micro-app-ng-checkout",
         countryIdentifier: 'countryCodeInput',
         searchIdentifier: "addressLine1Input",
         nz: {
@@ -50,7 +50,7 @@ export default class BigCommercePlugin {
       },
       {
         label: "One-page checkout (Billing details)",
-        layoutIdentifier: "CheckoutStepBillingAddress",
+        layoutSelector: "#CheckoutStepBillingAddress",
         countryIdentifier: 'FormField_11',
         searchIdentifier: "FormField_8",
         nz: {
@@ -87,7 +87,7 @@ export default class BigCommercePlugin {
       },
       {
         label: "One-page checkout (Shipping details)",
-        layoutIdentifier: "CheckoutStepShippingAddress",
+        layoutSelector: "#CheckoutStepShippingAddress",
         countryIdentifier: "FormField_21",
         searchIdentifier: "FormField_18",
         nz: {
@@ -123,8 +123,8 @@ export default class BigCommercePlugin {
         }
       },
       {
-        label: "Create account",
-        layoutIdentifier: "CreateAccountForm",
+        label: "Create account (Blueprint)",
+        layoutSelector: "#CreateAccountForm",
         countryIdentifier: 'FormField_11',
         searchIdentifier: "FormField_8",
         nz: {
@@ -159,7 +159,117 @@ export default class BigCommercePlugin {
           }
         }
       },
-
+      {
+        label: "Address book (Blueprint)",
+        layoutSelector: "#AddressEditForm",
+        countryIdentifier: 'FormField_11',
+        searchIdentifier: "FormField_8",
+        nz: {
+          countryValue: "New Zealand",
+          elements: {
+            address1: 'FormField_8',
+            suburb: 'FormField_9',
+            city: 'FormField_10',
+            region: 'FormField_12',
+            postcode: 'FormField_13',
+          },
+          regionMappings: null
+        },
+        au: {
+          countryValue: "Australia",
+          elements: {
+            address1: 'FormField_8',
+            address2: 'FormField_9',
+            suburb: 'FormField_10',
+            state: 'FormField_12',
+            postcode: 'FormField_13',
+          },
+          stateMappings: {
+            'ACT': 'Australian Capital Territory',
+            'NSW': 'New South Wales',
+            'NT' : 'Northern Territory',
+            'QLD': 'Queensland',
+            'SA' : 'South Australia',
+            'TAS': 'Tasmania',
+            'VIC': 'Victoria',
+            'WA' : 'Western Australia'
+          }
+        }
+      },
+      {
+        label: "Create account (Stencil)",
+        layoutSelector: "form[data-create-account-form]",
+        countryIdentifier: 'FormField_11_select',
+        searchIdentifier: "FormField_8_input",
+        nz: {
+          countryValue: "New Zealand",
+          elements: {
+            address1: 'FormField_8_input',
+            suburb: 'FormField_9_input',
+            city: 'FormField_10_input',
+            region: 'FormField_12_input',
+            postcode: 'FormField_13_input',
+          },
+          regionMappings: null
+        },
+        au: {
+          countryValue: "Australia",
+          elements: {
+            address1: 'FormField_8_input',
+            address2: 'FormField_9_input',
+            suburb: 'FormField_10_input',
+            state: 'FormField_12_input',
+            postcode: 'FormField_13_input',
+          },
+          stateMappings: {
+            'ACT': 'Australian Capital Territory',
+            'NSW': 'New South Wales',
+            'NT' : 'Northern Territory',
+            'QLD': 'Queensland',
+            'SA' : 'South Australia',
+            'TAS': 'Tasmania',
+            'VIC': 'Victoria',
+            'WA' : 'Western Australia'
+          }
+        }
+      },
+      {
+        label: "Address book (Stencil)",
+        layoutSelector: "form[data-address-form]",
+        countryIdentifier: 'FormField_11_select',
+        searchIdentifier: "FormField_8_input",
+        nz: {
+          countryValue: "New Zealand",
+          elements: {
+            address1: 'FormField_8_input',
+            suburb: 'FormField_9_input',
+            city: 'FormField_10_input',
+            region: 'FormField_12_input',
+            postcode: 'FormField_13_input',
+          },
+          regionMappings: null
+        },
+        au: {
+          countryValue: "Australia",
+          elements: {
+            address1: 'FormField_8_input',
+            address2: 'FormField_9_input',
+            suburb: 'FormField_10_input',
+            state: 'FormField_12_input',
+            postcode: 'FormField_13_input',
+          },
+          stateMappings: {
+            'ACT': 'Australian Capital Territory',
+            'NSW': 'New South Wales',
+            'NT' : 'Northern Territory',
+            'QLD': 'Queensland',
+            'SA' : 'South Australia',
+            'TAS': 'Tasmania',
+            'VIC': 'Victoria',
+            'WA' : 'Western Australia'
+          }
+        }
+      }
     ]
     this.formHelpers = []
 
@@ -169,7 +279,7 @@ export default class BigCommercePlugin {
 
   identifyLayout(){
     for (const layoutConfig of this.layoutConfigurations) {
-      let identifyingElement = document.getElementById(layoutConfig.layoutIdentifier)
+      let identifyingElement = document.querySelector(layoutConfig.layoutSelector)
 
       if (identifyingElement) {
         this._log(`Identified layout named: ${layoutConfig.label}`)
@@ -185,7 +295,7 @@ export default class BigCommercePlugin {
       let formHelperConfig = {
         countryElement: document.getElementById(layoutConfig.countryIdentifier),
         label: layoutConfig.label,
-        layoutIdentifier: layoutConfig.layoutIdentifier,
+        layoutSelector: layoutConfig.layoutSelector,
         nz: {
           countryValue: layoutConfig.nz.countryValue,
           searchElement: document.getElementById(layoutConfig.nz.elements.address1),
@@ -241,18 +351,18 @@ export default class BigCommercePlugin {
   }
 
   identifyAdditionalLayouts(){
-    const layoutIdentifierExists = config => document.getElementById(config.layoutIdentifier)
-    const isNewFormHelper = config => !this.anyFormHelpersWithLayoutIdentifier(config.layoutIdentifier)
+    const layoutSelectorExists = config => document.querySelector(config.layoutSelector)
+    const isNewFormHelper = config => !this.anyFormHelpersWithLayoutIdentifier(config.layoutSelector)
 
-    this.layoutConfigurations.filter(layoutIdentifierExists)
+    this.layoutConfigurations.filter(layoutSelectorExists)
                              .filter(isNewFormHelper)
                              .forEach(this.initialiseFormHelper.bind(this))
   }
 
-  // search active formHelpers for this layoutIdentifier
+  // search active formHelpers for this layoutSelector
   anyFormHelpersWithLayoutIdentifier(identifierToSearchFor){
     for (const activeFormHelper of this.formHelpers) {
-      if (activeFormHelper.layoutIdentifier == identifierToSearchFor) {
+      if (activeFormHelper.layoutSelector == identifierToSearchFor) {
         return true
       }
     }

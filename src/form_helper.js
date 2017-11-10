@@ -81,7 +81,7 @@ export default class FormHelper {
     this.widgets = {}
     this.subscriptions = {}
     this.label = formHelperConfig.label
-    this.layoutIdentifier = formHelperConfig.layoutIdentifier
+    this.layoutSelector = formHelperConfig.layoutSelector
     this.countryCodes = ["au", "nz"]
 
     this._bindToForm()
