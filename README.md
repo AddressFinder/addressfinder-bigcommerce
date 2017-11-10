@@ -51,7 +51,6 @@ If you are using a Blueprint theme you can find the alternate setup instructions
 3.  Click on the 'Google Analytics' tab that appears beside the 'General Settings Tab'
 4.  Copy and paste the following javascript snippet into the 'Tracking Code' box
 
-        ```
         <script>
         (function(d,w){
           w.AddressFinderConfig = {
@@ -66,7 +65,7 @@ If you are using a Blueprint theme you can find the alternate setup instructions
           });
         })(document, window);
         </script>
-        ```
+
 6. Replace the `ADDRESSFINDER_DEMO_KEY` placeholder in the snippet you added in the previous step with your own AddressFinder key and save.
 
 #### Obtaining a licence key

@@ -993,11 +993,11 @@ var BigCommercePlugin = function () {
   function BigCommercePlugin(widgetConfig) {
     _classCallCheck(this, BigCommercePlugin);
 
-    this.version = "1.2.7";
+    this.version = "1.3.0";
     this.widgetConfig = widgetConfig;
     this.layoutConfigurations = [{
       label: "Optimized one-page checkout (Early access)",
-      layoutIdentifier: "micro-app-ng-checkout",
+      layoutSelector: "#micro-app-ng-checkout",
       countryIdentifier: 'countryCodeInput',
       searchIdentifier: "addressLine1Input",
       nz: {
@@ -1033,7 +1033,7 @@ var BigCommercePlugin = function () {
       }
     }, {
       label: "One-page checkout (Billing details)",
-      layoutIdentifier: "CheckoutStepBillingAddress",
+      layoutSelector: "#CheckoutStepBillingAddress",
       countryIdentifier: 'FormField_11',
       searchIdentifier: "FormField_8",
       nz: {
@@ -1069,7 +1069,7 @@ var BigCommercePlugin = function () {
       }
     }, {
       label: "One-page checkout (Shipping details)",
-      layoutIdentifier: "CheckoutStepShippingAddress",
+      layoutSelector: "#CheckoutStepShippingAddress",
       countryIdentifier: "FormField_21",
       searchIdentifier: "FormField_18",
       nz: {
@@ -1104,8 +1104,8 @@ var BigCommercePlugin = function () {
         }
       }
     }, {
-      label: "Create account",
-      layoutIdentifier: "CreateAccountForm",
+      label: "Create account (Blueprint)",
+      layoutSelector: "#CreateAccountForm",
       countryIdentifier: 'FormField_11',
       searchIdentifier: "FormField_8",
       nz: {
@@ -1139,6 +1139,114 @@ var BigCommercePlugin = function () {
           'WA': 'Western Australia'
         }
       }
+    }, {
+      label: "Address book (Blueprint)",
+      layoutSelector: "#AddressEditForm",
+      countryIdentifier: 'FormField_11',
+      searchIdentifier: "FormField_8",
+      nz: {
+        countryValue: "New Zealand",
+        elements: {
+          address1: 'FormField_8',
+          suburb: 'FormField_9',
+          city: 'FormField_10',
+          region: 'FormField_12',
+          postcode: 'FormField_13'
+        },
+        regionMappings: null
+      },
+      au: {
+        countryValue: "Australia",
+        elements: {
+          address1: 'FormField_8',
+          address2: 'FormField_9',
+          suburb: 'FormField_10',
+          state: 'FormField_12',
+          postcode: 'FormField_13'
+        },
+        stateMappings: {
+          'ACT': 'Australian Capital Territory',
+          'NSW': 'New South Wales',
+          'NT': 'Northern Territory',
+          'QLD': 'Queensland',
+          'SA': 'South Australia',
+          'TAS': 'Tasmania',
+          'VIC': 'Victoria',
+          'WA': 'Western Australia'
+        }
+      }
+    }, {
+      label: "Create account (Stencil)",
+      layoutSelector: "form[data-create-account-form]",
+      countryIdentifier: 'FormField_11_select',
+      searchIdentifier: "FormField_8_input",
+      nz: {
+        countryValue: "New Zealand",
+        elements: {
+          address1: 'FormField_8_input',
+          suburb: 'FormField_9_input',
+          city: 'FormField_10_input',
+          region: 'FormField_12_input',
+          postcode: 'FormField_13_input'
+        },
+        regionMappings: null
+      },
+      au: {
+        countryValue: "Australia",
+        elements: {
+          address1: 'FormField_8_input',
+          address2: 'FormField_9_input',
+          suburb: 'FormField_10_input',
+          state: 'FormField_12_input',
+          postcode: 'FormField_13_input'
+        },
+        stateMappings: {
+          'ACT': 'Australian Capital Territory',
+          'NSW': 'New South Wales',
+          'NT': 'Northern Territory',
+          'QLD': 'Queensland',
+          'SA': 'South Australia',
+          'TAS': 'Tasmania',
+          'VIC': 'Victoria',
+          'WA': 'Western Australia'
+        }
+      }
+    }, {
+      label: "Address book (Stencil)",
+      layoutSelector: "form[data-address-form]",
+      countryIdentifier: 'FormField_11_select',
+      searchIdentifier: "FormField_8_input",
+      nz: {
+        countryValue: "New Zealand",
+        elements: {
+          address1: 'FormField_8_input',
+          suburb: 'FormField_9_input',
+          city: 'FormField_10_input',
+          region: 'FormField_12_input',
+          postcode: 'FormField_13_input'
+        },
+        regionMappings: null
+      },
+      au: {
+        countryValue: "Australia",
+        elements: {
+          address1: 'FormField_8_input',
+          address2: 'FormField_9_input',
+          suburb: 'FormField_10_input',
+          state: 'FormField_12_input',
+          postcode: 'FormField_13_input'
+        },
+        stateMappings: {
+          'ACT': 'Australian Capital Territory',
+          'NSW': 'New South Wales',
+          'NT': 'Northern Territory',
+          'QLD': 'Queensland',
+          'SA': 'South Australia',
+          'TAS': 'Tasmania',
+          'VIC': 'Victoria',
+          'WA': 'Western Australia'
+        }
+      }
     }];
     this.formHelpers = [];
 
@@ -1157,7 +1265,7 @@ var BigCommercePlugin = function () {
         for (var _iterator = this.layoutConfigurations[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
           var layoutConfig = _step.value;
 
-          var identifyingElement = document.getElementById(layoutConfig.layoutIdentifier);
+          var identifyingElement = document.querySelector(layoutConfig.layoutSelector);
 
           if (identifyingElement) {
             this._log("Identified layout named: " + layoutConfig.label);
@@ -1188,7 +1296,7 @@ var BigCommercePlugin = function () {
         var formHelperConfig = {
           countryElement: document.getElementById(layoutConfig.countryIdentifier),
           label: layoutConfig.label,
-          layoutIdentifier: layoutConfig.layoutIdentifier,
+          layoutSelector: layoutConfig.layoutSelector,
           nz: {
             countryValue: layoutConfig.nz.countryValue,
             searchElement: document.getElementById(layoutConfig.nz.elements.address1),
@@ -1274,17 +1382,17 @@ var BigCommercePlugin = function () {
     value: function identifyAdditionalLayouts() {
       var _this = this;
 
-      var layoutIdentifierExists = function layoutIdentifierExists(config) {
-        return document.getElementById(config.layoutIdentifier);
+      var layoutSelectorExists = function layoutSelectorExists(config) {
+        return document.querySelector(config.layoutSelector);
       };
       var isNewFormHelper = function isNewFormHelper(config) {
-        return !_this.anyFormHelpersWithLayoutIdentifier(config.layoutIdentifier);
+        return !_this.anyFormHelpersWithLayoutIdentifier(config.layoutSelector);
       };
 
-      this.layoutConfigurations.filter(layoutIdentifierExists).filter(isNewFormHelper).forEach(this.initialiseFormHelper.bind(this));
+      this.layoutConfigurations.filter(layoutSelectorExists).filter(isNewFormHelper).forEach(this.initialiseFormHelper.bind(this));
     }
 
-    // search active formHelpers for this layoutIdentifier
+    // search active formHelpers for this layoutSelector
 
   }, {
     key: "anyFormHelpersWithLayoutIdentifier",
@@ -1297,7 +1405,7 @@ var BigCommercePlugin = function () {
         for (var _iterator3 = this.formHelpers[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
           var activeFormHelper = _step3.value;
 
-          if (activeFormHelper.layoutIdentifier == identifierToSearchFor) {
+          if (activeFormHelper.layoutSelector == identifierToSearchFor) {
             return true;
           }
         }
@@ -2454,7 +2562,7 @@ var FormHelper = function () {
     this.widgets = {};
     this.subscriptions = {};
     this.label = formHelperConfig.label;
-    this.layoutIdentifier = formHelperConfig.layoutIdentifier;
+    this.layoutSelector = formHelperConfig.layoutSelector;
     this.countryCodes = ["au", "nz"];
 
     this._bindToForm();
