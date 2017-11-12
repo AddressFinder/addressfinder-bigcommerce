@@ -1,4 +1,4 @@
-#AddressFinder 1.3.0 (November 10, 2017)
+# AddressFinder 1.3.0 (November 10, 2017)
 * adds configuration for account creation on stencil themes
 * adds configuration for address book on stencil and blueprint themes
 
