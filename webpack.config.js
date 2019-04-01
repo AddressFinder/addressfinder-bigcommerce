@@ -3,7 +3,7 @@ const pathLib = require("path");
 
 const config = {
   entry: [
-    "./src/main.js"
+    "./src/bigcommerce_plugin.js"
   ],
   devtool: "source-map",
   output: {
