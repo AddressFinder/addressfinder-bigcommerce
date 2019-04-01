@@ -7,6 +7,7 @@ export default class MutationsHelper {
     this.layoutConfigurations = layoutConfigurations
     this.widgetConfig = widgetConfig
     this.countryCodes = ["au", "nz"]
+    this.identifyLayout()
     this.monitorMutations()
   }
 
@@ -92,15 +93,15 @@ export default class MutationsHelper {
       return false
     }
 
-  _bodyDoesntContainElement(element) {
-    return !document.body.contains(element)
+  _bodyContainsElement(element) {
+    document.body.contains(element)
   }
 
     // check all of the elements in the formHelper and confirm they are still
   // within the page DOM
   areAllElementsStillInTheDOM(){
 
-    if( this._bodyDoesntContainElement(this.formHelperConfig.countryElement)){
+    if( !this._bodyContainsElement(this.formHelperConfig.countryElement)){
       this._log("Country Element is not in the DOM")
       return false
     }
@@ -127,7 +128,7 @@ export default class MutationsHelper {
       return true
     }
 
-    if (this._bodyDoesntContainElement(formConfig.searchElement)){
+    if (!this._bodyContainsElement(formConfig.searchElement)){
       this._log("Search Element is not in the DOM")
       return false
     }
@@ -136,7 +137,7 @@ export default class MutationsHelper {
 
     const elementNotInDOM = Object.values(formConfig.elements)
                                   .filter(isPresent)
-                                  .find(this._bodyDoesntContainElement)
+                                  .find(!this._bodyContainsElement)
 
     if (elementNotInDOM) {
       this._log("Element is not in the DOM", elementNotInDOM)
@@ -222,10 +223,10 @@ export default class MutationsHelper {
     // widgetConfig.debug should be on 
     if (window.console) {
       if (object1 != undefined) {
-        console.log(`FormHelper for layout ${this.formHelperConfig.label}: ${message}`, object1)
+        console.log(`${message}`, object1)
       }
       else {
-        console.log(`FormHelper for layout ${this.formHelperConfig.label}: ${message}`)
+        console.log(`${message}`)
       }
     }
   }

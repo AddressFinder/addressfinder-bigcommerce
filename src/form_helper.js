@@ -4,76 +4,6 @@ import "core-js/fn/array/find"
 import "core-js/fn/array/from"
 import "core-js/fn/object/values"
 
-/**
- * Usage:
- *
- * new FormHelper({
- *   nzKey: "AAABBB111222",
- *   auKey: "XXXYYY888999",
- *   nzWidgetOptions: {
- *     byline: false
- *   },
- *   auWidgetOptions: {},
- *   debug: false
- * }, {
- *   countryElement: document.getElementById("country"),
- *   nz: {
- *     countryValue: "NZ",
- *     searchElement: document.getElementById('FormField_18'),
- *     regionMappings: {
- *       "Auckland Region": "Auckland Region",
- *       "Bay Of Plenty Region": "Bay of Plenty",
- *       "Canterbury Region": "Canterbury",
- *       "Gisborne Region": "Gisborne Region",
- *       "Hawke's Bay Region": "Hawke's Bay",
- *       "Manawatu-Wanganui Region": "Manawatu-Wanganui Region",
- *       "Marlborough Region": "Marlborough",
- *       "Nelson Region": "Nelson Region",
- *       "Northland Region": "Northland",
- *       "Otago Region": "Otago",
- *       "Southland Region": "Southland",
- *       "Taranaki Region": "Taranaki",
- *       "Tasman Region": "Tasman",
- *       "Waikato Region": "Waikato",
- *       "Wellington Region": "Wellington Region",
- *       "West Coast Region": "West Coast",
- *       "No Region": "Chatham Islands"
- *     },
- *     elements: {
- *       address_line_1_and_2: document.getElementById('FormField_18'),
- *       address_line_1: null,
- *       address_line_2: null,
- *       suburb: document.getElementById('FormField_19'),
- *       city: document.getElementById('FormField_20'),
- *       region: document.getElementById('FormField_22'),
- *       postcode: document.getElementById('FormField_23')
- *     }
- *   },
- *   au: {
- *     countryValue: "AU",
- *     searchElement: document.getElementById('FormField_18'),
- *     stateMappings: {
- *       ACT: "Australian Capital Territory",
- *       NSW: "New South Wales",
- *       NT: "Northern Territory",
- *       QLD: "Queensland",
- *       SA: "South Australia",
- *       TAS: "Tasmania",
- *       VIC: "Victoria",
- *       WA: "Western Australia"
- *     },
- *     elements: {
- *       address_line_1_and_2: null,
- *       address_line_1: document.getElementById('FormField_18'),
- *       address_line_2: document.getElementById('FormField_19'),
- *       locality_name: document.getElementById('FormField_20'),
- *       state_territory: document.getElementById('FormField_22'),
- *       postcode: document.getElementById('FormField_23')
- *     }
- *   }
- * });
- */
-
 export default class FormHelper {
   constructor(widgetConfig, formHelperConfig){
     this.widgetConfig = widgetConfig
@@ -226,7 +156,7 @@ export default class FormHelper {
 
       return
     }
-
+    
     if (element.options) {
       const checkOptionMatchesValue = option => option.value == value
       const selectedOption = Array.prototype.find.call(element.options, checkOptionMatchesValue)

@@ -1984,76 +1984,6 @@ __webpack_require__(94);
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-/**
- * Usage:
- *
- * new FormHelper({
- *   nzKey: "AAABBB111222",
- *   auKey: "XXXYYY888999",
- *   nzWidgetOptions: {
- *     byline: false
- *   },
- *   auWidgetOptions: {},
- *   debug: false
- * }, {
- *   countryElement: document.getElementById("country"),
- *   nz: {
- *     countryValue: "NZ",
- *     searchElement: document.getElementById('FormField_18'),
- *     regionMappings: {
- *       "Auckland Region": "Auckland Region",
- *       "Bay Of Plenty Region": "Bay of Plenty",
- *       "Canterbury Region": "Canterbury",
- *       "Gisborne Region": "Gisborne Region",
- *       "Hawke's Bay Region": "Hawke's Bay",
- *       "Manawatu-Wanganui Region": "Manawatu-Wanganui Region",
- *       "Marlborough Region": "Marlborough",
- *       "Nelson Region": "Nelson Region",
- *       "Northland Region": "Northland",
- *       "Otago Region": "Otago",
- *       "Southland Region": "Southland",
- *       "Taranaki Region": "Taranaki",
- *       "Tasman Region": "Tasman",
- *       "Waikato Region": "Waikato",
- *       "Wellington Region": "Wellington Region",
- *       "West Coast Region": "West Coast",
- *       "No Region": "Chatham Islands"
- *     },
- *     elements: {
- *       address_line_1_and_2: document.getElementById('FormField_18'),
- *       address_line_1: null,
- *       address_line_2: null,
- *       suburb: document.getElementById('FormField_19'),
- *       city: document.getElementById('FormField_20'),
- *       region: document.getElementById('FormField_22'),
- *       postcode: document.getElementById('FormField_23')
- *     }
- *   },
- *   au: {
- *     countryValue: "AU",
- *     searchElement: document.getElementById('FormField_18'),
- *     stateMappings: {
- *       ACT: "Australian Capital Territory",
- *       NSW: "New South Wales",
- *       NT: "Northern Territory",
- *       QLD: "Queensland",
- *       SA: "South Australia",
- *       TAS: "Tasmania",
- *       VIC: "Victoria",
- *       WA: "Western Australia"
- *     },
- *     elements: {
- *       address_line_1_and_2: null,
- *       address_line_1: document.getElementById('FormField_18'),
- *       address_line_2: document.getElementById('FormField_19'),
- *       locality_name: document.getElementById('FormField_20'),
- *       state_territory: document.getElementById('FormField_22'),
- *       postcode: document.getElementById('FormField_23')
- *     }
- *   }
- * });
- */
-
 var FormHelper = function () {
   function FormHelper(widgetConfig, formHelperConfig) {
     _classCallCheck(this, FormHelper);
@@ -2386,6 +2316,7 @@ var MutationsHelper = function () {
     this.layoutConfigurations = layoutConfigurations;
     this.widgetConfig = widgetConfig;
     this.countryCodes = ["au", "nz"];
+    this.identifyLayout();
     this.monitorMutations();
   }
 
@@ -2519,9 +2450,9 @@ var MutationsHelper = function () {
       return false;
     }
   }, {
-    key: "_bodyDoesntContainElement",
-    value: function _bodyDoesntContainElement(element) {
-      return !document.body.contains(element);
+    key: "_bodyContainsElement",
+    value: function _bodyContainsElement(element) {
+      document.body.contains(element);
     }
 
     // check all of the elements in the formHelper and confirm they are still
@@ -2532,7 +2463,7 @@ var MutationsHelper = function () {
     value: function areAllElementsStillInTheDOM() {
       var _this = this;
 
-      if (this._bodyDoesntContainElement(this.formHelperConfig.countryElement)) {
+      if (!this._bodyContainsElement(this.formHelperConfig.countryElement)) {
         this._log("Country Element is not in the DOM");
         return false;
       }
@@ -2560,7 +2491,7 @@ var MutationsHelper = function () {
         return true;
       }
 
-      if (this._bodyDoesntContainElement(formConfig.searchElement)) {
+      if (!this._bodyContainsElement(formConfig.searchElement)) {
         this._log("Search Element is not in the DOM");
         return false;
       }
@@ -2569,7 +2500,7 @@ var MutationsHelper = function () {
         return element != undefined;
       };
 
-      var elementNotInDOM = Object.values(formConfig.elements).filter(isPresent).find(this._bodyDoesntContainElement);
+      var elementNotInDOM = Object.values(formConfig.elements).filter(isPresent).find(!this._bodyContainsElement);
 
       if (elementNotInDOM) {
         this._log("Element is not in the DOM", elementNotInDOM);
@@ -2693,9 +2624,9 @@ var MutationsHelper = function () {
       // widgetConfig.debug should be on 
       if (window.console) {
         if (object1 != undefined) {
-          console.log("FormHelper for layout " + this.formHelperConfig.label + ": " + message, object1);
+          console.log("" + message, object1);
         } else {
-          console.log("FormHelper for layout " + this.formHelperConfig.label + ": " + message);
+          console.log("" + message);
         }
       }
     }
