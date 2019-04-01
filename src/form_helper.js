@@ -9,9 +9,6 @@ export default class FormHelper {
     this.widgetConfig = widgetConfig
     this.formHelperConfig = formHelperConfig
     this.widgets = {}
-    this.subscriptions = {}
-    this.label = formHelperConfig.label
-    this.layoutSelector = formHelperConfig.layoutSelector
     this.countryCodes = ["au", "nz"]
 
     this._bindToForm()
@@ -21,7 +18,7 @@ export default class FormHelper {
    * Shuts down this form_helper by disabling the widget and any callback handlers.
    */
   destroy(){
-    this._log("Destroying widget", this.label)
+    this._log("Destroying widget", this.formHelperConfig.label)
 
     for (var widgetCountryCode in this.widgets) {
       this.widgets[widgetCountryCode].disable()
@@ -29,7 +26,6 @@ export default class FormHelper {
     }
 
     this.widgets = null
-    this.subscriptions = []
 
     this.formHelperConfig.countryElement.removeEventListener("change", this.boundCountryChangedListener)
   }
@@ -156,7 +152,7 @@ export default class FormHelper {
 
       return
     }
-    
+
     if (element.options) {
       const checkOptionMatchesValue = option => option.value == value
       const selectedOption = Array.prototype.find.call(element.options, checkOptionMatchesValue)

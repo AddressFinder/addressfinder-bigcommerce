@@ -969,18 +969,6 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-__webpack_require__(52);
-
-__webpack_require__(66);
-
-__webpack_require__(46);
-
-__webpack_require__(47);
-
-__webpack_require__(82);
-
-__webpack_require__(84);
-
 var _mutation_helper = __webpack_require__(97);
 
 var _mutation_helper2 = _interopRequireDefault(_mutation_helper);
@@ -1005,8 +993,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } } // see https://github.com/zloirock/core-js
-
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var BigCommercePlugin = function BigCommercePlugin(widgetConfig) {
   _classCallCheck(this, BigCommercePlugin);
@@ -1991,9 +1978,6 @@ var FormHelper = function () {
     this.widgetConfig = widgetConfig;
     this.formHelperConfig = formHelperConfig;
     this.widgets = {};
-    this.subscriptions = {};
-    this.label = formHelperConfig.label;
-    this.layoutSelector = formHelperConfig.layoutSelector;
     this.countryCodes = ["au", "nz"];
 
     this._bindToForm();
@@ -2007,7 +1991,7 @@ var FormHelper = function () {
   _createClass(FormHelper, [{
     key: "destroy",
     value: function destroy() {
-      this._log("Destroying widget", this.label);
+      this._log("Destroying widget", this.formHelperConfig.label);
 
       for (var widgetCountryCode in this.widgets) {
         this.widgets[widgetCountryCode].disable();
@@ -2015,7 +1999,6 @@ var FormHelper = function () {
       }
 
       this.widgets = null;
-      this.subscriptions = [];
 
       this.formHelperConfig.countryElement.removeEventListener("change", this.boundCountryChangedListener);
     }
@@ -2295,15 +2278,26 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); // see https://github.com/zloirock/core-js
+
+
+__webpack_require__(52);
+
+__webpack_require__(66);
+
+__webpack_require__(46);
+
+__webpack_require__(47);
+
+__webpack_require__(82);
+
+__webpack_require__(84);
 
 var _form_helper = __webpack_require__(89);
 
 var _form_helper2 = _interopRequireDefault(_form_helper);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -2321,24 +2315,6 @@ var MutationsHelper = function () {
   }
 
   _createClass(MutationsHelper, [{
-    key: "domNodeModifiedHandler",
-    value: function domNodeModifiedHandler(event) {
-      if (event.target.className && event.target.className.includes("af_list")) {
-        return; // ignore AddressFinder changes
-      }
-
-      if (event.relatedNode && event.relatedNode.className && event.relatedNode.className.includes("af_list")) {
-        return; // ignore AddressFinder changes
-      }
-
-      if (this._mutationTimeout) {
-        clearTimeout(this._mutationTimeout); // reset previous timeout
-      }
-
-      // ignore any further changes for the next 750 mS
-      this._mutationTimeout = setTimeout(this.resetAndReloadFormHelpers.bind(this), 750);
-    }
-  }, {
     key: "identifyLayout",
     value: function identifyLayout() {
       var _iteratorNormalCompletion = true;
@@ -2571,50 +2547,6 @@ var MutationsHelper = function () {
       this.formHelpers = this.formHelpers.filter(isStillActive);
 
       this.identifyAdditionalLayouts();
-    }
-  }, {
-    key: "mutationHandler",
-    value: function mutationHandler(mutations) {
-      var changedNodes = mutations.reduce(function (nodes, mutation) {
-        // ignore this mutation if the target is the AddressFinder UL element
-        if (mutation.target && mutation.target.classList && mutation.target.classList.contains("af_list")) {
-          return nodes;
-        }
-
-        return nodes.concat([].concat(_toConsumableArray(mutation.addedNodes))).concat([].concat(_toConsumableArray(mutation.removedNodes)));
-      }, []);
-
-      var anyBigCommerceChanges = changedNodes.find(function (node) {
-        return !(node.classList && node.classList.contains("af_list"));
-      });
-
-      if (!anyBigCommerceChanges) {
-        return; // ignore AddressFinder changes
-      }
-
-      if (this._mutationTimeout) {
-        clearTimeout(this._mutationTimeout); // reset previous timeout
-      }
-
-      // ignore any further changes for the next 750 mS
-      this._mutationTimeout = setTimeout(this.resetAndReloadFormHelpers.bind(this), 750);
-    }
-  }, {
-    key: "monitorMutations",
-    value: function monitorMutations() {
-      if (window.MutationObserver) {
-        /* for modern browsers */
-        var observer = new MutationObserver(this.mutationHandler.bind(this));
-        observer.observe(document.body, { childList: true, subtree: true });
-      } else if (window.addEventListener) {
-        /* for IE 9 and 10 */
-        document.body.addEventListener('DOMNodeInserted', this.domNodeModifiedHandler.bind(this), false);
-        document.body.addEventListener('DOMNodeRemoved', this.domNodeModifiedHandler.bind(this), false);
-      } else {
-        if (window.console) {
-          console.info('AddressFinder Error - please use a more modern browser');
-        }
-      }
     }
   }, {
     key: "_log",
