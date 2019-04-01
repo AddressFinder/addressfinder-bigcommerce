@@ -67,8 +67,8 @@
 /* 0 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var store = __webpack_require__(22)('wks');
-var uid = __webpack_require__(15);
+var store = __webpack_require__(17)('wks');
+var uid = __webpack_require__(14);
 var Symbol = __webpack_require__(2).Symbol;
 var USE_SYMBOL = typeof Symbol == 'function';
 
@@ -84,7 +84,7 @@ $exports.store = store;
 /* 1 */
 /***/ (function(module, exports) {
 
-var core = module.exports = { version: '2.5.0' };
+var core = module.exports = { version: '2.6.5' };
 if (typeof __e == 'number') __e = core; // eslint-disable-line no-undef
 
 
@@ -106,9 +106,9 @@ if (typeof __g == 'number') __g = global; // eslint-disable-line no-undef
 
 var global = __webpack_require__(2);
 var core = __webpack_require__(1);
-var hide = __webpack_require__(6);
-var redefine = __webpack_require__(14);
-var ctx = __webpack_require__(21);
+var hide = __webpack_require__(5);
+var redefine = __webpack_require__(13);
+var ctx = __webpack_require__(23);
 var PROTOTYPE = 'prototype';
 
 var $export = function (type, name, source) {
@@ -163,21 +163,9 @@ module.exports = function (it, key) {
 /* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
-// to indexed object, toObject with fallback for non-array-like ES3 strings
-var IObject = __webpack_require__(37);
-var defined = __webpack_require__(18);
-module.exports = function (it) {
-  return IObject(defined(it));
-};
-
-
-/***/ }),
-/* 6 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var dP = __webpack_require__(7);
-var createDesc = __webpack_require__(13);
-module.exports = __webpack_require__(8) ? function (object, key, value) {
+var dP = __webpack_require__(6);
+var createDesc = __webpack_require__(12);
+module.exports = __webpack_require__(9) ? function (object, key, value) {
   return dP.f(object, key, createDesc(1, value));
 } : function (object, key, value) {
   object[key] = value;
@@ -186,15 +174,15 @@ module.exports = __webpack_require__(8) ? function (object, key, value) {
 
 
 /***/ }),
-/* 7 */
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var anObject = __webpack_require__(12);
+var anObject = __webpack_require__(11);
 var IE8_DOM_DEFINE = __webpack_require__(34);
-var toPrimitive = __webpack_require__(20);
+var toPrimitive = __webpack_require__(22);
 var dP = Object.defineProperty;
 
-exports.f = __webpack_require__(8) ? Object.defineProperty : function defineProperty(O, P, Attributes) {
+exports.f = __webpack_require__(9) ? Object.defineProperty : function defineProperty(O, P, Attributes) {
   anObject(O);
   P = toPrimitive(P, true);
   anObject(Attributes);
@@ -208,17 +196,7 @@ exports.f = __webpack_require__(8) ? Object.defineProperty : function defineProp
 
 
 /***/ }),
-/* 8 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// Thank's IE8 for his funny defineProperty
-module.exports = !__webpack_require__(11)(function () {
-  return Object.defineProperty({}, 'a', { get: function () { return 7; } }).a != 7;
-});
-
-
-/***/ }),
-/* 9 */
+/* 7 */
 /***/ (function(module, exports) {
 
 module.exports = function (it) {
@@ -227,20 +205,29 @@ module.exports = function (it) {
 
 
 /***/ }),
-/* 10 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
-// 19.1.2.14 / 15.2.3.14 Object.keys(O)
-var $keys = __webpack_require__(36);
-var enumBugKeys = __webpack_require__(30);
-
-module.exports = Object.keys || function keys(O) {
-  return $keys(O, enumBugKeys);
+// to indexed object, toObject with fallback for non-array-like ES3 strings
+var IObject = __webpack_require__(37);
+var defined = __webpack_require__(20);
+module.exports = function (it) {
+  return IObject(defined(it));
 };
 
 
 /***/ }),
-/* 11 */
+/* 9 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// Thank's IE8 for his funny defineProperty
+module.exports = !__webpack_require__(10)(function () {
+  return Object.defineProperty({}, 'a', { get: function () { return 7; } }).a != 7;
+});
+
+
+/***/ }),
+/* 10 */
 /***/ (function(module, exports) {
 
 module.exports = function (exec) {
@@ -253,10 +240,10 @@ module.exports = function (exec) {
 
 
 /***/ }),
-/* 12 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var isObject = __webpack_require__(9);
+var isObject = __webpack_require__(7);
 module.exports = function (it) {
   if (!isObject(it)) throw TypeError(it + ' is not an object!');
   return it;
@@ -264,7 +251,7 @@ module.exports = function (it) {
 
 
 /***/ }),
-/* 13 */
+/* 12 */
 /***/ (function(module, exports) {
 
 module.exports = function (bitmap, value) {
@@ -278,15 +265,15 @@ module.exports = function (bitmap, value) {
 
 
 /***/ }),
-/* 14 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var global = __webpack_require__(2);
-var hide = __webpack_require__(6);
+var hide = __webpack_require__(5);
 var has = __webpack_require__(4);
-var SRC = __webpack_require__(15)('src');
+var SRC = __webpack_require__(14)('src');
+var $toString = __webpack_require__(54);
 var TO_STRING = 'toString';
-var $toString = Function[TO_STRING];
 var TPL = ('' + $toString).split(TO_STRING);
 
 __webpack_require__(1).inspectSource = function (it) {
@@ -315,13 +302,26 @@ __webpack_require__(1).inspectSource = function (it) {
 
 
 /***/ }),
-/* 15 */
+/* 14 */
 /***/ (function(module, exports) {
 
 var id = 0;
 var px = Math.random();
 module.exports = function (key) {
   return 'Symbol('.concat(key === undefined ? '' : key, ')_', (++id + px).toString(36));
+};
+
+
+/***/ }),
+/* 15 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// 19.1.2.14 / 15.2.3.14 Object.keys(O)
+var $keys = __webpack_require__(36);
+var enumBugKeys = __webpack_require__(30);
+
+module.exports = Object.keys || function keys(O) {
+  return $keys(O, enumBugKeys);
 };
 
 
@@ -334,6 +334,31 @@ module.exports = {};
 
 /***/ }),
 /* 17 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var core = __webpack_require__(1);
+var global = __webpack_require__(2);
+var SHARED = '__core-js_shared__';
+var store = global[SHARED] || (global[SHARED] = {});
+
+(module.exports = function (key, value) {
+  return store[key] || (store[key] = value !== undefined ? value : {});
+})('versions', []).push({
+  version: core.version,
+  mode: __webpack_require__(18) ? 'pure' : 'global',
+  copyright: '© 2019 Denis Pushkarev (zloirock.ru)'
+});
+
+
+/***/ }),
+/* 18 */
+/***/ (function(module, exports) {
+
+module.exports = false;
+
+
+/***/ }),
+/* 19 */
 /***/ (function(module, exports) {
 
 var toString = {}.toString;
@@ -344,7 +369,7 @@ module.exports = function (it) {
 
 
 /***/ }),
-/* 18 */
+/* 20 */
 /***/ (function(module, exports) {
 
 // 7.2.1 RequireObjectCoercible(argument)
@@ -355,18 +380,18 @@ module.exports = function (it) {
 
 
 /***/ }),
-/* 19 */
+/* 21 */
 /***/ (function(module, exports) {
 
 exports.f = {}.propertyIsEnumerable;
 
 
 /***/ }),
-/* 20 */
+/* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 7.1.1 ToPrimitive(input [, PreferredType])
-var isObject = __webpack_require__(9);
+var isObject = __webpack_require__(7);
 // instead of the ES6 spec version, we didn't implement @@toPrimitive case
 // and the second argument - flag - preferred type is a string
 module.exports = function (it, S) {
@@ -380,11 +405,11 @@ module.exports = function (it, S) {
 
 
 /***/ }),
-/* 21 */
+/* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // optional / simple context binding
-var aFunction = __webpack_require__(54);
+var aFunction = __webpack_require__(55);
 module.exports = function (fn, that, length) {
   aFunction(fn);
   if (that === undefined) return fn;
@@ -406,22 +431,10 @@ module.exports = function (fn, that, length) {
 
 
 /***/ }),
-/* 22 */
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var global = __webpack_require__(2);
-var SHARED = '__core-js_shared__';
-var store = global[SHARED] || (global[SHARED] = {});
-module.exports = function (key) {
-  return store[key] || (store[key] = {});
-};
-
-
-/***/ }),
-/* 23 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var def = __webpack_require__(7).f;
+var def = __webpack_require__(6).f;
 var has = __webpack_require__(4);
 var TAG = __webpack_require__(0)('toStringTag');
 
@@ -431,32 +444,25 @@ module.exports = function (it, tag, stat) {
 
 
 /***/ }),
-/* 24 */
+/* 25 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports.f = __webpack_require__(0);
 
 
 /***/ }),
-/* 25 */
+/* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var global = __webpack_require__(2);
 var core = __webpack_require__(1);
-var LIBRARY = __webpack_require__(26);
-var wksExt = __webpack_require__(24);
-var defineProperty = __webpack_require__(7).f;
+var LIBRARY = __webpack_require__(18);
+var wksExt = __webpack_require__(25);
+var defineProperty = __webpack_require__(6).f;
 module.exports = function (name) {
   var $Symbol = core.Symbol || (core.Symbol = LIBRARY ? {} : global.Symbol || {});
   if (name.charAt(0) != '_' && !(name in $Symbol)) defineProperty($Symbol, name, { value: wksExt.f(name) });
 };
-
-
-/***/ }),
-/* 26 */
-/***/ (function(module, exports) {
-
-module.exports = false;
 
 
 /***/ }),
@@ -487,8 +493,8 @@ module.exports = function (it) {
 /* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var shared = __webpack_require__(22)('keys');
-var uid = __webpack_require__(15);
+var shared = __webpack_require__(17)('keys');
+var uid = __webpack_require__(14);
 module.exports = function (key) {
   return shared[key] || (shared[key] = uid(key));
 };
@@ -509,7 +515,7 @@ module.exports = (
 /***/ (function(module, exports, __webpack_require__) {
 
 // 7.1.13 ToObject(argument)
-var defined = __webpack_require__(18);
+var defined = __webpack_require__(20);
 module.exports = function (it) {
   return Object(defined(it));
 };
@@ -522,7 +528,7 @@ module.exports = function (it) {
 // 22.1.3.31 Array.prototype[@@unscopables]
 var UNSCOPABLES = __webpack_require__(0)('unscopables');
 var ArrayProto = Array.prototype;
-if (ArrayProto[UNSCOPABLES] == undefined) __webpack_require__(6)(ArrayProto, UNSCOPABLES, {});
+if (ArrayProto[UNSCOPABLES] == undefined) __webpack_require__(5)(ArrayProto, UNSCOPABLES, {});
 module.exports = function (key) {
   ArrayProto[UNSCOPABLES][key] = true;
 };
@@ -539,7 +545,7 @@ module.exports = function (key) {
 // 4 -> Array#every
 // 5 -> Array#find
 // 6 -> Array#findIndex
-var ctx = __webpack_require__(21);
+var ctx = __webpack_require__(23);
 var IObject = __webpack_require__(37);
 var toObject = __webpack_require__(31);
 var toLength = __webpack_require__(27);
@@ -582,7 +588,7 @@ module.exports = function (TYPE, $create) {
 /* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = !__webpack_require__(8) && !__webpack_require__(11)(function () {
+module.exports = !__webpack_require__(9) && !__webpack_require__(10)(function () {
   return Object.defineProperty(__webpack_require__(35)('div'), 'a', { get: function () { return 7; } }).a != 7;
 });
 
@@ -591,7 +597,7 @@ module.exports = !__webpack_require__(8) && !__webpack_require__(11)(function ()
 /* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var isObject = __webpack_require__(9);
+var isObject = __webpack_require__(7);
 var document = __webpack_require__(2).document;
 // typeof document.createElement is 'object' in old IE
 var is = isObject(document) && isObject(document.createElement);
@@ -605,7 +611,7 @@ module.exports = function (it) {
 /***/ (function(module, exports, __webpack_require__) {
 
 var has = __webpack_require__(4);
-var toIObject = __webpack_require__(5);
+var toIObject = __webpack_require__(8);
 var arrayIndexOf = __webpack_require__(38)(false);
 var IE_PROTO = __webpack_require__(29)('IE_PROTO');
 
@@ -628,7 +634,7 @@ module.exports = function (object, names) {
 /***/ (function(module, exports, __webpack_require__) {
 
 // fallback for non-array-like ES3 and non-enumerable old V8 strings
-var cof = __webpack_require__(17);
+var cof = __webpack_require__(19);
 // eslint-disable-next-line no-prototype-builtins
 module.exports = Object('z').propertyIsEnumerable(0) ? Object : function (it) {
   return cof(it) == 'String' ? it.split('') : Object(it);
@@ -641,9 +647,9 @@ module.exports = Object('z').propertyIsEnumerable(0) ? Object : function (it) {
 
 // false -> Array#indexOf
 // true  -> Array#includes
-var toIObject = __webpack_require__(5);
+var toIObject = __webpack_require__(8);
 var toLength = __webpack_require__(27);
-var toAbsoluteIndex = __webpack_require__(57);
+var toAbsoluteIndex = __webpack_require__(58);
 module.exports = function (IS_INCLUDES) {
   return function ($this, el, fromIndex) {
     var O = toIObject($this);
@@ -676,7 +682,7 @@ exports.f = Object.getOwnPropertySymbols;
 /***/ (function(module, exports, __webpack_require__) {
 
 // 7.2.2 IsArray(argument)
-var cof = __webpack_require__(17);
+var cof = __webpack_require__(19);
 module.exports = Array.isArray || function isArray(arg) {
   return cof(arg) == 'Array';
 };
@@ -687,7 +693,7 @@ module.exports = Array.isArray || function isArray(arg) {
 /***/ (function(module, exports, __webpack_require__) {
 
 // 19.1.2.2 / 15.2.3.5 Object.create(O [, Properties])
-var anObject = __webpack_require__(12);
+var anObject = __webpack_require__(11);
 var dPs = __webpack_require__(59);
 var enumBugKeys = __webpack_require__(30);
 var IE_PROTO = __webpack_require__(29)('IE_PROTO');
@@ -747,7 +753,7 @@ exports.f = Object.getOwnPropertyNames || function getOwnPropertyNames(O) {
 /***/ (function(module, exports, __webpack_require__) {
 
 // getting tag from 19.1.3.6 Object.prototype.toString()
-var cof = __webpack_require__(17);
+var cof = __webpack_require__(19);
 var TAG = __webpack_require__(0)('toStringTag');
 // ES3 wrong here
 var ARG = cof(function () { return arguments; }()) == 'Arguments';
@@ -801,14 +807,13 @@ __webpack_require__(45)(String, 'String', function (iterated) {
 
 "use strict";
 
-var LIBRARY = __webpack_require__(26);
+var LIBRARY = __webpack_require__(18);
 var $export = __webpack_require__(3);
-var redefine = __webpack_require__(14);
-var hide = __webpack_require__(6);
-var has = __webpack_require__(4);
+var redefine = __webpack_require__(13);
+var hide = __webpack_require__(5);
 var Iterators = __webpack_require__(16);
 var $iterCreate = __webpack_require__(68);
-var setToStringTag = __webpack_require__(23);
+var setToStringTag = __webpack_require__(24);
 var getPrototypeOf = __webpack_require__(69);
 var ITERATOR = __webpack_require__(0)('iterator');
 var BUGGY = !([].keys && 'next' in [].keys()); // Safari has buggy iterators w/o `next`
@@ -843,7 +848,7 @@ module.exports = function (Base, NAME, Constructor, next, DEFAULT, IS_SET, FORCE
       // Set @@toStringTag to native iterators
       setToStringTag(IteratorPrototype, TAG, true);
       // fix for some old engines
-      if (!LIBRARY && !has(IteratorPrototype, ITERATOR)) hide(IteratorPrototype, ITERATOR, returnThis);
+      if (!LIBRARY && typeof IteratorPrototype[ITERATOR] != 'function') hide(IteratorPrototype, ITERATOR, returnThis);
     }
   }
   // fix Array#{values, @@iterator}.name in V8 / FF
@@ -895,7 +900,7 @@ module.exports = __webpack_require__(1).Array.from;
 
 "use strict";
 
-var fails = __webpack_require__(11);
+var fails = __webpack_require__(10);
 
 module.exports = function (method, arg) {
   return !!method && fails(function () {
@@ -964,9 +969,6 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); // see https://github.com/zloirock/core-js
-
-
 __webpack_require__(52);
 
 __webpack_require__(66);
@@ -979,532 +981,41 @@ __webpack_require__(82);
 
 __webpack_require__(84);
 
-var _form_helper = __webpack_require__(89);
+var _mutation_helper = __webpack_require__(97);
 
-var _form_helper2 = _interopRequireDefault(_form_helper);
+var _mutation_helper2 = _interopRequireDefault(_mutation_helper);
+
+var _optimized_one_page_checkout = __webpack_require__(104);
+
+var _optimized_one_page_checkout2 = _interopRequireDefault(_optimized_one_page_checkout);
+
+var _one_page_checkout = __webpack_require__(101);
+
+var _one_page_checkout2 = _interopRequireDefault(_one_page_checkout);
+
+var _address_book = __webpack_require__(102);
+
+var _address_book2 = _interopRequireDefault(_address_book);
+
+var _create_account = __webpack_require__(103);
+
+var _create_account2 = _interopRequireDefault(_create_account);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } } // see https://github.com/zloirock/core-js
 
-var BigCommercePlugin = function () {
-  function BigCommercePlugin(widgetConfig) {
-    _classCallCheck(this, BigCommercePlugin);
 
-    this.version = "1.3.0";
-    this.widgetConfig = widgetConfig;
-    this.layoutConfigurations = [{
-      label: "Optimized one-page checkout (Early access)",
-      layoutSelector: "#micro-app-ng-checkout",
-      countryIdentifier: 'countryCodeInput',
-      searchIdentifier: "addressLine1Input",
-      nz: {
-        countryValue: "string:NZ",
-        elements: {
-          address1: 'addressLine1Input',
-          suburb: 'addressLine2Input',
-          city: 'cityInput',
-          region: 'provinceInput',
-          postcode: 'postCodeInput'
-        },
-        regionMappings: null
-      },
-      au: {
-        countryValue: "string:AU",
-        elements: {
-          address1: 'addressLine1Input',
-          address2: 'addressLine2Input',
-          suburb: 'cityInput',
-          state: 'provinceCodeInput',
-          postcode: 'postCodeInput'
-        },
-        stateMappings: {
-          'ACT': 'string:ACT',
-          'NSW': 'string:NSW',
-          'NT': 'string:NT',
-          'QLD': 'string:QLD',
-          'SA': 'string:SA',
-          'TAS': 'string:TAS',
-          'VIC': 'string:VIC',
-          'WA': 'string:WA'
-        }
-      }
-    }, {
-      label: "One-page checkout (Billing details)",
-      layoutSelector: "#CheckoutStepBillingAddress",
-      countryIdentifier: 'FormField_11',
-      searchIdentifier: "FormField_8",
-      nz: {
-        countryValue: "New Zealand",
-        elements: {
-          address1: 'FormField_8',
-          suburb: 'FormField_9',
-          city: 'FormField_10',
-          region: 'FormField_12',
-          postcode: 'FormField_13'
-        },
-        regionMappings: null
-      },
-      au: {
-        countryValue: "Australia",
-        elements: {
-          address1: 'FormField_8',
-          address2: 'FormField_9',
-          suburb: 'FormField_10',
-          state: 'FormField_12',
-          postcode: 'FormField_13'
-        },
-        stateMappings: {
-          'ACT': 'Australian Capital Territory',
-          'NSW': 'New South Wales',
-          'NT': 'Northern Territory',
-          'QLD': 'Queensland',
-          'SA': 'South Australia',
-          'TAS': 'Tasmania',
-          'VIC': 'Victoria',
-          'WA': 'Western Australia'
-        }
-      }
-    }, {
-      label: "One-page checkout (Shipping details)",
-      layoutSelector: "#CheckoutStepShippingAddress",
-      countryIdentifier: "FormField_21",
-      searchIdentifier: "FormField_18",
-      nz: {
-        countryValue: "New Zealand",
-        elements: {
-          address1: 'FormField_18',
-          suburb: 'FormField_19',
-          city: 'FormField_20',
-          region: 'FormField_22',
-          postcode: 'FormField_23'
-        },
-        regionMappings: null
-      },
-      au: {
-        countryValue: "Australia",
-        elements: {
-          address1: 'FormField_18',
-          address2: 'FormField_19',
-          suburb: 'FormField_20',
-          state: 'FormField_22',
-          postcode: 'FormField_23'
-        },
-        stateMappings: {
-          'ACT': 'Australian Capital Territory',
-          'NSW': 'New South Wales',
-          'NT': 'Northern Territory',
-          'QLD': 'Queensland',
-          'SA': 'South Australia',
-          'TAS': 'Tasmania',
-          'VIC': 'Victoria',
-          'WA': 'Western Australia'
-        }
-      }
-    }, {
-      label: "Create account (Blueprint)",
-      layoutSelector: "#CreateAccountForm",
-      countryIdentifier: 'FormField_11',
-      searchIdentifier: "FormField_8",
-      nz: {
-        countryValue: "New Zealand",
-        elements: {
-          address1: 'FormField_8',
-          suburb: 'FormField_9',
-          city: 'FormField_10',
-          region: 'FormField_12',
-          postcode: 'FormField_13'
-        },
-        regionMappings: null
-      },
-      au: {
-        countryValue: "Australia",
-        elements: {
-          address1: 'FormField_8',
-          address2: 'FormField_9',
-          suburb: 'FormField_10',
-          state: 'FormField_12',
-          postcode: 'FormField_13'
-        },
-        stateMappings: {
-          'ACT': 'Australian Capital Territory',
-          'NSW': 'New South Wales',
-          'NT': 'Northern Territory',
-          'QLD': 'Queensland',
-          'SA': 'South Australia',
-          'TAS': 'Tasmania',
-          'VIC': 'Victoria',
-          'WA': 'Western Australia'
-        }
-      }
-    }, {
-      label: "Address book (Blueprint)",
-      layoutSelector: "#AddressEditForm",
-      countryIdentifier: 'FormField_11',
-      searchIdentifier: "FormField_8",
-      nz: {
-        countryValue: "New Zealand",
-        elements: {
-          address1: 'FormField_8',
-          suburb: 'FormField_9',
-          city: 'FormField_10',
-          region: 'FormField_12',
-          postcode: 'FormField_13'
-        },
-        regionMappings: null
-      },
-      au: {
-        countryValue: "Australia",
-        elements: {
-          address1: 'FormField_8',
-          address2: 'FormField_9',
-          suburb: 'FormField_10',
-          state: 'FormField_12',
-          postcode: 'FormField_13'
-        },
-        stateMappings: {
-          'ACT': 'Australian Capital Territory',
-          'NSW': 'New South Wales',
-          'NT': 'Northern Territory',
-          'QLD': 'Queensland',
-          'SA': 'South Australia',
-          'TAS': 'Tasmania',
-          'VIC': 'Victoria',
-          'WA': 'Western Australia'
-        }
-      }
-    }, {
-      label: "Create account (Stencil)",
-      layoutSelector: "form[data-create-account-form]",
-      countryIdentifier: 'FormField_11_select',
-      searchIdentifier: "FormField_8_input",
-      nz: {
-        countryValue: "New Zealand",
-        elements: {
-          address1: 'FormField_8_input',
-          suburb: 'FormField_9_input',
-          city: 'FormField_10_input',
-          region: 'FormField_12_input',
-          postcode: 'FormField_13_input'
-        },
-        regionMappings: null
-      },
-      au: {
-        countryValue: "Australia",
-        elements: {
-          address1: 'FormField_8_input',
-          address2: 'FormField_9_input',
-          suburb: 'FormField_10_input',
-          state: 'FormField_12_input',
-          postcode: 'FormField_13_input'
-        },
-        stateMappings: {
-          'ACT': 'Australian Capital Territory',
-          'NSW': 'New South Wales',
-          'NT': 'Northern Territory',
-          'QLD': 'Queensland',
-          'SA': 'South Australia',
-          'TAS': 'Tasmania',
-          'VIC': 'Victoria',
-          'WA': 'Western Australia'
-        }
-      }
-    }, {
-      label: "Address book (Stencil)",
-      layoutSelector: "form[data-address-form]",
-      countryIdentifier: 'FormField_11_select',
-      searchIdentifier: "FormField_8_input",
-      nz: {
-        countryValue: "New Zealand",
-        elements: {
-          address1: 'FormField_8_input',
-          suburb: 'FormField_9_input',
-          city: 'FormField_10_input',
-          region: 'FormField_12_input',
-          postcode: 'FormField_13_input'
-        },
-        regionMappings: null
-      },
-      au: {
-        countryValue: "Australia",
-        elements: {
-          address1: 'FormField_8_input',
-          address2: 'FormField_9_input',
-          suburb: 'FormField_10_input',
-          state: 'FormField_12_input',
-          postcode: 'FormField_13_input'
-        },
-        stateMappings: {
-          'ACT': 'Australian Capital Territory',
-          'NSW': 'New South Wales',
-          'NT': 'Northern Territory',
-          'QLD': 'Queensland',
-          'SA': 'South Australia',
-          'TAS': 'Tasmania',
-          'VIC': 'Victoria',
-          'WA': 'Western Australia'
-        }
-      }
-    }];
-    this.formHelpers = [];
+var BigCommercePlugin = function BigCommercePlugin(widgetConfig) {
+  _classCallCheck(this, BigCommercePlugin);
 
-    this.identifyLayout();
-    this.monitorMutations();
-  }
-
-  _createClass(BigCommercePlugin, [{
-    key: "identifyLayout",
-    value: function identifyLayout() {
-      var _iteratorNormalCompletion = true;
-      var _didIteratorError = false;
-      var _iteratorError = undefined;
-
-      try {
-        for (var _iterator = this.layoutConfigurations[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-          var layoutConfig = _step.value;
-
-          var identifyingElement = document.querySelector(layoutConfig.layoutSelector);
-
-          if (identifyingElement) {
-            this._log("Identified layout named: " + layoutConfig.label);
-            this.initialiseFormHelper(layoutConfig);
-          }
-        }
-      } catch (err) {
-        _didIteratorError = true;
-        _iteratorError = err;
-      } finally {
-        try {
-          if (!_iteratorNormalCompletion && _iterator.return) {
-            _iterator.return();
-          }
-        } finally {
-          if (_didIteratorError) {
-            throw _iteratorError;
-          }
-        }
-      }
-    }
-  }, {
-    key: "initialiseFormHelper",
-    value: function initialiseFormHelper(layoutConfig) {
-      var searchElement = document.getElementById(layoutConfig.searchIdentifier);
-
-      if (searchElement) {
-        var formHelperConfig = {
-          countryElement: document.getElementById(layoutConfig.countryIdentifier),
-          label: layoutConfig.label,
-          layoutSelector: layoutConfig.layoutSelector,
-          nz: {
-            countryValue: layoutConfig.nz.countryValue,
-            searchElement: document.getElementById(layoutConfig.nz.elements.address1),
-            elements: {
-              address_line_1_and_2: document.getElementById(layoutConfig.nz.elements.address1),
-              address_line_1: null,
-              address_line_2: null,
-              suburb: document.getElementById(layoutConfig.nz.elements.suburb),
-              city: document.getElementById(layoutConfig.nz.elements.city),
-              region: document.getElementById(layoutConfig.nz.elements.region),
-              postcode: document.getElementById(layoutConfig.nz.elements.postcode)
-            },
-            regionMappings: null
-          },
-          au: {
-            countryValue: layoutConfig.au.countryValue,
-            searchElement: document.getElementById(layoutConfig.au.elements.address1),
-            elements: {
-              address_line_1_and_2: null,
-              address_line_1: document.getElementById(layoutConfig.au.elements.address1),
-              address_line_2: document.getElementById(layoutConfig.au.elements.address2),
-              locality_name: document.getElementById(layoutConfig.au.elements.suburb),
-              city: null,
-              state_territory: document.getElementById(layoutConfig.au.elements.state),
-              postcode: document.getElementById(layoutConfig.au.elements.postcode)
-            },
-            stateMappings: layoutConfig.au.stateMappings
-          }
-        };
-
-        var helper = new _form_helper2.default(this.widgetConfig, formHelperConfig);
-        this.formHelpers.push(helper);
-      }
-    }
-  }, {
-    key: "resetAndReloadFormHelpers",
-    value: function resetAndReloadFormHelpers() {
-      var formHelpersToDestroy = this._formHelpersWithMissingElements();
-
-      var _iteratorNormalCompletion2 = true;
-      var _didIteratorError2 = false;
-      var _iteratorError2 = undefined;
-
-      try {
-        for (var _iterator2 = formHelpersToDestroy[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-          var formHelper = _step2.value;
-
-          formHelper.destroy();
-        }
-      } catch (err) {
-        _didIteratorError2 = true;
-        _iteratorError2 = err;
-      } finally {
-        try {
-          if (!_iteratorNormalCompletion2 && _iterator2.return) {
-            _iterator2.return();
-          }
-        } finally {
-          if (_didIteratorError2) {
-            throw _iteratorError2;
-          }
-        }
-      }
-
-      var isStillActive = function isStillActive(formHelper) {
-        return !formHelpersToDestroy.includes(formHelper);
-      };
-      this.formHelpers = this.formHelpers.filter(isStillActive);
-
-      this.identifyAdditionalLayouts();
-    }
-  }, {
-    key: "_formHelpersWithMissingElements",
-    value: function _formHelpersWithMissingElements() {
-      var hasMissingElements = function hasMissingElements(formHelper) {
-        return !formHelper.areAllElementsStillInTheDOM();
-      };
-
-      return this.formHelpers.filter(hasMissingElements);
-    }
-  }, {
-    key: "identifyAdditionalLayouts",
-    value: function identifyAdditionalLayouts() {
-      var _this = this;
-
-      var layoutSelectorExists = function layoutSelectorExists(config) {
-        return document.querySelector(config.layoutSelector);
-      };
-      var isNewFormHelper = function isNewFormHelper(config) {
-        return !_this.anyFormHelpersWithLayoutIdentifier(config.layoutSelector);
-      };
-
-      this.layoutConfigurations.filter(layoutSelectorExists).filter(isNewFormHelper).forEach(this.initialiseFormHelper.bind(this));
-    }
-
-    // search active formHelpers for this layoutSelector
-
-  }, {
-    key: "anyFormHelpersWithLayoutIdentifier",
-    value: function anyFormHelpersWithLayoutIdentifier(identifierToSearchFor) {
-      var _iteratorNormalCompletion3 = true;
-      var _didIteratorError3 = false;
-      var _iteratorError3 = undefined;
-
-      try {
-        for (var _iterator3 = this.formHelpers[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-          var activeFormHelper = _step3.value;
-
-          if (activeFormHelper.layoutSelector == identifierToSearchFor) {
-            return true;
-          }
-        }
-      } catch (err) {
-        _didIteratorError3 = true;
-        _iteratorError3 = err;
-      } finally {
-        try {
-          if (!_iteratorNormalCompletion3 && _iterator3.return) {
-            _iterator3.return();
-          }
-        } finally {
-          if (_didIteratorError3) {
-            throw _iteratorError3;
-          }
-        }
-      }
-
-      return false;
-    }
-  }, {
-    key: "mutationHandler",
-    value: function mutationHandler(mutations) {
-      var changedNodes = mutations.reduce(function (nodes, mutation) {
-        // ignore this mutation if the target is the AddressFinder UL element
-        if (mutation.target && mutation.target.classList && mutation.target.classList.contains("af_list")) {
-          return nodes;
-        }
-
-        return nodes.concat([].concat(_toConsumableArray(mutation.addedNodes))).concat([].concat(_toConsumableArray(mutation.removedNodes)));
-      }, []);
-
-      var anyBigCommerceChanges = changedNodes.find(function (node) {
-        return !(node.classList && node.classList.contains("af_list"));
-      });
-
-      if (!anyBigCommerceChanges) {
-        return; // ignore AddressFinder changes
-      }
-
-      if (this._mutationTimeout) {
-        clearTimeout(this._mutationTimeout); // reset previous timeout
-      }
-
-      // ignore any further changes for the next 750 mS
-      this._mutationTimeout = setTimeout(this.resetAndReloadFormHelpers.bind(this), 750);
-    }
-  }, {
-    key: "domNodeModifiedHandler",
-    value: function domNodeModifiedHandler(event) {
-      if (event.target.className && event.target.className.includes("af_list")) {
-        return; // ignore AddressFinder changes
-      }
-
-      if (event.relatedNode && event.relatedNode.className && event.relatedNode.className.includes("af_list")) {
-        return; // ignore AddressFinder changes
-      }
-
-      if (this._mutationTimeout) {
-        clearTimeout(this._mutationTimeout); // reset previous timeout
-      }
-
-      // ignore any further changes for the next 750 mS
-      this._mutationTimeout = setTimeout(this.resetAndReloadFormHelpers.bind(this), 750);
-    }
-  }, {
-    key: "monitorMutations",
-    value: function monitorMutations() {
-      if (window.MutationObserver) {
-        /* for modern browsers */
-        var observer = new MutationObserver(this.mutationHandler.bind(this));
-        observer.observe(document.body, { childList: true, subtree: true });
-      } else if (window.addEventListener) {
-        /* for IE 9 and 10 */
-        document.body.addEventListener('DOMNodeInserted', this.domNodeModifiedHandler.bind(this), false);
-        document.body.addEventListener('DOMNodeRemoved', this.domNodeModifiedHandler.bind(this), false);
-      } else {
-        if (window.console) {
-          console.info('AddressFinder Error - please use a more modern browser');
-        }
-      }
-    }
-  }, {
-    key: "_log",
-    value: function _log(message) {
-      var object1 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
-
-      if (this.widgetConfig.debug && window.console) {
-        if (object1) {
-          console.log(message, object1);
-        } else {
-          console.log(message);
-        }
-      }
-    }
-  }]);
-
-  return BigCommercePlugin;
-}();
+  this.version = "1.3.0";
+  this.widgetConfig = widgetConfig;
+  this.layoutConfigurations = [_optimized_one_page_checkout2.default].concat(_toConsumableArray(_one_page_checkout2.default), _toConsumableArray(_address_book2.default), _toConsumableArray(_create_account2.default));
+  new _mutation_helper2.default(this.layoutConfigurations, this.widgetConfig);
+};
 
 exports.default = BigCommercePlugin;
 
@@ -1528,29 +1039,29 @@ module.exports = __webpack_require__(1).Symbol;
 // ECMAScript 6 symbols shim
 var global = __webpack_require__(2);
 var has = __webpack_require__(4);
-var DESCRIPTORS = __webpack_require__(8);
+var DESCRIPTORS = __webpack_require__(9);
 var $export = __webpack_require__(3);
-var redefine = __webpack_require__(14);
-var META = __webpack_require__(55).KEY;
-var $fails = __webpack_require__(11);
-var shared = __webpack_require__(22);
-var setToStringTag = __webpack_require__(23);
-var uid = __webpack_require__(15);
+var redefine = __webpack_require__(13);
+var META = __webpack_require__(56).KEY;
+var $fails = __webpack_require__(10);
+var shared = __webpack_require__(17);
+var setToStringTag = __webpack_require__(24);
+var uid = __webpack_require__(14);
 var wks = __webpack_require__(0);
-var wksExt = __webpack_require__(24);
-var wksDefine = __webpack_require__(25);
-var keyOf = __webpack_require__(56);
-var enumKeys = __webpack_require__(58);
+var wksExt = __webpack_require__(25);
+var wksDefine = __webpack_require__(26);
+var enumKeys = __webpack_require__(57);
 var isArray = __webpack_require__(40);
-var anObject = __webpack_require__(12);
-var toIObject = __webpack_require__(5);
-var toPrimitive = __webpack_require__(20);
-var createDesc = __webpack_require__(13);
+var anObject = __webpack_require__(11);
+var isObject = __webpack_require__(7);
+var toIObject = __webpack_require__(8);
+var toPrimitive = __webpack_require__(22);
+var createDesc = __webpack_require__(12);
 var _create = __webpack_require__(41);
 var gOPNExt = __webpack_require__(61);
 var $GOPD = __webpack_require__(62);
-var $DP = __webpack_require__(7);
-var $keys = __webpack_require__(10);
+var $DP = __webpack_require__(6);
+var $keys = __webpack_require__(15);
 var gOPD = $GOPD.f;
 var dP = $DP.f;
 var gOPN = gOPNExt.f;
@@ -1674,10 +1185,10 @@ if (!USE_NATIVE) {
   $GOPD.f = $getOwnPropertyDescriptor;
   $DP.f = $defineProperty;
   __webpack_require__(42).f = gOPNExt.f = $getOwnPropertyNames;
-  __webpack_require__(19).f = $propertyIsEnumerable;
+  __webpack_require__(21).f = $propertyIsEnumerable;
   __webpack_require__(39).f = $getOwnPropertySymbols;
 
-  if (DESCRIPTORS && !__webpack_require__(26)) {
+  if (DESCRIPTORS && !__webpack_require__(18)) {
     redefine(ObjectProto, 'propertyIsEnumerable', $propertyIsEnumerable, true);
   }
 
@@ -1703,9 +1214,9 @@ $export($export.S + $export.F * !USE_NATIVE, 'Symbol', {
       : SymbolRegistry[key] = $Symbol(key);
   },
   // 19.4.2.5 Symbol.keyFor(sym)
-  keyFor: function keyFor(key) {
-    if (isSymbol(key)) return keyOf(SymbolRegistry, key);
-    throw TypeError(key + ' is not a symbol!');
+  keyFor: function keyFor(sym) {
+    if (!isSymbol(sym)) throw TypeError(sym + ' is not a symbol!');
+    for (var key in SymbolRegistry) if (SymbolRegistry[key] === sym) return key;
   },
   useSetter: function () { setter = true; },
   useSimple: function () { setter = false; }
@@ -1735,15 +1246,14 @@ $JSON && $export($export.S + $export.F * (!USE_NATIVE || $fails(function () {
   return _stringify([S]) != '[null]' || _stringify({ a: S }) != '{}' || _stringify(Object(S)) != '{}';
 })), 'JSON', {
   stringify: function stringify(it) {
-    if (it === undefined || isSymbol(it)) return; // IE8 returns string on undefined
     var args = [it];
     var i = 1;
     var replacer, $replacer;
     while (arguments.length > i) args.push(arguments[i++]);
-    replacer = args[1];
-    if (typeof replacer == 'function') $replacer = replacer;
-    if ($replacer || !isArray(replacer)) replacer = function (key, value) {
-      if ($replacer) value = $replacer.call(this, key, value);
+    $replacer = replacer = args[1];
+    if (!isObject(replacer) && it === undefined || isSymbol(it)) return; // IE8 returns string on undefined
+    if (!isArray(replacer)) replacer = function (key, value) {
+      if (typeof $replacer == 'function') value = $replacer.call(this, key, value);
       if (!isSymbol(value)) return value;
     };
     args[1] = replacer;
@@ -1752,7 +1262,7 @@ $JSON && $export($export.S + $export.F * (!USE_NATIVE || $fails(function () {
 });
 
 // 19.4.3.4 Symbol.prototype[@@toPrimitive](hint)
-$Symbol[PROTOTYPE][TO_PRIMITIVE] || __webpack_require__(6)($Symbol[PROTOTYPE], TO_PRIMITIVE, $Symbol[PROTOTYPE].valueOf);
+$Symbol[PROTOTYPE][TO_PRIMITIVE] || __webpack_require__(5)($Symbol[PROTOTYPE], TO_PRIMITIVE, $Symbol[PROTOTYPE].valueOf);
 // 19.4.3.5 Symbol.prototype[@@toStringTag]
 setToStringTag($Symbol, 'Symbol');
 // 20.2.1.9 Math[@@toStringTag]
@@ -1763,6 +1273,13 @@ setToStringTag(global.JSON, 'JSON', true);
 
 /***/ }),
 /* 54 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__(17)('native-function-to-string', Function.toString);
+
+
+/***/ }),
+/* 55 */
 /***/ (function(module, exports) {
 
 module.exports = function (it) {
@@ -1772,18 +1289,18 @@ module.exports = function (it) {
 
 
 /***/ }),
-/* 55 */
+/* 56 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var META = __webpack_require__(15)('meta');
-var isObject = __webpack_require__(9);
+var META = __webpack_require__(14)('meta');
+var isObject = __webpack_require__(7);
 var has = __webpack_require__(4);
-var setDesc = __webpack_require__(7).f;
+var setDesc = __webpack_require__(6).f;
 var id = 0;
 var isExtensible = Object.isExtensible || function () {
   return true;
 };
-var FREEZE = !__webpack_require__(11)(function () {
+var FREEZE = !__webpack_require__(10)(function () {
   return isExtensible(Object.preventExtensions({}));
 });
 var setMeta = function (it) {
@@ -1831,42 +1348,13 @@ var meta = module.exports = {
 
 
 /***/ }),
-/* 56 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var getKeys = __webpack_require__(10);
-var toIObject = __webpack_require__(5);
-module.exports = function (object, el) {
-  var O = toIObject(object);
-  var keys = getKeys(O);
-  var length = keys.length;
-  var index = 0;
-  var key;
-  while (length > index) if (O[key = keys[index++]] === el) return key;
-};
-
-
-/***/ }),
 /* 57 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var toInteger = __webpack_require__(28);
-var max = Math.max;
-var min = Math.min;
-module.exports = function (index, length) {
-  index = toInteger(index);
-  return index < 0 ? max(index + length, 0) : min(index, length);
-};
-
-
-/***/ }),
-/* 58 */
-/***/ (function(module, exports, __webpack_require__) {
-
 // all enumerable object keys, includes symbols
-var getKeys = __webpack_require__(10);
+var getKeys = __webpack_require__(15);
 var gOPS = __webpack_require__(39);
-var pIE = __webpack_require__(19);
+var pIE = __webpack_require__(21);
 module.exports = function (it) {
   var result = getKeys(it);
   var getSymbols = gOPS.f;
@@ -1881,14 +1369,27 @@ module.exports = function (it) {
 
 
 /***/ }),
+/* 58 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var toInteger = __webpack_require__(28);
+var max = Math.max;
+var min = Math.min;
+module.exports = function (index, length) {
+  index = toInteger(index);
+  return index < 0 ? max(index + length, 0) : min(index, length);
+};
+
+
+/***/ }),
 /* 59 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var dP = __webpack_require__(7);
-var anObject = __webpack_require__(12);
-var getKeys = __webpack_require__(10);
+var dP = __webpack_require__(6);
+var anObject = __webpack_require__(11);
+var getKeys = __webpack_require__(15);
 
-module.exports = __webpack_require__(8) ? Object.defineProperties : function defineProperties(O, Properties) {
+module.exports = __webpack_require__(9) ? Object.defineProperties : function defineProperties(O, Properties) {
   anObject(O);
   var keys = getKeys(Properties);
   var length = keys.length;
@@ -1912,7 +1413,7 @@ module.exports = document && document.documentElement;
 /***/ (function(module, exports, __webpack_require__) {
 
 // fallback for IE11 buggy Object.getOwnPropertyNames with iframe and window
-var toIObject = __webpack_require__(5);
+var toIObject = __webpack_require__(8);
 var gOPN = __webpack_require__(42).f;
 var toString = {}.toString;
 
@@ -1936,15 +1437,15 @@ module.exports.f = function getOwnPropertyNames(it) {
 /* 62 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var pIE = __webpack_require__(19);
-var createDesc = __webpack_require__(13);
-var toIObject = __webpack_require__(5);
-var toPrimitive = __webpack_require__(20);
+var pIE = __webpack_require__(21);
+var createDesc = __webpack_require__(12);
+var toIObject = __webpack_require__(8);
+var toPrimitive = __webpack_require__(22);
 var has = __webpack_require__(4);
 var IE8_DOM_DEFINE = __webpack_require__(34);
 var gOPD = Object.getOwnPropertyDescriptor;
 
-exports.f = __webpack_require__(8) ? gOPD : function getOwnPropertyDescriptor(O, P) {
+exports.f = __webpack_require__(9) ? gOPD : function getOwnPropertyDescriptor(O, P) {
   O = toIObject(O);
   P = toPrimitive(P, true);
   if (IE8_DOM_DEFINE) try {
@@ -1965,7 +1466,7 @@ var classof = __webpack_require__(43);
 var test = {};
 test[__webpack_require__(0)('toStringTag')] = 'z';
 if (test + '' != '[object z]') {
-  __webpack_require__(14)(Object.prototype, 'toString', function toString() {
+  __webpack_require__(13)(Object.prototype, 'toString', function toString() {
     return '[object ' + classof(this) + ']';
   }, true);
 }
@@ -1975,14 +1476,14 @@ if (test + '' != '[object z]') {
 /* 64 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(25)('asyncIterator');
+__webpack_require__(26)('asyncIterator');
 
 
 /***/ }),
 /* 65 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(25)('observable');
+__webpack_require__(26)('observable');
 
 
 /***/ }),
@@ -1991,7 +1492,7 @@ __webpack_require__(25)('observable');
 
 __webpack_require__(44);
 __webpack_require__(70);
-module.exports = __webpack_require__(24).f('iterator');
+module.exports = __webpack_require__(25).f('iterator');
 
 
 /***/ }),
@@ -1999,7 +1500,7 @@ module.exports = __webpack_require__(24).f('iterator');
 /***/ (function(module, exports, __webpack_require__) {
 
 var toInteger = __webpack_require__(28);
-var defined = __webpack_require__(18);
+var defined = __webpack_require__(20);
 // true  -> String#at
 // false -> String#codePointAt
 module.exports = function (TO_STRING) {
@@ -2024,12 +1525,12 @@ module.exports = function (TO_STRING) {
 "use strict";
 
 var create = __webpack_require__(41);
-var descriptor = __webpack_require__(13);
-var setToStringTag = __webpack_require__(23);
+var descriptor = __webpack_require__(12);
+var setToStringTag = __webpack_require__(24);
 var IteratorPrototype = {};
 
 // 25.1.2.1.1 %IteratorPrototype%[@@iterator]()
-__webpack_require__(6)(IteratorPrototype, __webpack_require__(0)('iterator'), function () { return this; });
+__webpack_require__(5)(IteratorPrototype, __webpack_require__(0)('iterator'), function () { return this; });
 
 module.exports = function (Constructor, NAME, next) {
   Constructor.prototype = create(IteratorPrototype, { next: descriptor(1, next) });
@@ -2061,10 +1562,10 @@ module.exports = Object.getPrototypeOf || function (O) {
 /***/ (function(module, exports, __webpack_require__) {
 
 var $iterators = __webpack_require__(71);
-var getKeys = __webpack_require__(10);
-var redefine = __webpack_require__(14);
+var getKeys = __webpack_require__(15);
+var redefine = __webpack_require__(13);
 var global = __webpack_require__(2);
-var hide = __webpack_require__(6);
+var hide = __webpack_require__(5);
 var Iterators = __webpack_require__(16);
 var wks = __webpack_require__(0);
 var ITERATOR = wks('iterator');
@@ -2129,7 +1630,7 @@ for (var collections = getKeys(DOMIterables), i = 0; i < collections.length; i++
 var addToUnscopables = __webpack_require__(32);
 var step = __webpack_require__(72);
 var Iterators = __webpack_require__(16);
-var toIObject = __webpack_require__(5);
+var toIObject = __webpack_require__(8);
 
 // 22.1.3.4 Array.prototype.entries()
 // 22.1.3.13 Array.prototype.keys()
@@ -2207,7 +1708,7 @@ module.exports = function (original, length) {
 /* 75 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var isObject = __webpack_require__(9);
+var isObject = __webpack_require__(7);
 var isArray = __webpack_require__(40);
 var SPECIES = __webpack_require__(0)('species');
 
@@ -2231,7 +1732,7 @@ module.exports = function (original) {
 
 "use strict";
 
-var ctx = __webpack_require__(21);
+var ctx = __webpack_require__(23);
 var $export = __webpack_require__(3);
 var toObject = __webpack_require__(31);
 var call = __webpack_require__(77);
@@ -2274,7 +1775,7 @@ $export($export.S + $export.F * !__webpack_require__(81)(function (iter) { Array
 /***/ (function(module, exports, __webpack_require__) {
 
 // call something on iterator step with safe closing on error
-var anObject = __webpack_require__(12);
+var anObject = __webpack_require__(11);
 module.exports = function (iterator, fn, value, entries) {
   try {
     return entries ? fn(anObject(value)[0], value[1]) : fn(value);
@@ -2307,8 +1808,8 @@ module.exports = function (it) {
 
 "use strict";
 
-var $defineProperty = __webpack_require__(7);
-var createDesc = __webpack_require__(13);
+var $defineProperty = __webpack_require__(6);
+var createDesc = __webpack_require__(12);
 
 module.exports = function (object, index, value) {
   if (index in object) $defineProperty.f(object, index, createDesc(0, value));
@@ -2418,7 +1919,7 @@ $export($export.P + $export.F * __webpack_require__(88)(INCLUDES), 'String', {
 
 // helper for String#{startsWith, endsWith, includes}
 var isRegExp = __webpack_require__(87);
-var defined = __webpack_require__(18);
+var defined = __webpack_require__(20);
 
 module.exports = function (that, searchString, NAME) {
   if (isRegExp(searchString)) throw TypeError('String#' + NAME + " doesn't accept regex!");
@@ -2431,8 +1932,8 @@ module.exports = function (that, searchString, NAME) {
 /***/ (function(module, exports, __webpack_require__) {
 
 // 7.2.8 IsRegExp(argument)
-var isObject = __webpack_require__(9);
-var cof = __webpack_require__(17);
+var isObject = __webpack_require__(7);
+var cof = __webpack_require__(19);
 var MATCH = __webpack_require__(0)('match');
 module.exports = function (it) {
   var isRegExp;
@@ -2587,67 +2088,6 @@ var FormHelper = function () {
       this.subscriptions = [];
 
       this.formHelperConfig.countryElement.removeEventListener("change", this.boundCountryChangedListener);
-    }
-
-    // check all of the elements in the formHelper and confirm they are still
-    // within the page DOM
-
-  }, {
-    key: "areAllElementsStillInTheDOM",
-    value: function areAllElementsStillInTheDOM() {
-      var _this = this;
-
-      if (this._bodyDoesntContainElement(this.formHelperConfig.countryElement)) {
-        this._log("Country Element is not in the DOM");
-        return false;
-      }
-
-      var countryCodeWithMissingElements = this.countryCodes.find(function (countryCode) {
-        if (_this.areAllElementsStillInTheDOMForCountryCode(countryCode)) {
-          return false; // not missing
-        } else {
-            return true; // missing an element
-          }
-      });
-
-      var allElementsStillInTheDOM = !countryCodeWithMissingElements;
-      this._log('areAllElementsStillInTheDOM?', allElementsStillInTheDOM);
-
-      return allElementsStillInTheDOM;
-    }
-  }, {
-    key: "areAllElementsStillInTheDOMForCountryCode",
-    value: function areAllElementsStillInTheDOMForCountryCode(countryCode) {
-      var formConfig = this.formHelperConfig[countryCode];
-
-      // if config is not supplied then no need to check elements
-      if (!formConfig) {
-        return true;
-      }
-
-      if (this._bodyDoesntContainElement(formConfig.searchElement)) {
-        this._log("Search Element is not in the DOM");
-        return false;
-      }
-      // const findElement = elementName => formConfig.elements[elementName]
-      var isPresent = function isPresent(element) {
-        return element != undefined;
-      };
-
-      var elementNotInDOM = Object.values(formConfig.elements).filter(isPresent).find(this._bodyDoesntContainElement);
-
-      if (elementNotInDOM) {
-        this._log("Element is not in the DOM", elementNotInDOM);
-        return false;
-      }
-
-      // all elements are still in the DOM
-      return true;
-    }
-  }, {
-    key: "_bodyDoesntContainElement",
-    value: function _bodyDoesntContainElement(element) {
-      return !document.body.contains(element);
     }
   }, {
     key: "_bindToForm",
@@ -2896,9 +2336,9 @@ $export($export.S, 'Object', {
 /* 96 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var getKeys = __webpack_require__(10);
-var toIObject = __webpack_require__(5);
-var isEnum = __webpack_require__(19).f;
+var getKeys = __webpack_require__(15);
+var toIObject = __webpack_require__(8);
+var isEnum = __webpack_require__(21).f;
 module.exports = function (isEntries) {
   return function (it) {
     var O = toIObject(it);
@@ -2913,6 +2353,649 @@ module.exports = function (isEntries) {
   };
 };
 
+
+/***/ }),
+/* 97 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _form_helper = __webpack_require__(89);
+
+var _form_helper2 = _interopRequireDefault(_form_helper);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var MutationsHelper = function () {
+  function MutationsHelper(layoutConfigurations, widgetConfig) {
+    _classCallCheck(this, MutationsHelper);
+
+    this.formHelperConfig = {};
+    this.formHelpers = [];
+    this.layoutConfigurations = layoutConfigurations;
+    this.widgetConfig = widgetConfig;
+    this.countryCodes = ["au", "nz"];
+    this.monitorMutations();
+  }
+
+  _createClass(MutationsHelper, [{
+    key: "domNodeModifiedHandler",
+    value: function domNodeModifiedHandler(event) {
+      if (event.target.className && event.target.className.includes("af_list")) {
+        return; // ignore AddressFinder changes
+      }
+
+      if (event.relatedNode && event.relatedNode.className && event.relatedNode.className.includes("af_list")) {
+        return; // ignore AddressFinder changes
+      }
+
+      if (this._mutationTimeout) {
+        clearTimeout(this._mutationTimeout); // reset previous timeout
+      }
+
+      // ignore any further changes for the next 750 mS
+      this._mutationTimeout = setTimeout(this.resetAndReloadFormHelpers.bind(this), 750);
+    }
+  }, {
+    key: "identifyLayout",
+    value: function identifyLayout() {
+      var _iteratorNormalCompletion = true;
+      var _didIteratorError = false;
+      var _iteratorError = undefined;
+
+      try {
+        for (var _iterator = this.layoutConfigurations[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+          var layoutConfig = _step.value;
+
+          var identifyingElement = document.querySelector(layoutConfig.layoutSelector);
+
+          if (identifyingElement) {
+            this._log("Identified layout named: " + layoutConfig.label);
+            this.initialiseFormHelper(layoutConfig);
+          }
+        }
+      } catch (err) {
+        _didIteratorError = true;
+        _iteratorError = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion && _iterator.return) {
+            _iterator.return();
+          }
+        } finally {
+          if (_didIteratorError) {
+            throw _iteratorError;
+          }
+        }
+      }
+    }
+  }, {
+    key: "initialiseFormHelper",
+    value: function initialiseFormHelper(layoutConfig) {
+      var searchElement = document.getElementById(layoutConfig.searchIdentifier);
+
+      if (searchElement) {
+        this.formHelperConfig = {
+          countryElement: document.getElementById(layoutConfig.countryIdentifier),
+          label: layoutConfig.label,
+          layoutSelector: layoutConfig.layoutSelector,
+          nz: {
+            countryValue: layoutConfig.nz.countryValue,
+            searchElement: document.getElementById(layoutConfig.nz.elements.address1),
+            elements: {
+              address_line_1_and_2: document.getElementById(layoutConfig.nz.elements.address1),
+              address_line_1: null,
+              address_line_2: null,
+              suburb: document.getElementById(layoutConfig.nz.elements.suburb),
+              city: document.getElementById(layoutConfig.nz.elements.city),
+              region: document.getElementById(layoutConfig.nz.elements.region),
+              postcode: document.getElementById(layoutConfig.nz.elements.postcode)
+            },
+            regionMappings: null
+          },
+          au: {
+            countryValue: layoutConfig.au.countryValue,
+            searchElement: document.getElementById(layoutConfig.au.elements.address1),
+            elements: {
+              address_line_1_and_2: null,
+              address_line_1: document.getElementById(layoutConfig.au.elements.address1),
+              address_line_2: document.getElementById(layoutConfig.au.elements.address2),
+              locality_name: document.getElementById(layoutConfig.au.elements.suburb),
+              city: null,
+              state_territory: document.getElementById(layoutConfig.au.elements.state),
+              postcode: document.getElementById(layoutConfig.au.elements.postcode)
+            },
+            stateMappings: layoutConfig.au.stateMappings
+          }
+        };
+        var helper = new _form_helper2.default(this.widgetConfig, this.formHelperConfig);
+        this.formHelpers.push(helper);
+      }
+    }
+
+    // search active formHelpers for this layoutSelector
+
+  }, {
+    key: "anyFormHelpersWithLayoutIdentifier",
+    value: function anyFormHelpersWithLayoutIdentifier(identifierToSearchFor) {
+      var _iteratorNormalCompletion2 = true;
+      var _didIteratorError2 = false;
+      var _iteratorError2 = undefined;
+
+      try {
+        for (var _iterator2 = this.formHelpers[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+          var activeFormHelper = _step2.value;
+
+          if (activeFormHelper.layoutSelector == identifierToSearchFor) {
+            return true;
+          }
+        }
+      } catch (err) {
+        _didIteratorError2 = true;
+        _iteratorError2 = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion2 && _iterator2.return) {
+            _iterator2.return();
+          }
+        } finally {
+          if (_didIteratorError2) {
+            throw _iteratorError2;
+          }
+        }
+      }
+
+      return false;
+    }
+  }, {
+    key: "_bodyDoesntContainElement",
+    value: function _bodyDoesntContainElement(element) {
+      return !document.body.contains(element);
+    }
+
+    // check all of the elements in the formHelper and confirm they are still
+    // within the page DOM
+
+  }, {
+    key: "areAllElementsStillInTheDOM",
+    value: function areAllElementsStillInTheDOM() {
+      var _this = this;
+
+      if (this._bodyDoesntContainElement(this.formHelperConfig.countryElement)) {
+        this._log("Country Element is not in the DOM");
+        return false;
+      }
+
+      var countryCodeWithMissingElements = this.countryCodes.find(function (countryCode) {
+        if (_this.areAllElementsStillInTheDOMForCountryCode(countryCode)) {
+          return false; // not missing
+        } else {
+            return true; // missing an element
+          }
+      });
+
+      var allElementsStillInTheDOM = !countryCodeWithMissingElements;
+      this._log('areAllElementsStillInTheDOM?', allElementsStillInTheDOM);
+
+      return allElementsStillInTheDOM;
+    }
+  }, {
+    key: "areAllElementsStillInTheDOMForCountryCode",
+    value: function areAllElementsStillInTheDOMForCountryCode(countryCode) {
+      var formConfig = this.formHelperConfig[countryCode];
+
+      // if config is not supplied then no need to check elements
+      if (!formConfig) {
+        return true;
+      }
+
+      if (this._bodyDoesntContainElement(formConfig.searchElement)) {
+        this._log("Search Element is not in the DOM");
+        return false;
+      }
+      // const findElement = elementName => formConfig.elements[elementName]
+      var isPresent = function isPresent(element) {
+        return element != undefined;
+      };
+
+      var elementNotInDOM = Object.values(formConfig.elements).filter(isPresent).find(this._bodyDoesntContainElement);
+
+      if (elementNotInDOM) {
+        this._log("Element is not in the DOM", elementNotInDOM);
+        return false;
+      }
+
+      // all elements are still in the DOM
+      return true;
+    }
+  }, {
+    key: "identifyAdditionalLayouts",
+    value: function identifyAdditionalLayouts() {
+      var _this2 = this;
+
+      var layoutSelectorExists = function layoutSelectorExists(config) {
+        return document.querySelector(config.layoutSelector);
+      };
+      var isNewFormHelper = function isNewFormHelper(config) {
+        return !_this2.anyFormHelpersWithLayoutIdentifier(config.layoutSelector);
+      };
+
+      this.layoutConfigurations.filter(layoutSelectorExists).filter(isNewFormHelper).forEach(this.initialiseFormHelper.bind(this));
+    }
+  }, {
+    key: "_formHelpersWithMissingElements",
+    value: function _formHelpersWithMissingElements() {
+      var _this3 = this;
+
+      var hasMissingElements = function hasMissingElements(formHelper) {
+        return !_this3.areAllElementsStillInTheDOM();
+      };
+
+      return this.formHelpers.filter(hasMissingElements);
+    }
+  }, {
+    key: "resetAndReloadFormHelpers",
+    value: function resetAndReloadFormHelpers() {
+      var formHelpersToDestroy = this._formHelpersWithMissingElements();
+
+      var _iteratorNormalCompletion3 = true;
+      var _didIteratorError3 = false;
+      var _iteratorError3 = undefined;
+
+      try {
+        for (var _iterator3 = formHelpersToDestroy[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+          var formHelper = _step3.value;
+
+          formHelper.destroy();
+        }
+      } catch (err) {
+        _didIteratorError3 = true;
+        _iteratorError3 = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion3 && _iterator3.return) {
+            _iterator3.return();
+          }
+        } finally {
+          if (_didIteratorError3) {
+            throw _iteratorError3;
+          }
+        }
+      }
+
+      var isStillActive = function isStillActive(formHelper) {
+        return !formHelpersToDestroy.includes(formHelper);
+      };
+      this.formHelpers = this.formHelpers.filter(isStillActive);
+
+      this.identifyAdditionalLayouts();
+    }
+  }, {
+    key: "mutationHandler",
+    value: function mutationHandler(mutations) {
+      var changedNodes = mutations.reduce(function (nodes, mutation) {
+        // ignore this mutation if the target is the AddressFinder UL element
+        if (mutation.target && mutation.target.classList && mutation.target.classList.contains("af_list")) {
+          return nodes;
+        }
+
+        return nodes.concat([].concat(_toConsumableArray(mutation.addedNodes))).concat([].concat(_toConsumableArray(mutation.removedNodes)));
+      }, []);
+
+      var anyBigCommerceChanges = changedNodes.find(function (node) {
+        return !(node.classList && node.classList.contains("af_list"));
+      });
+
+      if (!anyBigCommerceChanges) {
+        return; // ignore AddressFinder changes
+      }
+
+      if (this._mutationTimeout) {
+        clearTimeout(this._mutationTimeout); // reset previous timeout
+      }
+
+      // ignore any further changes for the next 750 mS
+      this._mutationTimeout = setTimeout(this.resetAndReloadFormHelpers.bind(this), 750);
+    }
+  }, {
+    key: "monitorMutations",
+    value: function monitorMutations() {
+      if (window.MutationObserver) {
+        /* for modern browsers */
+        var observer = new MutationObserver(this.mutationHandler.bind(this));
+        observer.observe(document.body, { childList: true, subtree: true });
+      } else if (window.addEventListener) {
+        /* for IE 9 and 10 */
+        document.body.addEventListener('DOMNodeInserted', this.domNodeModifiedHandler.bind(this), false);
+        document.body.addEventListener('DOMNodeRemoved', this.domNodeModifiedHandler.bind(this), false);
+      } else {
+        if (window.console) {
+          console.info('AddressFinder Error - please use a more modern browser');
+        }
+      }
+    }
+  }, {
+    key: "_log",
+    value: function _log(message) {
+      var object1 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : undefined;
+
+      // widgetConfig.debug should be on 
+      if (window.console) {
+        if (object1 != undefined) {
+          console.log("FormHelper for layout " + this.formHelperConfig.label + ": " + message, object1);
+        } else {
+          console.log("FormHelper for layout " + this.formHelperConfig.label + ": " + message);
+        }
+      }
+    }
+  }]);
+
+  return MutationsHelper;
+}();
+
+exports.default = MutationsHelper;
+
+/***/ }),
+/* 98 */,
+/* 99 */,
+/* 100 */,
+/* 101 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _default_state_mappings = __webpack_require__(105);
+
+var _default_state_mappings2 = _interopRequireDefault(_default_state_mappings);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+exports.default = [{
+  label: "One-page checkout (Billing details)",
+  layoutSelector: "#CheckoutStepBillingAddress",
+  countryIdentifier: 'FormField_11',
+  searchIdentifier: "FormField_8",
+  nz: {
+    countryValue: "New Zealand",
+    elements: {
+      address1: 'FormField_8',
+      suburb: 'FormField_9',
+      city: 'FormField_10',
+      region: 'FormField_12',
+      postcode: 'FormField_13'
+    },
+    regionMappings: null
+  },
+  au: {
+    countryValue: "Australia",
+    elements: {
+      address1: 'FormField_8',
+      address2: 'FormField_9',
+      suburb: 'FormField_10',
+      state: 'FormField_12',
+      postcode: 'FormField_13'
+    },
+    stateMappings: _default_state_mappings2.default
+  }
+}, {
+  label: "One-page checkout (Shipping details)",
+  layoutSelector: "#CheckoutStepShippingAddress",
+  countryIdentifier: "FormField_21",
+  searchIdentifier: "FormField_18",
+  nz: {
+    countryValue: "New Zealand",
+    elements: {
+      address1: 'FormField_18',
+      suburb: 'FormField_19',
+      city: 'FormField_20',
+      region: 'FormField_22',
+      postcode: 'FormField_23'
+    },
+    regionMappings: null
+  },
+  au: {
+    countryValue: "Australia",
+    elements: {
+      address1: 'FormField_18',
+      address2: 'FormField_19',
+      suburb: 'FormField_20',
+      state: 'FormField_22',
+      postcode: 'FormField_23'
+    },
+    stateMappings: _default_state_mappings2.default
+  }
+}];
+
+/***/ }),
+/* 102 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _default_state_mappings = __webpack_require__(105);
+
+var _default_state_mappings2 = _interopRequireDefault(_default_state_mappings);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+exports.default = [{
+  label: "Address book (Blueprint)",
+  layoutSelector: "#AddressEditForm",
+  countryIdentifier: 'FormField_11',
+  searchIdentifier: "FormField_8",
+  nz: {
+    countryValue: "New Zealand",
+    elements: {
+      address1: 'FormField_8',
+      suburb: 'FormField_9',
+      city: 'FormField_10',
+      region: 'FormField_12',
+      postcode: 'FormField_13'
+    },
+    regionMappings: null
+  },
+  au: {
+    countryValue: "Australia",
+    elements: {
+      address1: 'FormField_8',
+      address2: 'FormField_9',
+      suburb: 'FormField_10',
+      state: 'FormField_12',
+      postcode: 'FormField_13'
+    },
+    stateMappings: _default_state_mappings2.default
+  }
+}, {
+  label: "Address book (Stencil)",
+  layoutSelector: "form[data-address-form]",
+  countryIdentifier: 'FormField_11_select',
+  searchIdentifier: "FormField_8_input",
+  nz: {
+    countryValue: "New Zealand",
+    elements: {
+      address1: 'FormField_8_input',
+      suburb: 'FormField_9_input',
+      city: 'FormField_10_input',
+      region: 'FormField_12_input',
+      postcode: 'FormField_13_input'
+    },
+    regionMappings: null
+  },
+  au: {
+    countryValue: "Australia",
+    elements: {
+      address1: 'FormField_8_input',
+      address2: 'FormField_9_input',
+      suburb: 'FormField_10_input',
+      state: 'FormField_12_input',
+      postcode: 'FormField_13_input'
+    },
+    stateMappings: _default_state_mappings2.default
+  }
+}];
+
+/***/ }),
+/* 103 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _default_state_mappings = __webpack_require__(105);
+
+var _default_state_mappings2 = _interopRequireDefault(_default_state_mappings);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+exports.default = [{
+  label: "Create account (Blueprint)",
+  layoutSelector: "#CreateAccountForm",
+  countryIdentifier: 'FormField_11',
+  searchIdentifier: "FormField_8",
+  nz: {
+    countryValue: "New Zealand",
+    elements: {
+      address1: 'FormField_8',
+      suburb: 'FormField_9',
+      city: 'FormField_10',
+      region: 'FormField_12',
+      postcode: 'FormField_13'
+    },
+    regionMappings: null
+  },
+  au: {
+    countryValue: "Australia",
+    elements: {
+      address1: 'FormField_8',
+      address2: 'FormField_9',
+      suburb: 'FormField_10',
+      state: 'FormField_12',
+      postcode: 'FormField_13'
+    },
+    stateMappings: _default_state_mappings2.default
+  }
+}, {
+  label: "Create account (Stencil)",
+  layoutSelector: "form[data-create-account-form]",
+  countryIdentifier: 'FormField_11_select',
+  searchIdentifier: "FormField_8_input",
+  nz: {
+    countryValue: "New Zealand",
+    elements: {
+      address1: 'FormField_8_input',
+      suburb: 'FormField_9_input',
+      city: 'FormField_10_input',
+      region: 'FormField_12_input',
+      postcode: 'FormField_13_input'
+    },
+    regionMappings: null
+  },
+  au: {
+    countryValue: "Australia",
+    elements: {
+      address1: 'FormField_8_input',
+      address2: 'FormField_9_input',
+      suburb: 'FormField_10_input',
+      state: 'FormField_12_input',
+      postcode: 'FormField_13_input'
+    },
+    stateMappings: _default_state_mappings2.default
+  }
+}];
+
+/***/ }),
+/* 104 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = {
+  label: "Optimized one-page checkout (Early access)",
+  layoutSelector: "#micro-app-ng-checkout",
+  countryIdentifier: 'countryCodeInput',
+  searchIdentifier: "addressLine1Input",
+  nz: {
+    countryValue: "string:NZ",
+    elements: {
+      address1: 'addressLine1Input',
+      suburb: 'addressLine2Input',
+      city: 'cityInput',
+      region: 'provinceInput',
+      postcode: 'postCodeInput'
+    },
+    regionMappings: null
+  },
+  au: {
+    countryValue: "string:AU",
+    elements: {
+      address1: 'addressLine1Input',
+      address2: 'addressLine2Input',
+      suburb: 'cityInput',
+      state: 'provinceCodeInput',
+      postcode: 'postCodeInput'
+    },
+    stateMappings: {
+      'ACT': 'string:ACT',
+      'NSW': 'string:NSW',
+      'NT': 'string:NT',
+      'QLD': 'string:QLD',
+      'SA': 'string:SA',
+      'TAS': 'string:TAS',
+      'VIC': 'string:VIC',
+      'WA': 'string:WA'
+    }
+  }
+};
+
+/***/ }),
+/* 105 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = {
+  'ACT': 'Australian Capital Territory',
+  'NSW': 'New South Wales',
+  'NT': 'Northern Territory',
+  'QLD': 'Queensland',
+  'SA': 'South Australia',
+  'TAS': 'Tasmania',
+  'VIC': 'Victoria',
+  'WA': 'Western Australia'
+};
 
 /***/ })
 /******/ ]);

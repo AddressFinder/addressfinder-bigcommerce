@@ -104,61 +104,6 @@ export default class FormHelper {
     this.formHelperConfig.countryElement.removeEventListener("change", this.boundCountryChangedListener)
   }
 
-  // check all of the elements in the formHelper and confirm they are still
-  // within the page DOM
-  areAllElementsStillInTheDOM(){
-
-    if( this._bodyDoesntContainElement(this.formHelperConfig.countryElement)){
-      this._log("Country Element is not in the DOM")
-      return false
-    }
-
-    const countryCodeWithMissingElements = this.countryCodes.find((countryCode) => {
-      if (this.areAllElementsStillInTheDOMForCountryCode(countryCode)) {
-        return false // not missing
-      } else {
-        return true // missing an element
-      }
-    });
-
-    const allElementsStillInTheDOM = !countryCodeWithMissingElements
-    this._log('areAllElementsStillInTheDOM?', allElementsStillInTheDOM)
-
-    return allElementsStillInTheDOM
-  }
-
-  areAllElementsStillInTheDOMForCountryCode(countryCode) {
-    const formConfig = this.formHelperConfig[countryCode]
-
-    // if config is not supplied then no need to check elements
-    if (!formConfig) {
-      return true
-    }
-
-    if (this._bodyDoesntContainElement(formConfig.searchElement)){
-      this._log("Search Element is not in the DOM")
-      return false
-    }
-    // const findElement = elementName => formConfig.elements[elementName]
-    const isPresent = element => element != undefined
-
-    const elementNotInDOM = Object.values(formConfig.elements)
-                                  .filter(isPresent)
-                                  .find(this._bodyDoesntContainElement)
-
-    if (elementNotInDOM) {
-      this._log("Element is not in the DOM", elementNotInDOM)
-      return false
-    }
-
-    // all elements are still in the DOM
-    return true
-  }
-
-  _bodyDoesntContainElement(element) {
-    return !document.body.contains(element)
-  }
-
   _bindToForm(){
     this.boundCountryChangedListener = this._countryChanged.bind(this) // save this so we can unbind in the destroy() method
     this.formHelperConfig.countryElement.addEventListener("change", this.boundCountryChangedListener);
