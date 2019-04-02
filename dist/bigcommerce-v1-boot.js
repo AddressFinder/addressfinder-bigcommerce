@@ -627,194 +627,40 @@ __webpack_require__(48);
 
 __webpack_require__(49);
 
+__webpack_require__(105);
+
 __webpack_require__(83);
 
 __webpack_require__(85);
-
-var _log = __webpack_require__(104);
-
-var _log2 = _interopRequireDefault(_log);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var MutationsHelper = function () {
-  function MutationsHelper(_ref) {
-    var layoutConfigurations = _ref.layoutConfigurations,
-        formHelperConfig = _ref.formHelperConfig,
-        formHelpers = _ref.formHelpers,
-        initialiseFormHelper = _ref.initialiseFormHelper;
-
+  function MutationsHelper(resetAndReloadFormHelpers) {
     _classCallCheck(this, MutationsHelper);
 
-    this.layoutConfigurations = layoutConfigurations;
-    this.formHelpers = formHelpers;
-    this.formHelperConfig = formHelperConfig;
-    this.initialiseFormHelper = initialiseFormHelper;
-    this.countryCodes = ["au", "nz"];
+    this.resetAndReloadFormHelpers = resetAndReloadFormHelpers;
     this.monitorMutations();
   }
 
-  // search active formHelpers for this layoutSelector
-
-
   _createClass(MutationsHelper, [{
-    key: "anyFormHelpersWithLayoutIdentifier",
-    value: function anyFormHelpersWithLayoutIdentifier(identifierToSearchFor) {
-      var _iteratorNormalCompletion = true;
-      var _didIteratorError = false;
-      var _iteratorError = undefined;
-
-      try {
-        for (var _iterator = this.formHelpers[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-          var activeFormHelper = _step.value;
-
-          if (activeFormHelper.layoutSelector == identifierToSearchFor) {
-            return true;
-          }
-        }
-      } catch (err) {
-        _didIteratorError = true;
-        _iteratorError = err;
-      } finally {
-        try {
-          if (!_iteratorNormalCompletion && _iterator.return) {
-            _iterator.return();
-          }
-        } finally {
-          if (_didIteratorError) {
-            throw _iteratorError;
-          }
+    key: "monitorMutations",
+    value: function monitorMutations() {
+      if (window.MutationObserver) {
+        /* for modern browsers */
+        var observer = new MutationObserver(this._mutationHandler.bind(this));
+        observer.observe(document.body, { childList: true, subtree: true });
+      } else if (window.addEventListener) {
+        /* for IE 9 and 10 */
+        document.body.addEventListener('DOMNodeInserted', this._domNodeModifiedHandler.bind(this), false);
+        document.body.addEventListener('DOMNodeRemoved', this._domNodeModifiedHandler.bind(this), false);
+      } else {
+        if (window.console) {
+          console.info('AddressFinder Error - please use a more modern browser');
         }
       }
-
-      return false;
-    }
-  }, {
-    key: "identifyAdditionalLayouts",
-    value: function identifyAdditionalLayouts() {
-      var _this = this;
-
-      var layoutSelectorExists = function layoutSelectorExists(config) {
-        return document.querySelector(config.layoutSelector);
-      };
-      var isNewFormHelper = function isNewFormHelper(config) {
-        return !_this.anyFormHelpersWithLayoutIdentifier(config.layoutSelector);
-      };
-
-      this.layoutConfigurations.filter(layoutSelectorExists).filter(isNewFormHelper).forEach(this.initialiseFormHelper.bind(this));
-    }
-  }, {
-    key: "_bodyContainsElement",
-    value: function _bodyContainsElement(element) {
-      document.body.contains(element);
-    }
-
-    // check all of the elements in the formHelper and confirm they are still
-    // within the page DOM
-
-  }, {
-    key: "areAllElementsStillInTheDOM",
-    value: function areAllElementsStillInTheDOM() {
-      var _this2 = this;
-
-      if (!this._bodyContainsElement(this.formHelperConfig.countryElement)) {
-        (0, _log2.default)("Country Element is not in the DOM");
-        return false;
-      }
-
-      var countryCodeWithMissingElements = this.countryCodes.find(function (countryCode) {
-        if (_this2.areAllElementsStillInTheDOMForCountryCode(countryCode)) {
-          return false; // not missing
-        } else {
-            return true; // missing an element
-          }
-      });
-
-      var allElementsStillInTheDOM = !countryCodeWithMissingElements;
-      (0, _log2.default)('areAllElementsStillInTheDOM?', allElementsStillInTheDOM);
-
-      return allElementsStillInTheDOM;
-    }
-  }, {
-    key: "areAllElementsStillInTheDOMForCountryCode",
-    value: function areAllElementsStillInTheDOMForCountryCode(countryCode) {
-      var formConfig = this.formHelperConfig[countryCode];
-
-      // if config is not supplied then no need to check elements
-      if (!formConfig) {
-        return true;
-      }
-
-      if (!this._bodyContainsElement(formConfig.searchElement)) {
-        (0, _log2.default)("Search Element is not in the DOM");
-        return false;
-      }
-      // const findElement = elementName => formConfig.elements[elementName]
-      var isPresent = function isPresent(element) {
-        return element != undefined;
-      };
-
-      var elementNotInDOM = Object.values(formConfig.elements).filter(isPresent).find(!this._bodyContainsElement);
-
-      if (elementNotInDOM) {
-        (0, _log2.default)("Element is not in the DOM", elementNotInDOM);
-        return false;
-      }
-
-      // all elements are still in the DOM
-      return true;
-    }
-  }, {
-    key: "_formHelpersWithMissingElements",
-    value: function _formHelpersWithMissingElements() {
-      var _this3 = this;
-
-      var hasMissingElements = function hasMissingElements() {
-        return !_this3.areAllElementsStillInTheDOM();
-      };
-
-      return this.formHelpers.filter(hasMissingElements);
-    }
-  }, {
-    key: "resetAndReloadFormHelpers",
-    value: function resetAndReloadFormHelpers() {
-      var formHelpersToDestroy = this._formHelpersWithMissingElements();
-
-      var _iteratorNormalCompletion2 = true;
-      var _didIteratorError2 = false;
-      var _iteratorError2 = undefined;
-
-      try {
-        for (var _iterator2 = formHelpersToDestroy[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-          var formHelper = _step2.value;
-
-          formHelper.destroy();
-        }
-      } catch (err) {
-        _didIteratorError2 = true;
-        _iteratorError2 = err;
-      } finally {
-        try {
-          if (!_iteratorNormalCompletion2 && _iterator2.return) {
-            _iterator2.return();
-          }
-        } finally {
-          if (_didIteratorError2) {
-            throw _iteratorError2;
-          }
-        }
-      }
-
-      var isStillActive = function isStillActive(formHelper) {
-        return !formHelpersToDestroy.includes(formHelper);
-      };
-      this.formHelpers = this.formHelpers.filter(isStillActive);
-
-      this.identifyAdditionalLayouts();
     }
   }, {
     key: "_mutationHandler",
@@ -855,24 +701,7 @@ var MutationsHelper = function () {
       }
 
       // ignore any further changes for the next 750 mS
-      this._mutationTimeout = setTimeout(this.resetAndReloadFormHelpers.bind(this), 750);
-    }
-  }, {
-    key: "monitorMutations",
-    value: function monitorMutations() {
-      if (window.MutationObserver) {
-        /* for modern browsers */
-        var observer = new MutationObserver(this._mutationHandler.bind(this));
-        observer.observe(document.body, { childList: true, subtree: true });
-      } else if (window.addEventListener) {
-        /* for IE 9 and 10 */
-        document.body.addEventListener('DOMNodeInserted', this._domNodeModifiedHandler.bind(this), false);
-        document.body.addEventListener('DOMNodeRemoved', this._domNodeModifiedHandler.bind(this), false);
-      } else {
-        if (window.console) {
-          console.info('AddressFinder Error - please use a more modern browser');
-        }
-      }
+      this._mutationTimeout = setTimeout(this.resetAndReloadFormHelpers, 750);
     }
   }]);
 
@@ -2518,10 +2347,6 @@ var _mutation_helper = __webpack_require__(35);
 
 var _mutation_helper2 = _interopRequireDefault(_mutation_helper);
 
-var _log = __webpack_require__(104);
-
-var _log2 = _interopRequireDefault(_log);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -2534,13 +2359,33 @@ var IdentifyLayouts = function () {
     this.formHelperConfig = {};
     this.widgetConfig = widgetConfig;
     this.layoutConfigurations = layoutConfigurations;
-    this.mutationHelper = undefined;
-    this.initialiseFormHelper = this.initialiseFormHelper.bind(this);
+    this.countryCodes = ["au", "nz"];
+    this.resetAndReloadFormHelpers = this.resetAndReloadFormHelpers.bind(this);
 
     this._identifyLayout();
+    new _mutation_helper2.default(this.resetAndReloadFormHelpers);
   }
 
   _createClass(IdentifyLayouts, [{
+    key: "resetAndReloadFormHelpers",
+    value: function resetAndReloadFormHelpers() {
+      var _this = this;
+
+      var formHelpersToDestroy = this.formHelpers.filter(function () {
+        return !_this._allElementsStillInTheDOM();
+      });
+      var activeFormHelpers = this.formHelpers.filter(function () {
+        return _this._allElementsStillInTheDOM();
+      });
+
+      formHelpersToDestroy.forEach(function (formHelper) {
+        return formHelper.destroy();
+      });
+      this.formHelpers = activeFormHelpers;
+
+      this._identifyAdditionalLayouts();
+    }
+  }, {
     key: "_identifyLayout",
     value: function _identifyLayout() {
       var _iteratorNormalCompletion = true;
@@ -2554,8 +2399,8 @@ var IdentifyLayouts = function () {
           var identifyingElement = document.querySelector(layoutConfig.layoutSelector);
 
           if (identifyingElement) {
-            (0, _log2.default)("Identified layout named: " + layoutConfig.label);
-            this.initialiseFormHelper(layoutConfig);
+            this.log("Identified layout named: " + layoutConfig.label);
+            this._initialiseFormHelper(layoutConfig);
           }
         }
       } catch (err) {
@@ -2574,8 +2419,8 @@ var IdentifyLayouts = function () {
       }
     }
   }, {
-    key: "initialiseFormHelper",
-    value: function initialiseFormHelper(layoutConfig) {
+    key: "_initialiseFormHelper",
+    value: function _initialiseFormHelper(layoutConfig) {
       var searchElement = document.getElementById(layoutConfig.searchIdentifier);
 
       if (searchElement) {
@@ -2615,9 +2460,97 @@ var IdentifyLayouts = function () {
 
         var helper = new _form_helper2.default(this.widgetConfig, this.formHelperConfig);
         this.formHelpers.push(helper);
+      }
+    }
+  }, {
+    key: "_identifyAdditionalLayouts",
+    value: function _identifyAdditionalLayouts() {
+      var _this2 = this;
 
-        if (this.mutationHelper === undefined) {
-          this.mutationHelper = new _mutation_helper2.default(this);
+      var layoutSelectorExists = function layoutSelectorExists(config) {
+        return document.querySelector(config.layoutSelector);
+      };
+      var isNewFormHelper = function isNewFormHelper(config) {
+        return !_this2._anyFormHelpersWithLayoutIdentifier(config.layoutSelector);
+      };
+
+      this.layoutConfigurations.filter(layoutSelectorExists).filter(isNewFormHelper).forEach(this._initialiseFormHelper.bind(this));
+    }
+
+    // search active formHelpers for this layoutSelector
+
+  }, {
+    key: "_anyFormHelpersWithLayoutIdentifier",
+    value: function _anyFormHelpersWithLayoutIdentifier(identifierToSearchFor) {
+      return this.formHelpers.some(function (activeFormHelper) {
+        return activeFormHelper.layoutSelector == identifierToSearchFor;
+      });
+    }
+  }, {
+    key: "_bodyContainsElement",
+    value: function _bodyContainsElement(element) {
+      document.body.contains(element);
+    }
+  }, {
+    key: "_allElementsStillInTheDOM",
+    value: function _allElementsStillInTheDOM() {
+      var _this3 = this;
+
+      // check all of the elements in the formHelper and confirm they are still
+      // within the page DOM. Returns false if elements are missing
+
+      if (!this._bodyContainsElement(this.formHelperConfig.countryElement)) {
+        this.log("Country Element is not in the DOM");
+        return false;
+      }
+
+      var allElementsPresent = this.countryCodes.find(function (countryCode) {
+        return _this3._allElementsStillInTheDOMForCountryCode(countryCode);
+      });
+
+      this.log('allElementsStillInTheDOM?', allElementsPresent);
+      return allElementsPresent;
+    }
+  }, {
+    key: "_allElementsStillInTheDOMForCountryCode",
+    value: function _allElementsStillInTheDOMForCountryCode(countryCode) {
+      // Returns false if elements are missing
+      var formConfig = this.formHelperConfig[countryCode];
+
+      // If no config is provided no need to check for elements
+      if (!formConfig) {
+        return true;
+      }
+
+      if (!this._bodyContainsElement(formConfig.searchElement)) {
+        this.log("Search Element is not in the DOM");
+        return false;
+      }
+
+      var isPresent = function isPresent(element) {
+        return element != undefined;
+      };
+
+      var elementNotInDOM = Object.values(formConfig.elements).filter(isPresent).find(!this._bodyContainsElement);
+
+      if (elementNotInDOM) {
+        this.log("Element is not in the DOM", elementNotInDOM);
+        return false;
+      }
+
+      return true;
+    }
+  }, {
+    key: "log",
+    value: function log(message) {
+      var data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : undefined;
+
+      // widget.debug should be on
+      if (this.widgetConfig.debug && window.console) {
+        if (data != undefined) {
+          console.log("" + message, data);
+        } else {
+          console.log("" + message);
         }
       }
     }
@@ -2951,28 +2884,30 @@ module.exports = function (isEntries) {
 
 /***/ }),
 /* 103 */,
-/* 104 */
+/* 104 */,
+/* 105 */
+/***/ (function(module, exports, __webpack_require__) {
+
+__webpack_require__(106);
+module.exports = __webpack_require__(1).Array.some;
+
+
+/***/ }),
+/* 106 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
+var $export = __webpack_require__(3);
+var $some = __webpack_require__(33)(3);
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
+$export($export.P + $export.F * !__webpack_require__(50)([].some, true), 'Array', {
+  // 22.1.3.23 / 15.4.4.17 Array.prototype.some(callbackfn [, thisArg])
+  some: function some(callbackfn /* , thisArg */) {
+    return $some(this, callbackfn, arguments[1]);
+  }
 });
 
-exports.default = function (message) {
-  var data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : undefined;
-
-  // widget.debug should be on
-  if (window.console) {
-    if (data != undefined) {
-      console.log("" + message, data);
-    } else {
-      console.log("" + message);
-    }
-  }
-};
 
 /***/ })
 /******/ ]);

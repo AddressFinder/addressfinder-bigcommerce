@@ -1,6 +1,5 @@
 import FormHelper from "./form_helper"
 import MutationHelper from "./mutation_helper"
-import log from './log'
 
 export default class IdentifyLayouts {
   constructor(layoutConfigurations, widgetConfig) {
@@ -8,10 +7,21 @@ export default class IdentifyLayouts {
     this.formHelperConfig = {}
     this.widgetConfig = widgetConfig
     this.layoutConfigurations = layoutConfigurations
-    this.mutationHelper = undefined
-    this.initialiseFormHelper = this.initialiseFormHelper.bind(this)
-
+    this.countryCodes = ["au", "nz"]
+    this.resetAndReloadFormHelpers = this.resetAndReloadFormHelpers.bind(this)
+    
     this._identifyLayout()
+    new MutationHelper(this.resetAndReloadFormHelpers)
+  }
+
+  resetAndReloadFormHelpers() {
+    const formHelpersToDestroy = this.formHelpers.filter(() => !this._allElementsStillInTheDOM())
+    const activeFormHelpers = this.formHelpers.filter(() => this._allElementsStillInTheDOM())
+
+    formHelpersToDestroy.forEach(formHelper => formHelper.destroy())
+    this.formHelpers = activeFormHelpers
+
+    this._identifyAdditionalLayouts()
   }
 
   _identifyLayout(){
@@ -19,13 +29,13 @@ export default class IdentifyLayouts {
       let identifyingElement = document.querySelector(layoutConfig.layoutSelector)
 
       if (identifyingElement) {
-        log(`Identified layout named: ${layoutConfig.label}`)
-        this.initialiseFormHelper(layoutConfig)
+        this.log(`Identified layout named: ${layoutConfig.label}`)
+        this._initialiseFormHelper(layoutConfig)
       }
     }
   }
 
-  initialiseFormHelper(layoutConfig){
+  _initialiseFormHelper(layoutConfig){
     let searchElement = document.getElementById(layoutConfig.searchIdentifier)
 
     if (searchElement) {
@@ -65,9 +75,80 @@ export default class IdentifyLayouts {
 
       let helper = new FormHelper(this.widgetConfig, this.formHelperConfig)
       this.formHelpers.push(helper)
+    }
+  }
 
-      if (this.mutationHelper === undefined) {
-        this.mutationHelper = new MutationHelper(this)
+  _identifyAdditionalLayouts(){
+    const layoutSelectorExists = config => document.querySelector(config.layoutSelector)
+    const isNewFormHelper = config => !this._anyFormHelpersWithLayoutIdentifier(config.layoutSelector)
+
+    this.layoutConfigurations.filter(layoutSelectorExists)
+                             .filter(isNewFormHelper)
+                             .forEach(this._initialiseFormHelper.bind(this))
+  }
+
+  // search active formHelpers for this layoutSelector
+  _anyFormHelpersWithLayoutIdentifier(identifierToSearchFor){
+    return this.formHelpers.some(activeFormHelper => activeFormHelper.layoutSelector == identifierToSearchFor)
+  }
+
+  _bodyContainsElement(element) {
+    document.body.contains(element)
+  }
+
+  _allElementsStillInTheDOM() {
+    // check all of the elements in the formHelper and confirm they are still
+    // within the page DOM. Returns false if elements are missing
+
+    if(!this._bodyContainsElement(this.formHelperConfig.countryElement)){
+      this.log("Country Element is not in the DOM")
+      return false
+    }
+
+    const allElementsPresent = this.countryCodes.find((countryCode) => {
+      return this._allElementsStillInTheDOMForCountryCode(countryCode)
+    })
+
+    this.log('allElementsStillInTheDOM?', allElementsPresent)
+    return allElementsPresent
+  }
+
+  _allElementsStillInTheDOMForCountryCode(countryCode) {
+    // Returns false if elements are missing
+    const formConfig = this.formHelperConfig[countryCode]
+
+    // If no config is provided no need to check for elements
+    if (!formConfig) {
+      return true
+    }
+
+    if (!this._bodyContainsElement(formConfig.searchElement)){
+      this.log("Search Element is not in the DOM")
+      return false
+    }
+
+    const isPresent = element => element != undefined
+
+    const elementNotInDOM = Object.values(formConfig.elements)
+                                  .filter(isPresent)
+                                  .find(!this._bodyContainsElement)
+
+    if (elementNotInDOM) {
+      this.log("Element is not in the DOM", elementNotInDOM)
+      return false
+    }
+
+    return true
+  }
+
+  log(message, data=undefined){
+    // widget.debug should be on
+    if (this.widgetConfig.debug && window.console) {
+      if (data != undefined) {
+        console.log(`${message}`, data)
+      }
+      else {
+        console.log(`${message}`)
       }
     }
   }
