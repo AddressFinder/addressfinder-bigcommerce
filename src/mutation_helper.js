@@ -6,24 +6,16 @@ import "core-js/fn/array/from"
 import "core-js/fn/array/includes"
 import "core-js/fn/string/includes"
 
+import log from './log'
+
 export default class MutationsHelper {
-  constructor({layoutConfigurations, widgetConfig, formHelperConfig, formHelpers, initialiseFormHelper}) {
+  constructor({layoutConfigurations, formHelperConfig, formHelpers, initialiseFormHelper}) {
+    this.layoutConfigurations = layoutConfigurations
     this.formHelpers = formHelpers
     this.formHelperConfig = formHelperConfig
-    this.layoutConfigurations = layoutConfigurations
-    this.widgetConfig = widgetConfig
     this.initialiseFormHelper = initialiseFormHelper
     this.countryCodes = ["au", "nz"]
     this.monitorMutations()
-  }
-
-  identifyAdditionalLayouts(){
-    const layoutSelectorExists = config => document.querySelector(config.layoutSelector)
-    const isNewFormHelper = config => !this.anyFormHelpersWithLayoutIdentifier(config.layoutSelector)
-
-    this.layoutConfigurations.filter(layoutSelectorExists)
-                             .filter(isNewFormHelper)
-                             .forEach(this.initialiseFormHelper.bind(this))
   }
 
     // search active formHelpers for this layoutSelector
@@ -33,9 +25,18 @@ export default class MutationsHelper {
           return true
         }
       }
-  
+
       return false
     }
+
+  identifyAdditionalLayouts(){
+    const layoutSelectorExists = config => document.querySelector(config.layoutSelector)
+    const isNewFormHelper = config => !this.anyFormHelpersWithLayoutIdentifier(config.layoutSelector)
+
+    this.layoutConfigurations.filter(layoutSelectorExists)
+                              .filter(isNewFormHelper)
+                              .forEach(this.initialiseFormHelper.bind(this))
+  }
 
   _bodyContainsElement(element) {
     document.body.contains(element)
@@ -46,7 +47,7 @@ export default class MutationsHelper {
   areAllElementsStillInTheDOM(){
 
     if( !this._bodyContainsElement(this.formHelperConfig.countryElement)){
-      this._log("Country Element is not in the DOM")
+      log("Country Element is not in the DOM")
       return false
     }
 
@@ -59,7 +60,7 @@ export default class MutationsHelper {
     });
 
     const allElementsStillInTheDOM = !countryCodeWithMissingElements
-    this._log('areAllElementsStillInTheDOM?', allElementsStillInTheDOM)
+    log('areAllElementsStillInTheDOM?', allElementsStillInTheDOM)
 
     return allElementsStillInTheDOM
   }
@@ -73,7 +74,7 @@ export default class MutationsHelper {
     }
 
     if (!this._bodyContainsElement(formConfig.searchElement)){
-      this._log("Search Element is not in the DOM")
+      log("Search Element is not in the DOM")
       return false
     }
     // const findElement = elementName => formConfig.elements[elementName]
@@ -84,7 +85,7 @@ export default class MutationsHelper {
                                   .find(!this._bodyContainsElement)
 
     if (elementNotInDOM) {
-      this._log("Element is not in the DOM", elementNotInDOM)
+      log("Element is not in the DOM", elementNotInDOM)
       return false
     }
 
@@ -129,25 +130,19 @@ export default class MutationsHelper {
       return // ignore AddressFinder changes
     }
 
-    if (this._mutationTimeout) {
-      clearTimeout(this._mutationTimeout) // reset previous timeout
-    }
-
-    // ignore any further changes for the next 750 mS
-    this._mutationTimeout = setTimeout(this.resetAndReloadFormHelpers.bind(this), 750)
-
-    // this._setMutationTimeout()
+    this._setMutationTimeout()
   }
 
   _domNodeModifiedHandler(event){
-    if (event.target.className && event.target.className.includes("af_list")) {
-      return // ignore AddressFinder changes
+    if ((event.target.className && event.target.className.includes("af_list")) ||
+        (event.relatedNode && event.relatedNode.className && event.relatedNode.className.includes("af_list"))) {
+        return // ignore AddressFinder changes
     }
 
-    if (event.relatedNode && event.relatedNode.className && event.relatedNode.className.includes("af_list")) {
-      return // ignore AddressFinder changes
-    }
+    _setMutationTimeout()
+  }
 
+  _setMutationTimeout() {
     if (this._mutationTimeout) {
       clearTimeout(this._mutationTimeout) // reset previous timeout
     }
@@ -172,17 +167,4 @@ export default class MutationsHelper {
         }
     }
   }
-
-  _log(message, data=undefined){
-    // widgetConfig.debug should be on 
-    if (this.widgetConfig.debug && window.console) {
-      if (data != undefined) {
-        console.log(`${message}`, data)
-      }
-      else {
-        console.log(`${message}`)
-      }
-    }
-  }
-
 }

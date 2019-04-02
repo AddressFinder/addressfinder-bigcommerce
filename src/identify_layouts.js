@@ -1,5 +1,6 @@
 import FormHelper from "./form_helper"
 import MutationHelper from "./mutation_helper"
+import log from './log'
 
 export default class IdentifyLayouts {
   constructor(layoutConfigurations, widgetConfig) {
@@ -8,16 +9,17 @@ export default class IdentifyLayouts {
     this.widgetConfig = widgetConfig
     this.layoutConfigurations = layoutConfigurations
     this.mutationHelper = undefined
+    this.initialiseFormHelper = this.initialiseFormHelper.bind(this)
 
-    this.identifyLayout()
+    this._identifyLayout()
   }
 
-  identifyLayout(){
+  _identifyLayout(){
     for (const layoutConfig of this.layoutConfigurations) {
       let identifyingElement = document.querySelector(layoutConfig.layoutSelector)
 
       if (identifyingElement) {
-        this._log(`Identified layout named: ${layoutConfig.label}`)
+        log(`Identified layout named: ${layoutConfig.label}`)
         this.initialiseFormHelper(layoutConfig)
       }
     }
@@ -69,17 +71,4 @@ export default class IdentifyLayouts {
       }
     }
   }
-
-  _log(message, data=undefined){
-    // widgetConfig.debug should be on 
-    if (this.widgetConfig.debug && window.console) {
-      if (data != undefined) {
-        console.log(`${message}`, data)
-      }
-      else {
-        console.log(`${message}`)
-      }
-    }
-  }
-
 }

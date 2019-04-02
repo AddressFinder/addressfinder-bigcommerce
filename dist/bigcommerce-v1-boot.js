@@ -631,6 +631,12 @@ __webpack_require__(83);
 
 __webpack_require__(85);
 
+var _log = __webpack_require__(104);
+
+var _log2 = _interopRequireDefault(_log);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -638,40 +644,24 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 var MutationsHelper = function () {
   function MutationsHelper(_ref) {
     var layoutConfigurations = _ref.layoutConfigurations,
-        widgetConfig = _ref.widgetConfig,
         formHelperConfig = _ref.formHelperConfig,
         formHelpers = _ref.formHelpers,
         initialiseFormHelper = _ref.initialiseFormHelper;
 
     _classCallCheck(this, MutationsHelper);
 
+    this.layoutConfigurations = layoutConfigurations;
     this.formHelpers = formHelpers;
     this.formHelperConfig = formHelperConfig;
-    this.layoutConfigurations = layoutConfigurations;
-    this.widgetConfig = widgetConfig;
     this.initialiseFormHelper = initialiseFormHelper;
     this.countryCodes = ["au", "nz"];
     this.monitorMutations();
   }
 
+  // search active formHelpers for this layoutSelector
+
+
   _createClass(MutationsHelper, [{
-    key: "identifyAdditionalLayouts",
-    value: function identifyAdditionalLayouts() {
-      var _this = this;
-
-      var layoutSelectorExists = function layoutSelectorExists(config) {
-        return document.querySelector(config.layoutSelector);
-      };
-      var isNewFormHelper = function isNewFormHelper(config) {
-        return !_this.anyFormHelpersWithLayoutIdentifier(config.layoutSelector);
-      };
-
-      this.layoutConfigurations.filter(layoutSelectorExists).filter(isNewFormHelper).forEach(this.initialiseFormHelper.bind(this));
-    }
-
-    // search active formHelpers for this layoutSelector
-
-  }, {
     key: "anyFormHelpersWithLayoutIdentifier",
     value: function anyFormHelpersWithLayoutIdentifier(identifierToSearchFor) {
       var _iteratorNormalCompletion = true;
@@ -704,6 +694,20 @@ var MutationsHelper = function () {
       return false;
     }
   }, {
+    key: "identifyAdditionalLayouts",
+    value: function identifyAdditionalLayouts() {
+      var _this = this;
+
+      var layoutSelectorExists = function layoutSelectorExists(config) {
+        return document.querySelector(config.layoutSelector);
+      };
+      var isNewFormHelper = function isNewFormHelper(config) {
+        return !_this.anyFormHelpersWithLayoutIdentifier(config.layoutSelector);
+      };
+
+      this.layoutConfigurations.filter(layoutSelectorExists).filter(isNewFormHelper).forEach(this.initialiseFormHelper.bind(this));
+    }
+  }, {
     key: "_bodyContainsElement",
     value: function _bodyContainsElement(element) {
       document.body.contains(element);
@@ -718,7 +722,7 @@ var MutationsHelper = function () {
       var _this2 = this;
 
       if (!this._bodyContainsElement(this.formHelperConfig.countryElement)) {
-        this._log("Country Element is not in the DOM");
+        (0, _log2.default)("Country Element is not in the DOM");
         return false;
       }
 
@@ -731,7 +735,7 @@ var MutationsHelper = function () {
       });
 
       var allElementsStillInTheDOM = !countryCodeWithMissingElements;
-      this._log('areAllElementsStillInTheDOM?', allElementsStillInTheDOM);
+      (0, _log2.default)('areAllElementsStillInTheDOM?', allElementsStillInTheDOM);
 
       return allElementsStillInTheDOM;
     }
@@ -746,7 +750,7 @@ var MutationsHelper = function () {
       }
 
       if (!this._bodyContainsElement(formConfig.searchElement)) {
-        this._log("Search Element is not in the DOM");
+        (0, _log2.default)("Search Element is not in the DOM");
         return false;
       }
       // const findElement = elementName => formConfig.elements[elementName]
@@ -757,7 +761,7 @@ var MutationsHelper = function () {
       var elementNotInDOM = Object.values(formConfig.elements).filter(isPresent).find(!this._bodyContainsElement);
 
       if (elementNotInDOM) {
-        this._log("Element is not in the DOM", elementNotInDOM);
+        (0, _log2.default)("Element is not in the DOM", elementNotInDOM);
         return false;
       }
 
@@ -832,26 +836,20 @@ var MutationsHelper = function () {
         return; // ignore AddressFinder changes
       }
 
-      if (this._mutationTimeout) {
-        clearTimeout(this._mutationTimeout); // reset previous timeout
-      }
-
-      // ignore any further changes for the next 750 mS
-      this._mutationTimeout = setTimeout(this.resetAndReloadFormHelpers.bind(this), 750);
-
-      // this._setMutationTimeout()
+      this._setMutationTimeout();
     }
   }, {
     key: "_domNodeModifiedHandler",
     value: function _domNodeModifiedHandler(event) {
-      if (event.target.className && event.target.className.includes("af_list")) {
+      if (event.target.className && event.target.className.includes("af_list") || event.relatedNode && event.relatedNode.className && event.relatedNode.className.includes("af_list")) {
         return; // ignore AddressFinder changes
       }
 
-      if (event.relatedNode && event.relatedNode.className && event.relatedNode.className.includes("af_list")) {
-        return; // ignore AddressFinder changes
-      }
-
+      _setMutationTimeout();
+    }
+  }, {
+    key: "_setMutationTimeout",
+    value: function _setMutationTimeout() {
       if (this._mutationTimeout) {
         clearTimeout(this._mutationTimeout); // reset previous timeout
       }
@@ -873,20 +871,6 @@ var MutationsHelper = function () {
       } else {
         if (window.console) {
           console.info('AddressFinder Error - please use a more modern browser');
-        }
-      }
-    }
-  }, {
-    key: "_log",
-    value: function _log(message) {
-      var data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : undefined;
-
-      // widgetConfig.debug should be on 
-      if (this.widgetConfig.debug && window.console) {
-        if (data != undefined) {
-          console.log("" + message, data);
-        } else {
-          console.log("" + message);
         }
       }
     }
@@ -2534,6 +2518,10 @@ var _mutation_helper = __webpack_require__(35);
 
 var _mutation_helper2 = _interopRequireDefault(_mutation_helper);
 
+var _log = __webpack_require__(104);
+
+var _log2 = _interopRequireDefault(_log);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -2547,13 +2535,14 @@ var IdentifyLayouts = function () {
     this.widgetConfig = widgetConfig;
     this.layoutConfigurations = layoutConfigurations;
     this.mutationHelper = undefined;
+    this.initialiseFormHelper = this.initialiseFormHelper.bind(this);
 
-    this.identifyLayout();
+    this._identifyLayout();
   }
 
   _createClass(IdentifyLayouts, [{
-    key: "identifyLayout",
-    value: function identifyLayout() {
+    key: "_identifyLayout",
+    value: function _identifyLayout() {
       var _iteratorNormalCompletion = true;
       var _didIteratorError = false;
       var _iteratorError = undefined;
@@ -2565,7 +2554,7 @@ var IdentifyLayouts = function () {
           var identifyingElement = document.querySelector(layoutConfig.layoutSelector);
 
           if (identifyingElement) {
-            this._log("Identified layout named: " + layoutConfig.label);
+            (0, _log2.default)("Identified layout named: " + layoutConfig.label);
             this.initialiseFormHelper(layoutConfig);
           }
         }
@@ -2629,20 +2618,6 @@ var IdentifyLayouts = function () {
 
         if (this.mutationHelper === undefined) {
           this.mutationHelper = new _mutation_helper2.default(this);
-        }
-      }
-    }
-  }, {
-    key: "_log",
-    value: function _log(message) {
-      var data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : undefined;
-
-      // widgetConfig.debug should be on 
-      if (this.widgetConfig.debug && window.console) {
-        if (data != undefined) {
-          console.log("" + message, data);
-        } else {
-          console.log("" + message);
         }
       }
     }
@@ -2973,6 +2948,31 @@ module.exports = function (isEntries) {
   };
 };
 
+
+/***/ }),
+/* 103 */,
+/* 104 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+exports.default = function (message) {
+  var data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : undefined;
+
+  // widget.debug should be on
+  if (window.console) {
+    if (data != undefined) {
+      console.log("" + message, data);
+    } else {
+      console.log("" + message);
+    }
+  }
+};
 
 /***/ })
 /******/ ]);
