@@ -142,7 +142,6 @@ export default class IdentifyLayouts {
   }
 
   log(message, data=undefined){
-    // widget.debug should be on
     if (this.widgetConfig.debug && window.console) {
       if (data != undefined) {
         console.log(`${message}`, data)

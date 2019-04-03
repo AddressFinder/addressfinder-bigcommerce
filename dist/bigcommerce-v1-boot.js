@@ -2545,7 +2545,6 @@ var IdentifyLayouts = function () {
     value: function log(message) {
       var data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : undefined;
 
-      // widget.debug should be on
       if (this.widgetConfig.debug && window.console) {
         if (data != undefined) {
           console.log("" + message, data);
@@ -2598,9 +2597,7 @@ var FormHelper = function () {
     this._bindToForm();
   }
 
-  /**
-   * Shuts down this form_helper by disabling the widget and any callback handlers.
-   */
+  // Shuts down this form_helper by disabling the widget and any callback handlers.
 
 
   _createClass(FormHelper, [{
@@ -2665,20 +2662,21 @@ var FormHelper = function () {
   }, {
     key: "_clearElementValues",
     value: function _clearElementValues(countryCode) {
+      var _this = this;
+
       var elements = this.formHelperConfig[countryCode].elements;
-      for (var elementName in elements) {
-        var element = elements[elementName];
-        if (element) this._setElementValue(element, "", elementName);
-      }
+      Object.values(elements).forEach(function (element) {
+        if (element) _this._setElementValue(element, "", elementName);
+      });
     }
   }, {
     key: "_setActiveCountry",
     value: function _setActiveCountry(countryCode) {
       this._log("Setting active country", countryCode);
 
-      for (var widgetCountryCode in this.widgets) {
-        this.widgets[widgetCountryCode].disable();
-      }
+      Object.values(this.widgets).forEach(function (widget) {
+        return widget.disable();
+      });
       this.widgets[countryCode].enable();
     }
   }, {
@@ -2770,11 +2768,11 @@ var FormHelper = function () {
   }, {
     key: "_log",
     value: function _log(message) {
-      var object1 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : undefined;
+      var data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : undefined;
 
       if (this.widgetConfig.debug && window.console) {
-        if (object1 != undefined) {
-          console.log("FormHelper for layout " + this.formHelperConfig.label + ": " + message, object1);
+        if (data != undefined) {
+          console.log("FormHelper for layout " + this.formHelperConfig.label + ": " + message, data);
         } else {
           console.log("FormHelper for layout " + this.formHelperConfig.label + ": " + message);
         }

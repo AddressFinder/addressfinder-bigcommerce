@@ -14,9 +14,7 @@ export default class FormHelper {
     this._bindToForm()
   }
 
-  /**
-   * Shuts down this form_helper by disabling the widget and any callback handlers.
-   */
+  // Shuts down this form_helper by disabling the widget and any callback handlers.
   destroy(){
     this._log("Destroying widget", this.formHelperConfig.label)
 
@@ -67,24 +65,22 @@ export default class FormHelper {
     this._setActiveCountry(activeCountry)
     if(!preserveValues) {
       const isInactiveCountry = countryCode => countryCode != activeCountry
-      this.countryCodes.filter(isInactiveCountry).forEach(this._clearElementValues.bind(this))
+      this.countryCodes.filter(isInactiveCountry)
+                       .forEach(this._clearElementValues.bind(this))
     }
   }
 
   _clearElementValues(countryCode){
     const elements = this.formHelperConfig[countryCode].elements
-    for (var elementName in elements) {
-      const element = elements[elementName];
+    Object.values(elements).forEach((element) => {
       if (element) this._setElementValue(element, "", elementName);
-    }
+    })
   }
 
   _setActiveCountry(countryCode){
     this._log("Setting active country", countryCode)
 
-    for (var widgetCountryCode in this.widgets) {
-      this.widgets[widgetCountryCode].disable()
-    }
+    Object.values(this.widgets).forEach(widget => widget.disable())
     this.widgets[countryCode].enable()
   }
 
@@ -173,10 +169,10 @@ export default class FormHelper {
     element.dispatchEvent(event);
   }
 
-  _log(message, object1=undefined){
+  _log(message, data=undefined){
     if (this.widgetConfig.debug && window.console) {
-      if (object1 != undefined) {
-        console.log(`FormHelper for layout ${this.formHelperConfig.label}: ${message}`, object1)
+      if (data != undefined) {
+        console.log(`FormHelper for layout ${this.formHelperConfig.label}: ${message}`, data)
       }
       else {
         console.log(`FormHelper for layout ${this.formHelperConfig.label}: ${message}`)
