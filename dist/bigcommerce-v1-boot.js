@@ -2763,7 +2763,6 @@ var FormHelper = function () {
   }, {
     key: "_dispatchChangeEvent",
     value: function _dispatchChangeEvent(element) {
-
       var event;
       switch (typeof Event === "undefined" ? "undefined" : _typeof(Event)) {
         case 'function':
@@ -2773,11 +2772,6 @@ var FormHelper = function () {
           event = document.createEvent('Event');
           event.initEvent('change', true, false);
       }
-
-      f.element().dispatchEvent(event);
-
-      var event = document.createEvent('HTMLEvents');
-      event.initEvent('change', true, false);
       element.dispatchEvent(event);
     }
   }, {

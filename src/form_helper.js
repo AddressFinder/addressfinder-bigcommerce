@@ -164,7 +164,6 @@ export default class FormHelper {
   }
 
   _dispatchChangeEvent(element) {
-
     var event;
     switch (typeof (Event)) {
     case 'function':
@@ -174,13 +173,6 @@ export default class FormHelper {
       event = document.createEvent('Event');
       event.initEvent('change', true, false);
     }
-
-    f.element().dispatchEvent(event);
-
-
-
-    var event = document.createEvent('HTMLEvents');
-    event.initEvent('change', true, false);
     element.dispatchEvent(event);
   }
 
