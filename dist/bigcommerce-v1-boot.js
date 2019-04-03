@@ -2571,6 +2571,8 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 __webpack_require__(96);
@@ -2761,6 +2763,19 @@ var FormHelper = function () {
   }, {
     key: "_dispatchChangeEvent",
     value: function _dispatchChangeEvent(element) {
+
+      var event;
+      switch (typeof Event === "undefined" ? "undefined" : _typeof(Event)) {
+        case 'function':
+          event = new Event('change', { 'bubbles': true, "cancelable": false });
+          break;
+        default:
+          event = document.createEvent('Event');
+          event.initEvent('change', true, false);
+      }
+
+      f.element().dispatchEvent(event);
+
       var event = document.createEvent('HTMLEvents');
       event.initEvent('change', true, false);
       element.dispatchEvent(event);
