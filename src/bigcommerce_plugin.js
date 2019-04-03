@@ -1,7 +1,7 @@
-import optimizedOnePageCheckout from './layout_config/optimized_one_page_checkout'
-import onePageCheckout from './layout_config/one_page_checkout'
-import addressBook from './layout_config/address_book'
-import createAccount from './layout_config/create_account'
+import optimizedOnePageCheckout from './address_form_config/optimized_one_page_checkout'
+import onePageCheckout from './address_form_config/one_page_checkout'
+import addressBook from './address_form_config/address_book'
+import createAccount from './address_form_config/create_account'
 import PluginManager from "./plugin_manager";
 
 window.AF = window.AF || {}
