@@ -72,8 +72,8 @@ export default class FormHelper {
 
   _clearElementValues(countryCode){
     const elements = this.formHelperConfig[countryCode].elements
-    Object.values(elements).forEach((element) => {
-      if (element) this._setElementValue(element, "", elementName);
+    Object.entries(elements).forEach(([name, element]) => {
+      if (element) this._setElementValue(element, "", name);
     })
   }
 
