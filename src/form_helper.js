@@ -149,16 +149,6 @@ export default class FormHelper {
       return
     }
 
-    if (element.options) {
-      const checkOptionMatchesValue = option => option.value == value
-      const selectedOption = Array.prototype.find.call(element.options, checkOptionMatchesValue)
-
-      element.value = value;
-      if (selectedOption) this._dispatchChangeEvent(selectedOption)
-
-      return
-    }
-
     element.value = value;
     this._dispatchChangeEvent(element)
   }

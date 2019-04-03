@@ -638,10 +638,15 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var MutationsHelper = function () {
-  function MutationsHelper(resetAndReloadFormHelpers) {
+  function MutationsHelper(_ref) {
+    var mutationEventHandler = _ref.mutationEventHandler,
+        ignoredClass = _ref.ignoredClass;
+
     _classCallCheck(this, MutationsHelper);
 
-    this.resetAndReloadFormHelpers = resetAndReloadFormHelpers;
+    this.mutationEventHandler = mutationEventHandler;
+    // Mutation events emitted by elements with this class are ignored.
+    this.ignoredClass = ignoredClass;
     this.monitorMutations();
   }
 
@@ -665,9 +670,11 @@ var MutationsHelper = function () {
   }, {
     key: "_mutationHandler",
     value: function _mutationHandler(mutations) {
+      var _this = this;
+
       var changedNodes = mutations.reduce(function (nodes, mutation) {
         // ignore this mutation if the target is the AddressFinder UL element
-        if (mutation.target && mutation.target.classList && mutation.target.classList.contains("af_list")) {
+        if (mutation.target && mutation.target.classList && mutation.target.classList.contains(_this.ignoredClass)) {
           return nodes;
         }
 
@@ -675,7 +682,7 @@ var MutationsHelper = function () {
       }, []);
 
       var anyBigCommerceChanges = changedNodes.find(function (node) {
-        return !(node.classList && node.classList.contains("af_list"));
+        return !(node.classList && node.classList.contains(_this.ignoredClass));
       });
 
       if (!anyBigCommerceChanges) {
@@ -687,7 +694,7 @@ var MutationsHelper = function () {
   }, {
     key: "_domNodeModifiedHandler",
     value: function _domNodeModifiedHandler(event) {
-      if (event.target.className && event.target.className.includes("af_list") || event.relatedNode && event.relatedNode.className && event.relatedNode.className.includes("af_list")) {
+      if (event.target.className && event.target.className.includes(this.ignoredClass) || event.relatedNode && event.relatedNode.className && event.relatedNode.className.includes(this.ignoredClass)) {
         return; // ignore AddressFinder changes
       }
 
@@ -701,7 +708,7 @@ var MutationsHelper = function () {
       }
 
       // ignore any further changes for the next 750 mS
-      this._mutationTimeout = setTimeout(this.resetAndReloadFormHelpers, 750);
+      this._mutationTimeout = setTimeout(this.mutationEventHandler, 750);
     }
   }]);
 
@@ -1050,10 +1057,6 @@ module.exports = __webpack_require__(52);
 "use strict";
 
 
-var _mutation_helper = __webpack_require__(35);
-
-var _mutation_helper2 = _interopRequireDefault(_mutation_helper);
-
 var _optimized_one_page_checkout = __webpack_require__(90);
 
 var _optimized_one_page_checkout2 = _interopRequireDefault(_optimized_one_page_checkout);
@@ -1070,47 +1073,29 @@ var _create_account = __webpack_require__(93);
 
 var _create_account2 = _interopRequireDefault(_create_account);
 
-var _identify_layouts = __webpack_require__(94);
+var _plugin_manager = __webpack_require__(107);
 
-var _identify_layouts2 = _interopRequireDefault(_identify_layouts);
+var _plugin_manager2 = _interopRequireDefault(_plugin_manager);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
 window.AF = window.AF || {};
-window.AF.BigCommercePlugin = BigCommercePlugin;
-
-var BigCommercePlugin = function BigCommercePlugin(widgetConfig) {
-  _classCallCheck(this, BigCommercePlugin);
-
-  this.version = "1.3.0";
-  this.widgetConfig = widgetConfig;
-  this.layoutConfigurations = [_optimized_one_page_checkout2.default].concat(_toConsumableArray(_one_page_checkout2.default), _toConsumableArray(_address_book2.default), _toConsumableArray(_create_account2.default));
-  new _identify_layouts2.default(this.layoutConfigurations, this.widgetConfig);
-};
-
-// this is configured using:
-//
-// window.AddressFinderConfig = {
-//   key: "ADDRESSFINDER_DEMO_KEY",
-//   widgetOptions: {
-//     byline: false
-//   },
-//   debug: true
-// }
-
 
 var _initPlugin = function _initPlugin() {
-  window.AF._plugin = new BigCommercePlugin({
+
+  var addressFormConfigurations = [_optimized_one_page_checkout2.default].concat(_toConsumableArray(_one_page_checkout2.default), _toConsumableArray(_address_book2.default), _toConsumableArray(_create_account2.default));
+
+  var widgetConfig = {
     nzKey: window.AddressFinderConfig.key_nz || window.AddressFinderConfig.key || window.AddressFinderConfig.key_au,
     auKey: window.AddressFinderConfig.key_au || window.AddressFinderConfig.key || window.AddressFinderConfig.key_nz,
     nzWidgetOptions: window.AddressFinderConfig.nzWidgetOptions || window.AddressFinderConfig.widgetOptions || {},
     auWidgetOptions: window.AddressFinderConfig.auWidgetOptions || window.AddressFinderConfig.widgetOptions || {},
     debug: window.AddressFinderConfig.debug || false
-  });
+  };
+
+  window.AF._bigCommercePlugin = new _plugin_manager2.default(addressFormConfigurations, widgetConfig);
 };
 
 var s = document.createElement('script');
@@ -2327,240 +2312,7 @@ exports.default = [{
 }];
 
 /***/ }),
-/* 94 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _form_helper = __webpack_require__(95);
-
-var _form_helper2 = _interopRequireDefault(_form_helper);
-
-var _mutation_helper = __webpack_require__(35);
-
-var _mutation_helper2 = _interopRequireDefault(_mutation_helper);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var IdentifyLayouts = function () {
-  function IdentifyLayouts(layoutConfigurations, widgetConfig) {
-    _classCallCheck(this, IdentifyLayouts);
-
-    this.formHelpers = [];
-    this.formHelperConfig = {};
-    this.widgetConfig = widgetConfig;
-    this.layoutConfigurations = layoutConfigurations;
-    this.countryCodes = ["au", "nz"];
-    this.resetAndReloadFormHelpers = this.resetAndReloadFormHelpers.bind(this);
-
-    this._identifyLayout();
-    new _mutation_helper2.default(this.resetAndReloadFormHelpers);
-  }
-
-  _createClass(IdentifyLayouts, [{
-    key: "resetAndReloadFormHelpers",
-    value: function resetAndReloadFormHelpers() {
-      var _this = this;
-
-      var formHelpersToDestroy = this.formHelpers.filter(function () {
-        return !_this._allElementsStillInTheDOM();
-      });
-      var activeFormHelpers = this.formHelpers.filter(function () {
-        return _this._allElementsStillInTheDOM();
-      });
-
-      formHelpersToDestroy.forEach(function (formHelper) {
-        return formHelper.destroy();
-      });
-      this.formHelpers = activeFormHelpers;
-
-      this._identifyAdditionalLayouts();
-    }
-  }, {
-    key: "_identifyLayout",
-    value: function _identifyLayout() {
-      var _iteratorNormalCompletion = true;
-      var _didIteratorError = false;
-      var _iteratorError = undefined;
-
-      try {
-        for (var _iterator = this.layoutConfigurations[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-          var layoutConfig = _step.value;
-
-          var identifyingElement = document.querySelector(layoutConfig.layoutSelector);
-
-          if (identifyingElement) {
-            this.log("Identified layout named: " + layoutConfig.label);
-            this._initialiseFormHelper(layoutConfig);
-          }
-        }
-      } catch (err) {
-        _didIteratorError = true;
-        _iteratorError = err;
-      } finally {
-        try {
-          if (!_iteratorNormalCompletion && _iterator.return) {
-            _iterator.return();
-          }
-        } finally {
-          if (_didIteratorError) {
-            throw _iteratorError;
-          }
-        }
-      }
-    }
-  }, {
-    key: "_initialiseFormHelper",
-    value: function _initialiseFormHelper(layoutConfig) {
-      var searchElement = document.getElementById(layoutConfig.searchIdentifier);
-
-      if (searchElement) {
-        this.formHelperConfig = {
-          countryElement: document.getElementById(layoutConfig.countryIdentifier),
-          label: layoutConfig.label,
-          layoutSelector: layoutConfig.layoutSelector,
-          nz: {
-            countryValue: layoutConfig.nz.countryValue,
-            searchElement: document.getElementById(layoutConfig.nz.elements.address1),
-            elements: {
-              address_line_1_and_2: document.getElementById(layoutConfig.nz.elements.address1),
-              address_line_1: null,
-              address_line_2: null,
-              suburb: document.getElementById(layoutConfig.nz.elements.suburb),
-              city: document.getElementById(layoutConfig.nz.elements.city),
-              region: document.getElementById(layoutConfig.nz.elements.region),
-              postcode: document.getElementById(layoutConfig.nz.elements.postcode)
-            },
-            regionMappings: null
-          },
-          au: {
-            countryValue: layoutConfig.au.countryValue,
-            searchElement: document.getElementById(layoutConfig.au.elements.address1),
-            elements: {
-              address_line_1_and_2: null,
-              address_line_1: document.getElementById(layoutConfig.au.elements.address1),
-              address_line_2: document.getElementById(layoutConfig.au.elements.address2),
-              locality_name: document.getElementById(layoutConfig.au.elements.suburb),
-              city: null,
-              state_territory: document.getElementById(layoutConfig.au.elements.state),
-              postcode: document.getElementById(layoutConfig.au.elements.postcode)
-            },
-            stateMappings: layoutConfig.au.stateMappings
-          }
-        };
-
-        var helper = new _form_helper2.default(this.widgetConfig, this.formHelperConfig);
-        this.formHelpers.push(helper);
-      }
-    }
-  }, {
-    key: "_identifyAdditionalLayouts",
-    value: function _identifyAdditionalLayouts() {
-      var _this2 = this;
-
-      var layoutSelectorExists = function layoutSelectorExists(config) {
-        return document.querySelector(config.layoutSelector);
-      };
-      var isNewFormHelper = function isNewFormHelper(config) {
-        return !_this2._anyFormHelpersWithLayoutIdentifier(config.layoutSelector);
-      };
-
-      this.layoutConfigurations.filter(layoutSelectorExists).filter(isNewFormHelper).forEach(this._initialiseFormHelper.bind(this));
-    }
-
-    // search active formHelpers for this layoutSelector
-
-  }, {
-    key: "_anyFormHelpersWithLayoutIdentifier",
-    value: function _anyFormHelpersWithLayoutIdentifier(identifierToSearchFor) {
-      return this.formHelpers.some(function (activeFormHelper) {
-        return activeFormHelper.layoutSelector == identifierToSearchFor;
-      });
-    }
-  }, {
-    key: "_bodyContainsElement",
-    value: function _bodyContainsElement(element) {
-      document.body.contains(element);
-    }
-  }, {
-    key: "_allElementsStillInTheDOM",
-    value: function _allElementsStillInTheDOM() {
-      var _this3 = this;
-
-      // check all of the elements in the formHelper and confirm they are still
-      // within the page DOM. Returns false if elements are missing
-
-      if (!this._bodyContainsElement(this.formHelperConfig.countryElement)) {
-        this.log("Country Element is not in the DOM");
-        return false;
-      }
-
-      var allElementsPresent = this.countryCodes.find(function (countryCode) {
-        return _this3._allElementsStillInTheDOMForCountryCode(countryCode);
-      });
-
-      this.log('allElementsStillInTheDOM?', allElementsPresent);
-      return allElementsPresent;
-    }
-  }, {
-    key: "_allElementsStillInTheDOMForCountryCode",
-    value: function _allElementsStillInTheDOMForCountryCode(countryCode) {
-      // Returns false if elements are missing
-      var formConfig = this.formHelperConfig[countryCode];
-
-      // If no config is provided no need to check for elements
-      if (!formConfig) {
-        return true;
-      }
-
-      if (!this._bodyContainsElement(formConfig.searchElement)) {
-        this.log("Search Element is not in the DOM");
-        return false;
-      }
-
-      var isPresent = function isPresent(element) {
-        return element != undefined;
-      };
-
-      var elementNotInDOM = Object.values(formConfig.elements).filter(isPresent).find(!this._bodyContainsElement);
-
-      if (elementNotInDOM) {
-        this.log("Element is not in the DOM", elementNotInDOM);
-        return false;
-      }
-
-      return true;
-    }
-  }, {
-    key: "log",
-    value: function log(message) {
-      var data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : undefined;
-
-      if (this.widgetConfig.debug && window.console) {
-        if (data != undefined) {
-          console.log("" + message, data);
-        } else {
-          console.log("" + message);
-        }
-      }
-    }
-  }]);
-
-  return IdentifyLayouts;
-}();
-
-exports.default = IdentifyLayouts;
-
-/***/ }),
+/* 94 */,
 /* 95 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -2751,18 +2503,6 @@ var FormHelper = function () {
         return;
       }
 
-      if (element.options) {
-        var checkOptionMatchesValue = function checkOptionMatchesValue(option) {
-          return option.value == value;
-        };
-        var selectedOption = Array.prototype.find.call(element.options, checkOptionMatchesValue);
-
-        element.value = value;
-        if (selectedOption) this._dispatchChangeEvent(selectedOption);
-
-        return;
-      }
-
       element.value = value;
       this._dispatchChangeEvent(element);
     }
@@ -2921,6 +2661,157 @@ $export($export.P + $export.F * !__webpack_require__(50)([].some, true), 'Array'
   }
 });
 
+
+/***/ }),
+/* 107 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _form_helper = __webpack_require__(95);
+
+var _form_helper2 = _interopRequireDefault(_form_helper);
+
+var _mutation_helper = __webpack_require__(35);
+
+var _mutation_helper2 = _interopRequireDefault(_mutation_helper);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var PluginManager = function () {
+  function PluginManager(addressFormConfigurations, widgetConfig) {
+    _classCallCheck(this, PluginManager);
+
+    this.formHelpers = [];
+    this.addressFormConfigurations = addressFormConfigurations;
+    this.widgetConfig = widgetConfig;
+
+    this.loadFormHelpers();
+
+    new _mutation_helper2.default({
+      mutationEventHandler: this.loadFormHelpers.bind(this),
+      ignoredClass: "af_list"
+    });
+  }
+
+  _createClass(PluginManager, [{
+    key: "loadFormHelpers",
+    value: function loadFormHelpers() {
+      this.formHelpers.forEach(function (formHelper) {
+        return formHelper.destroy();
+      });
+      this.identifiedAddressFormConfigurations = [];
+      this.formHelpers = [];
+
+      this._identifyAddressForms();
+
+      this.identifiedAddressFormConfigurations.forEach(this._initialiseFormHelper.bind(this));
+    }
+  }, {
+    key: "_identifyAddressForms",
+    value: function _identifyAddressForms() {
+      var _iteratorNormalCompletion = true;
+      var _didIteratorError = false;
+      var _iteratorError = undefined;
+
+      try {
+        for (var _iterator = this.addressFormConfigurations[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+          var addressFormConfig = _step.value;
+
+          var identifyingElement = document.querySelector(addressFormConfig.layoutSelector);
+
+          if (identifyingElement) {
+            this.log("Identified layout named: " + addressFormConfig.label);
+            this.identifiedAddressFormConfigurations.push(addressFormConfig);
+          }
+        }
+      } catch (err) {
+        _didIteratorError = true;
+        _iteratorError = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion && _iterator.return) {
+            _iterator.return();
+          }
+        } finally {
+          if (_didIteratorError) {
+            throw _iteratorError;
+          }
+        }
+      }
+    }
+  }, {
+    key: "_initialiseFormHelper",
+    value: function _initialiseFormHelper(addressFormConfig) {
+      var searchElement = document.getElementById(addressFormConfig.searchIdentifier);
+
+      if (searchElement) {
+        var formHelperConfig = {
+          countryElement: document.getElementById(addressFormConfig.countryIdentifier),
+          label: addressFormConfig.label,
+          layoutSelector: addressFormConfig.layoutSelector,
+          nz: {
+            countryValue: addressFormConfig.nz.countryValue,
+            searchElement: document.getElementById(addressFormConfig.nz.elements.address1),
+            elements: {
+              address_line_1_and_2: document.getElementById(addressFormConfig.nz.elements.address1),
+              address_line_1: null,
+              address_line_2: null,
+              suburb: document.getElementById(addressFormConfig.nz.elements.suburb),
+              city: document.getElementById(addressFormConfig.nz.elements.city),
+              region: document.getElementById(addressFormConfig.nz.elements.region),
+              postcode: document.getElementById(addressFormConfig.nz.elements.postcode)
+            },
+            regionMappings: null
+          },
+          au: {
+            countryValue: addressFormConfig.au.countryValue,
+            searchElement: document.getElementById(addressFormConfig.au.elements.address1),
+            elements: {
+              address_line_1_and_2: null,
+              address_line_1: document.getElementById(addressFormConfig.au.elements.address1),
+              address_line_2: document.getElementById(addressFormConfig.au.elements.address2),
+              locality_name: document.getElementById(addressFormConfig.au.elements.suburb),
+              city: null,
+              state_territory: document.getElementById(addressFormConfig.au.elements.state),
+              postcode: document.getElementById(addressFormConfig.au.elements.postcode)
+            },
+            stateMappings: addressFormConfig.au.stateMappings
+          }
+        };
+
+        var helper = new _form_helper2.default(this.widgetConfig, formHelperConfig);
+        this.formHelpers.push(helper);
+      }
+    }
+  }, {
+    key: "log",
+    value: function log(message) {
+      var data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : undefined;
+
+      if (this.widgetConfig.debug && window.console) {
+        if (data != undefined) {
+          console.log("" + message, data);
+        } else {
+          console.log("" + message);
+        }
+      }
+    }
+  }]);
+
+  return PluginManager;
+}();
+
+exports.default = PluginManager;
 
 /***/ })
 /******/ ]);

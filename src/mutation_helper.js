@@ -8,8 +8,10 @@ import "core-js/fn/array/includes"
 import "core-js/fn/string/includes"
 
 export default class MutationsHelper {
-  constructor(resetAndReloadFormHelpers) {
-    this.resetAndReloadFormHelpers = resetAndReloadFormHelpers
+  constructor({mutationEventHandler, ignoredClass}) {
+    this.mutationEventHandler = mutationEventHandler
+    // Mutation events emitted by elements with this class are ignored.
+    this.ignoredClass = ignoredClass
     this.monitorMutations()
   }
 
@@ -33,7 +35,7 @@ export default class MutationsHelper {
   _mutationHandler(mutations){
     const changedNodes = mutations.reduce((nodes, mutation) => {
       // ignore this mutation if the target is the AddressFinder UL element
-      if (mutation.target && mutation.target.classList && mutation.target.classList.contains("af_list")) {
+      if (mutation.target && mutation.target.classList && mutation.target.classList.contains(this.ignoredClass)) {
         return nodes
       }
 
@@ -41,7 +43,7 @@ export default class MutationsHelper {
     }, [])
 
     const anyBigCommerceChanges = changedNodes.find((node) => {
-      return !(node.classList && node.classList.contains("af_list"))
+      return !(node.classList && node.classList.contains(this.ignoredClass))
     })
 
     if (!anyBigCommerceChanges) {
@@ -52,8 +54,8 @@ export default class MutationsHelper {
   }
 
   _domNodeModifiedHandler(event){
-    if ((event.target.className && event.target.className.includes("af_list")) ||
-        (event.relatedNode && event.relatedNode.className && event.relatedNode.className.includes("af_list"))) {
+    if ((event.target.className && event.target.className.includes(this.ignoredClass)) ||
+        (event.relatedNode && event.relatedNode.className && event.relatedNode.className.includes(this.ignoredClass))) {
         return // ignore AddressFinder changes
     }
 
@@ -66,6 +68,6 @@ export default class MutationsHelper {
     }
 
     // ignore any further changes for the next 750 mS
-    this._mutationTimeout = setTimeout(this.resetAndReloadFormHelpers, 750)
+    this._mutationTimeout = setTimeout(this.mutationEventHandler, 750)
   }
 }
