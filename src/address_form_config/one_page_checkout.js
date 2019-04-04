@@ -1,5 +1,7 @@
 import defaultStateMappings from './default_state_mappings'
 
+// Starting to rework
+
 export default [
   {
     label: "One-page checkout (Billing details)",
@@ -10,6 +12,7 @@ export default [
       countryValue: "New Zealand",
       elements: {
         address1: 'FormField_8',
+        address2: null,
         suburb: 'FormField_9',
         city: 'FormField_10',
         region: 'FormField_12',
@@ -38,6 +41,7 @@ export default [
       countryValue: "New Zealand",
       elements: {
         address1: 'FormField_18',
+        address2: null,
         suburb: 'FormField_19',
         city: 'FormField_20',
         region: 'FormField_22',

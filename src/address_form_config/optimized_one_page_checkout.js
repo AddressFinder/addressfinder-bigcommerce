@@ -7,6 +7,7 @@ export default {
     countryValue: "string:NZ",
     elements: {
       address1: 'addressLine1Input',
+      address2: null,
       suburb: 'addressLine2Input',
       city: 'cityInput',
       region: 'provinceInput',

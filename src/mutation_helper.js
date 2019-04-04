@@ -1,12 +1,3 @@
-
-import "core-js/fn/symbol" // see https://github.com/zloirock/core-js
-import "core-js/fn/symbol/iterator"
-import "core-js/fn/array/find"
-import "core-js/fn/array/from"
-import "core-js/fn/array/some"
-import "core-js/fn/array/includes"
-import "core-js/fn/string/includes"
-
 export default class MutationsHelper {
   constructor({mutationEventHandler, ignoredClass}) {
     this.mutationEventHandler = mutationEventHandler

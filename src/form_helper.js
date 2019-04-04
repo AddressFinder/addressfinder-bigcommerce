@@ -1,12 +1,8 @@
-import "core-js/fn/array/map"
-import "core-js/fn/array/filter"
-import "core-js/fn/array/find"
-import "core-js/fn/array/from"
-import "core-js/fn/object/values"
 export default class FormHelper {
-  constructor(widgetConfig, formHelperConfig){
+  constructor(widgetConfig, formHelperConfig, eventToDispatch){
     this.widgetConfig = widgetConfig
     this.formHelperConfig = formHelperConfig
+    this.eventToDispatch = eventToDispatch
     this.widgets = {}
     this.countryCodes = ["au", "nz"]
 
@@ -31,11 +27,11 @@ export default class FormHelper {
     this.boundCountryChangedListener = this._countryChanged.bind(this) // save this so we can unbind in the destroy() method
     this.formHelperConfig.countryElement.addEventListener("change", this.boundCountryChangedListener);
 
-    let nzWidget = new window.AddressFinder.Widget(this.formHelperConfig.nz.searchElement, this.widgetConfig.nzKey, "nz", this.widgetConfig.nzWidgetOptions);
+    let nzWidget = new window.AddressFinder.Widget(this.formHelperConfig.searchElement, this.widgetConfig.nzKey, "nz", this.widgetConfig.nzWidgetOptions);
     nzWidget.on("result:select", this._nzAddressSelected.bind(this))
     this.widgets["nz"] = nzWidget
 
-    let auWidget = new window.AddressFinder.Widget(this.formHelperConfig.au.searchElement, this.widgetConfig.auKey, "au", this.widgetConfig.auWidgetOptions);
+    let auWidget = new window.AddressFinder.Widget(this.formHelperConfig.searchElement, this.widgetConfig.auKey, "au", this.widgetConfig.auWidgetOptions);
     auWidget.on("result:select", this._auAddressSelected.bind(this))
     this.widgets["au"] = auWidget
 
@@ -83,19 +79,28 @@ export default class FormHelper {
     this.widgets[countryCode].enable()
   }
 
+  _combineAddressElements(elements) {
+    const addressIsPresent = element => element != null && element != ""
+    const combined = elements.filter(addressIsPresent)
+    return combined.length > 1 ? combined.join(", ") : combined[0]
+  }
+
   _nzAddressSelected(fullAddress, metaData){
     let elements = this.formHelperConfig.nz.elements
     let selected = new AddressFinder.NZSelectedAddress(fullAddress, metaData);
 
-    if(elements.address_line_1_and_2){
-      this._setElementValue(elements.address_line_1_and_2, selected.address_line_1_and_2(), "address_line_1_and_2")
-    }
-    else {
+    if (!elements.address_line_2 && !elements.suburb) {
+      const combined = this._combineAddressElements([selected.address_line_1_and_2(), selected.suburb()])
+      this._setElementValue(elements.address_line_1, combined, "address_line_1")
+    } else if (!elements.address_line_2 && elements.suburb) {
+      this._setElementValue(elements.address_line_1, selected.address_line_1_and_2(), "address_line_1")
+      this._setElementValue(elements.suburb, selected.suburb(), "suburb")
+    } else {
       this._setElementValue(elements.address_line_1, selected.address_line_1(), "address_line_1")
       this._setElementValue(elements.address_line_2, selected.address_line_2(), "address_line_2")
+      this._setElementValue(elements.suburb, selected.suburb(), "suburb")
     }
 
-    this._setElementValue(elements.suburb, selected.suburb(), "suburb")
     this._setElementValue(elements.city, selected.city(), "city")
     this._setElementValue(elements.postcode, selected.postcode(), "postcode")
 
@@ -111,12 +116,10 @@ export default class FormHelper {
   _auAddressSelected(fullAddress, metaData){
     let elements = this.formHelperConfig.au.elements
 
-    if(elements.address_line_1_and_2){
-      const addressIsPresent = array => array != null
-      const combined = [metaData.address_line_1, metaData.address_line_2].filter(addressIsPresent).join(", ")
-      this._setElementValue(elements.address_line_1_and_2, combined, "address_line_1_and_2")
-    }
-    else {
+    if (!elements.address_line_2) {
+      const combined = this._combineAddressElements([metaData.address_line_1, metaData.address_line_2])
+      this._setElementValue(elements.address_line_1, combined, "address_line_1")
+    } else {
       this._setElementValue(elements.address_line_1, metaData.address_line_1, "address_line_1")
       const address_line_2 = metaData.address_line_2 || ""
       this._setElementValue(elements.address_line_2, address_line_2, "address_line_2")
@@ -156,11 +159,11 @@ export default class FormHelper {
     var event;
     switch (typeof (Event)) {
     case 'function':
-      event = new Event('change', {'bubbles':true, "cancelable": false});
+      event = new Event(this.eventToDispatch, {'bubbles':true, "cancelable": false});
       break;
     default:
       event = document.createEvent('Event');
-      event.initEvent('change', true, false);
+      event.initEvent(this.eventToDispatch, true, false);
     }
     element.dispatchEvent(event);
   }

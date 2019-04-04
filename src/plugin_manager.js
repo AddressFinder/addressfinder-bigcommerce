@@ -1,18 +1,20 @@
 import FormHelper from "./form_helper"
-import MutationHelper from "./mutation_helper"
 
 export default class PluginManager {
-  constructor(addressFormConfigurations, widgetConfig) {
+  constructor({addressFormConfigurations, widgetConfig, eventToDispatch}) {
     this.formHelpers = []
     this.addressFormConfigurations = addressFormConfigurations
     this.widgetConfig = widgetConfig
+    this.eventToDispatch = eventToDispatch
+
+    this.reload = this.reload.bind(this)
 
     this.loadFormHelpers()
+  }
 
-    new MutationHelper({
-      mutationEventHandler: this.loadFormHelpers.bind(this),
-      ignoredClass: "af_list"
-    })
+  reload(addressFormConfigurations) {
+    this.addressFormConfigurations = addressFormConfigurations
+    this.loadFormHelpers()
   }
 
   loadFormHelpers() {
@@ -21,7 +23,6 @@ export default class PluginManager {
     this.formHelpers = []
     
     this._identifyAddressForms()
-
     this.identifiedAddressFormConfigurations.forEach(this._initialiseFormHelper.bind(this))
   }
 
@@ -31,38 +32,36 @@ export default class PluginManager {
 
       if (identifyingElement) {
         this.log(`Identified layout named: ${addressFormConfig.label}`)
+
         this.identifiedAddressFormConfigurations.push(addressFormConfig)
       }
     }
   }
 
   _initialiseFormHelper(addressFormConfig){
-    let searchElement = document.getElementById(addressFormConfig.searchIdentifier)
+    let searchElement = document.getElementById(addressFormConfig.searchIdentifier) 
 
     if (searchElement) {
       let formHelperConfig = {
         countryElement: document.getElementById(addressFormConfig.countryIdentifier),
+        searchElement: document.getElementById(addressFormConfig.searchIdentifier),
         label: addressFormConfig.label,
         layoutSelector: addressFormConfig.layoutSelector,
         nz: {
           countryValue: addressFormConfig.nz.countryValue,
-          searchElement: document.getElementById(addressFormConfig.nz.elements.address1),
           elements: {
-            address_line_1_and_2: document.getElementById(addressFormConfig.nz.elements.address1),
-            address_line_1: null,
-            address_line_2: null,
+            address_line_1: document.getElementById(addressFormConfig.nz.elements.address1),
+            address_line_2: document.getElementById(addressFormConfig.nz.elements.address2),
             suburb: document.getElementById(addressFormConfig.nz.elements.suburb),
             city: document.getElementById(addressFormConfig.nz.elements.city),
             region: document.getElementById(addressFormConfig.nz.elements.region),
             postcode: document.getElementById(addressFormConfig.nz.elements.postcode)
           },
-          regionMappings: null
+          regionMappings: addressFormConfig.nz.regionMappings
         },
         au: {
           countryValue: addressFormConfig.au.countryValue,
-          searchElement: document.getElementById(addressFormConfig.au.elements.address1),
           elements: {
-            address_line_1_and_2: null,
             address_line_1: document.getElementById(addressFormConfig.au.elements.address1),
             address_line_2: document.getElementById(addressFormConfig.au.elements.address2),
             locality_name: document.getElementById(addressFormConfig.au.elements.suburb),
@@ -74,7 +73,7 @@ export default class PluginManager {
         }
       }
 
-      let helper = new FormHelper(this.widgetConfig, formHelperConfig)
+      let helper = new FormHelper(this.widgetConfig, formHelperConfig, this.eventToDispatch)
       this.formHelpers.push(helper)
     }
   }
