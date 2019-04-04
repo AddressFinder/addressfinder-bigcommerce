@@ -34,13 +34,13 @@ import ConfigManager from "./config_manager"
         debug: window.AddressFinderConfig.debug || false
       }
   
-      this.PluginManager = new PageManager({
+      this.PageManager = new PageManager({
         addressFormConfigurations: this.ConfigManager.load(),
         widgetConfig,
         eventToDispatch: 'input' 
       })
     
-      window.AF._bigCommercePlugin = this.PluginManager
+      window.AF._bigCommercePlugin = this.PageManager
     }
   
      _addScript() {
