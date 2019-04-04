@@ -1,6 +1,6 @@
-import FormHelper from "./form_helper"
+import FormManager from "./form_manager"
 
-export default class PluginManager {
+export default class PageManager {
   constructor({addressFormConfigurations, widgetConfig, eventToDispatch}) {
     this.formHelpers = []
     this.addressFormConfigurations = addressFormConfigurations
@@ -73,7 +73,7 @@ export default class PluginManager {
         }
       }
 
-      let helper = new FormHelper(this.widgetConfig, formHelperConfig, this.eventToDispatch)
+      let helper = new FormManager(this.widgetConfig, formHelperConfig, this.eventToDispatch)
       this.formHelpers.push(helper)
     }
   }

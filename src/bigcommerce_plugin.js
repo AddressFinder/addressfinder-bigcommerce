@@ -1,5 +1,5 @@
-import PluginManager from "./plugin_manager";
-import MutationHelper from "./mutation_helper"
+import PageManager from "./page_manager";
+import MutationManager from "./mutation_manager"
 import ConfigManager from "./config_manager"
 
 (function(d,w) {
@@ -11,7 +11,7 @@ import ConfigManager from "./config_manager"
       this.PluginManager = null
       this.ConfigManager = new ConfigManager
   
-      new MutationHelper({
+      new MutationManager({
         mutationEventHandler: this.mutationEventHandler.bind(this),
         ignoredClass: "af_list"
       })
@@ -34,7 +34,7 @@ import ConfigManager from "./config_manager"
         debug: window.AddressFinderConfig.debug || false
       }
   
-      this.PluginManager = new PluginManager({
+      this.PluginManager = new PageManager({
         addressFormConfigurations: this.ConfigManager.load(),
         widgetConfig,
         eventToDispatch: 'input' 
