@@ -11,10 +11,12 @@ export default class PageManager {
     // The event type to trigger when a field value is changed by AddressFinder 
     this.eventToDispatch = eventToDispatch
 
+    this.reload = this.reload.bind(this)
+
     this.loadFormHelpers()
   }
 
-  reload = (addressFormConfigurations) => {
+  reload(addressFormConfigurations) {
     // Takes the addressFormConfigurations (static and dynamic) provided by the ConfigManager and loads our formHelpers
     this.addressFormConfigurations = addressFormConfigurations
     this.loadFormHelpers()
