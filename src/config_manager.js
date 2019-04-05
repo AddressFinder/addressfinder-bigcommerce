@@ -6,7 +6,7 @@ import createAccount from './address_form_config/create_account'
 export default class ConfigManager {
 
    load() {
-
+    // This function is called when the page mutates and returns our form configurations
     const addressFormConfigurations = [
       optimizedOnePageCheckout,
       onePageCheckout,

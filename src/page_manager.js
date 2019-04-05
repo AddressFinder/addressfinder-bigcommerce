@@ -2,31 +2,36 @@ import FormManager from "./form_manager"
 
 export default class PageManager {
   constructor({addressFormConfigurations, widgetConfig, eventToDispatch}) {
+    // Each formHelper is an instance of the FormManager class
     this.formHelpers = []
+    // An object containing identifying information about an address form, such as the id values 
     this.addressFormConfigurations = addressFormConfigurations
+    // Configuration provided by the user, such as keys and widget options
     this.widgetConfig = widgetConfig
+    // The event type to trigger when a field value is changed by AddressFinder 
     this.eventToDispatch = eventToDispatch
-
-    this.reload = this.reload.bind(this)
 
     this.loadFormHelpers()
   }
 
-  reload(addressFormConfigurations) {
+  reload = (addressFormConfigurations) => {
+    // Takes the addressFormConfigurations (static and dynamic) provided by the ConfigManager and loads our formHelpers
     this.addressFormConfigurations = addressFormConfigurations
     this.loadFormHelpers()
   }
 
   loadFormHelpers() {
+    // We destroy and reset all our current helpers and configurations, then recreate them.
     this.formHelpers.forEach(formHelper => formHelper.destroy())
     this.identifiedAddressFormConfigurations = []
     this.formHelpers = []
-    
+ 
     this._identifyAddressForms()
     this.identifiedAddressFormConfigurations.forEach(this._initialiseFormHelper.bind(this))
   }
 
   _identifyAddressForms(){
+    // Checks if each of our form configs are present on the page
     for (const addressFormConfig of this.addressFormConfigurations) {
       let identifyingElement = document.querySelector(addressFormConfig.layoutSelector)
 
@@ -39,6 +44,7 @@ export default class PageManager {
   }
 
   _initialiseFormHelper(addressFormConfig){
+    // For each configuration, create a formHelperConfig. This maps our form configurations to the corresponding DOM elements. 
     let searchElement = document.getElementById(addressFormConfig.searchIdentifier) 
 
     if (searchElement) {

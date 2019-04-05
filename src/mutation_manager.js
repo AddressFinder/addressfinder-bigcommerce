@@ -1,8 +1,10 @@
 export default class MutationManager {
   constructor({mutationEventHandler, ignoredClass}) {
     this.mutationEventHandler = mutationEventHandler
+    this.millisecondsToIgnoreMutations = 750
     // Mutation events emitted by elements with this class are ignored.
     this.ignoredClass = ignoredClass
+
     this.monitorMutations()
   }
 
@@ -33,11 +35,11 @@ export default class MutationManager {
       return nodes.concat([...mutation.addedNodes]).concat([...mutation.removedNodes])
     }, [])
 
-    const anyBigCommerceChanges = changedNodes.find((node) => {
+    const anyStoreMutations = changedNodes.find((node) => {
       return !(node.classList && node.classList.contains(this.ignoredClass))
     })
 
-    if (!anyBigCommerceChanges) {
+    if (!anyStoreMutations) {
       return // ignore AddressFinder changes
     }
 
@@ -59,6 +61,6 @@ export default class MutationManager {
     }
 
     // ignore any further changes for the next 750 mS
-    this._mutationTimeout = setTimeout(this.mutationEventHandler, 750)
+    this._mutationTimeout = setTimeout(this.mutationEventHandler, this.millisecondsToIgnoreMutations)
   }
 }
