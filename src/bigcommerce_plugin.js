@@ -52,7 +52,7 @@ import ConfigManager from "./config_manager"
       this.PageManager = new PageManager({
         addressFormConfigurations: this.ConfigManager.load(),
         widgetConfig,
-        eventToDispatch: 'input' 
+        eventToDispatch: 'change' 
       })
     
       window.AddressFinderPlugin._shopifyPlugin = this.PageManager
