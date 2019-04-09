@@ -8,10 +8,7 @@ import "core-js/fn/array/from"
 import "core-js/fn/array/includes"
 import "core-js/fn/array/map"
 import "core-js/fn/array/filter"
-
-import PageManager from "./page_manager";
-import MutationManager from "./mutation_manager"
-import ConfigManager from "./config_manager"
+var AddressFinderPlugin = require('@addressfinder/addressfinder')
 
 (function(d, w) {
   class BigcommercePlugin {
@@ -25,7 +22,7 @@ import ConfigManager from "./config_manager"
       this.ConfigManager = new ConfigManager()
 
       // Watches for any mutations to the DOM, so we can reload our configurations when something changes.
-      new MutationManager({
+      new AddressFinderPlugin.MutationManager({
         mutationEventHandler: this.mutationEventHandler.bind(this),
         ignoredClass: "af_list"
       })
@@ -49,7 +46,7 @@ import ConfigManager from "./config_manager"
         debug: window.AddressFinderPlugin.debug || false
       }
 
-      this.PageManager = new PageManager({
+      this.PageManager = new AddressFinderPlugin.PageManager({
         addressFormConfigurations: this.ConfigManager.load(),
         widgetConfig,
         eventToDispatch: 'change' 

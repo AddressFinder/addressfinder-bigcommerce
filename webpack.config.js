@@ -5,9 +5,8 @@ const config = {
   entry: [
     "./src/bigcommerce_plugin.js"
   ],
-  devtool: "source-map",
   output: {
-    path: pathLib.resolve(__dirname, "./dist"),
+    path: pathLib.resolve(__dirname, "./lib"),
   },
   module: {
     rules: [
@@ -17,7 +16,7 @@ const config = {
         use: {
           loader: 'babel-loader',
           options: {
-            presets: ['es2015']
+            presets: ['env']
           }
         }
       }
