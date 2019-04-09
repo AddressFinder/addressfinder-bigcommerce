@@ -1,28 +1,28 @@
 export default {
   label: "Optimized one-page checkout (Early access)",
   layoutSelector: "#micro-app-ng-checkout",
-  countryIdentifier: 'countryCodeInput',
-  searchIdentifier: "addressLine1Input",
+  countryIdentifier: '#countryCodeInput',
+  searchIdentifier: "#addressLine1Input",
   nz: {
     countryValue: "string:NZ",
     elements: {
-      address1: 'addressLine1Input',
+      address1: '#addressLine1Input',
       address2: null,
-      suburb: 'addressLine2Input',
-      city: 'cityInput',
-      region: 'provinceInput',
-      postcode: 'postCodeInput'
+      suburb: '#addressLine2Input',
+      city: '#cityInput',
+      region: '#provinceInput',
+      postcode: '#postCodeInput'
     },
     regionMappings: null
   },
   au: {
     countryValue: "string:AU",
     elements: {
-      address1: 'addressLine1Input',
-      address2: 'addressLine2Input',
-      suburb: 'cityInput',
-      state: 'provinceCodeInput',
-      postcode: 'postCodeInput'
+      address1: '#addressLine1Input',
+      address2: '#addressLine2Input',
+      suburb: '#cityInput',
+      state: '#provinceCodeInput',
+      postcode: '#postCodeInput'
     },
     stateMappings: {
       'ACT': 'string:ACT',
