@@ -8,9 +8,9 @@ export default class ConfigManager {
     // This function is called when the page mutates and returns our form configurations
     const addressFormConfigurations = [
       optimizedOnePageCheckout,
-      onePageCheckout,
-      addressBook,
-      createAccount
+      ...onePageCheckout,
+      ...addressBook,
+      ...createAccount
     ]
 
     return addressFormConfigurations

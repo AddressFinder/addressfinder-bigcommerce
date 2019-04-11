@@ -8,26 +8,28 @@ import "core-js/fn/array/from"
 import "core-js/fn/array/includes"
 import "core-js/fn/array/map"
 import "core-js/fn/array/filter"
-var AddressFinderPlugin = require('@addressfinder/addressfinder')
+import { PageManager, MutationManager } from '@addressfinder/addressfinder'
+import ConfigManager from './config_manager'
 
-(function(d, w) {
+(function(d,w) {
   class BigcommercePlugin {
     constructor() {
-      this._initPlugin()
-
+  
       // Manages the mapping of the form configurations to the DOM. 
       this.PageManager = null
-
+  
       // Manages the form configuraions, and creates any dynamic forms
       this.ConfigManager = new ConfigManager()
-
+  
       // Watches for any mutations to the DOM, so we can reload our configurations when something changes.
-      new AddressFinderPlugin.MutationManager({
+      new MutationManager({
         mutationEventHandler: this.mutationEventHandler.bind(this),
         ignoredClass: "af_list"
       })
+  
+      this._initPlugin()
     }
-
+  
     mutationEventHandler() {
       // When the form mutates, reload our form configurations, and reload the form helpers in the page manager.
       let addressFormConfigurations = this.ConfigManager.load()
@@ -35,31 +37,31 @@ var AddressFinderPlugin = require('@addressfinder/addressfinder')
         this.PageManager.reload(addressFormConfigurations)
       }
     }
-
+  
     _initPlugin(){
     
       const widgetConfig = {
-        nzKey: window.AddressFinderPlugin.key,
-        auKey: window.AddressFinderPlugin.key,
-        nzWidgetOptions: window.AddressFinderPlugin.nzWidgetOptions || window.AddressFinderPlugin.widgetOptions || {},
-        auWidgetOptions: window.AddressFinderPlugin.auWidgetOptions || window.AddressFinderPlugin.widgetOptions || {},
-        debug: window.AddressFinderPlugin.debug || false
+        nzKey: window.AddressFinderConfig.key,
+        auKey: window.AddressFinderConfig.key,
+        nzWidgetOptions: window.AddressFinderConfig.nzWidgetOptions || window.AddressFinderConfig.widgetOptions || {},
+        auWidgetOptions: window.AddressFinderConfig.auWidgetOptions || window.AddressFinderConfig.widgetOptions || {},
+        debug: window.AddressFinderConfig.debug || false
       }
-
-      this.PageManager = new AddressFinderPlugin.PageManager({
+  
+      this.PageManager = new PageManager({
         addressFormConfigurations: this.ConfigManager.load(),
         widgetConfig,
         eventToDispatch: 'change' 
       })
     
-      window.AddressFinderPlugin._shopifyPlugin = this.PageManager
+      window.AddressFinder._bigcommercePlugin = this.PageManager
     }
   }
-
+  
   var s = document.createElement('script')
   s.src = 'https://api.addressfinder.io/assets/v3/widget.js'
   s.async = 1
-  s.onload = new BigcommercePlugin
+  s.onload = function() { new BigcommercePlugin() }
   document.body.appendChild(s)
 
 })(document, window)

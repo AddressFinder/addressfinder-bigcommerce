@@ -6,7 +6,8 @@ const config = {
     "./src/bigcommerce_plugin.js"
   ],
   output: {
-    path: pathLib.resolve(__dirname, "./lib"),
+    path: pathLib.resolve(__dirname, "./dist"),
+    libraryTarget: 'umd'
   },
   module: {
     rules: [
