@@ -1,14 +1,4 @@
-
-import "core-js/fn/symbol" // see https://github.com/zloirock/core-js
-import "core-js/fn/symbol/iterator"
-import "core-js/fn/string/includes"
-import "core-js/fn/object/values"
-import "core-js/fn/array/find"
-import "core-js/fn/array/from"
-import "core-js/fn/array/includes"
-import "core-js/fn/array/map"
-import "core-js/fn/array/filter"
-import { PageManager, MutationManager } from '@addressfinder/addressfinder'
+import { PageManager, MutationManager } from './addressfinder_webpage_tools'
 import ConfigManager from './config_manager'
 
 (function(d,w) {
@@ -20,8 +10,7 @@ import ConfigManager from './config_manager'
   
       // Manages the form configuraions, and creates any dynamic forms
       this.ConfigManager = new ConfigManager()
-  
-      // Watches for any mutations to the DOM, so we can reload our configurations when something changes.
+
       new MutationManager({
         mutationEventHandler: this.mutationEventHandler.bind(this),
         ignoredClass: "af_list"
@@ -29,7 +18,7 @@ import ConfigManager from './config_manager'
   
       this._initPlugin()
     }
-  
+
     mutationEventHandler() {
       // When the form mutates, reload our form configurations, and reload the form helpers in the page manager.
       let addressFormConfigurations = this.ConfigManager.load()
@@ -51,7 +40,7 @@ import ConfigManager from './config_manager'
       this.PageManager = new PageManager({
         addressFormConfigurations: this.ConfigManager.load(),
         widgetConfig,
-        eventToDispatch: 'change' 
+        eventToDispatch: 'change',
       })
     
       window.AddressFinder._bigcommercePlugin = this.PageManager
