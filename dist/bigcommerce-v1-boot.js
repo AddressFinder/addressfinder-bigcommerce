@@ -369,7 +369,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
       /******/
 
-      return __webpack_require__(__webpack_require__.s = 49);
+      return __webpack_require__(__webpack_require__.s = 48);
       /******/
     }(
     /************************************************************************/
@@ -628,7 +628,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
       var SRC = __webpack_require__(14)('src');
 
-      var $toString = __webpack_require__(53);
+      var $toString = __webpack_require__(52);
 
       var TO_STRING = 'toString';
       var TPL = ('' + $toString).split(TO_STRING);
@@ -776,7 +776,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
     /***/
     function (module, exports, __webpack_require__) {
       // optional / simple context binding
-      var aFunction = __webpack_require__(54);
+      var aFunction = __webpack_require__(53);
 
       module.exports = function (fn, that, length) {
         aFunction(fn);
@@ -956,7 +956,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
       var toLength = __webpack_require__(27);
 
-      var asc = __webpack_require__(82);
+      var asc = __webpack_require__(81);
 
       module.exports = function (TYPE, $create) {
         var IS_MAP = TYPE == 1;
@@ -1096,7 +1096,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
       var toLength = __webpack_require__(27);
 
-      var toAbsoluteIndex = __webpack_require__(57);
+      var toAbsoluteIndex = __webpack_require__(56);
 
       module.exports = function (IS_INCLUDES) {
         return function ($this, el, fromIndex) {
@@ -1148,7 +1148,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       // 19.1.2.2 / 15.2.3.5 Object.create(O [, Properties])
       var anObject = __webpack_require__(11);
 
-      var dPs = __webpack_require__(58);
+      var dPs = __webpack_require__(57);
 
       var enumBugKeys = __webpack_require__(30);
 
@@ -1170,7 +1170,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
         var iframeDocument;
         iframe.style.display = 'none';
 
-        __webpack_require__(59).appendChild(iframe);
+        __webpack_require__(58).appendChild(iframe);
 
         iframe.src = 'javascript:'; // eslint-disable-line no-script-url
         // createDict = iframe.contentWindow.Object;
@@ -1258,7 +1258,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
     function (module, exports, __webpack_require__) {
       "use strict";
 
-      var $at = __webpack_require__(66)(true); // 21.1.3.27 String.prototype[@@iterator]()
+      var $at = __webpack_require__(65)(true); // 21.1.3.27 String.prototype[@@iterator]()
 
 
       __webpack_require__(45)(String, 'String', function (iterated) {
@@ -1300,11 +1300,11 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
       var Iterators = __webpack_require__(16);
 
-      var $iterCreate = __webpack_require__(67);
+      var $iterCreate = __webpack_require__(66);
 
       var setToStringTag = __webpack_require__(24);
 
-      var getPrototypeOf = __webpack_require__(68);
+      var getPrototypeOf = __webpack_require__(67);
 
       var ITERATOR = __webpack_require__(0)('iterator');
 
@@ -1734,150 +1734,11 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
     /* 48 */
 
     /***/
-    function (module, __webpack_exports__, __webpack_require__) {
-      "use strict";
-      /* harmony export (binding) */
-
-      __webpack_require__.d(__webpack_exports__, "a", function () {
-        return MutationManager;
-      });
-
-      function _toConsumableArray(arr) {
-        return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread();
-      }
-
-      function _nonIterableSpread() {
-        throw new TypeError("Invalid attempt to spread non-iterable instance");
-      }
-
-      function _iterableToArray(iter) {
-        if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter);
-      }
-
-      function _arrayWithoutHoles(arr) {
-        if (Array.isArray(arr)) {
-          for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) {
-            arr2[i] = arr[i];
-          }
-
-          return arr2;
-        }
-      }
-
-      function _classCallCheck(instance, Constructor) {
-        if (!(instance instanceof Constructor)) {
-          throw new TypeError("Cannot call a class as a function");
-        }
-      }
-
-      function _defineProperties(target, props) {
-        for (var i = 0; i < props.length; i++) {
-          var descriptor = props[i];
-          descriptor.enumerable = descriptor.enumerable || false;
-          descriptor.configurable = true;
-          if ("value" in descriptor) descriptor.writable = true;
-          Object.defineProperty(target, descriptor.key, descriptor);
-        }
-      }
-
-      function _createClass(Constructor, protoProps, staticProps) {
-        if (protoProps) _defineProperties(Constructor.prototype, protoProps);
-        if (staticProps) _defineProperties(Constructor, staticProps);
-        return Constructor;
-      }
-
-      var MutationManager =
-      /*#__PURE__*/
-      function () {
-        function MutationManager(_ref) {
-          var mutationEventHandler = _ref.mutationEventHandler,
-              ignoredClass = _ref.ignoredClass;
-
-          _classCallCheck(this, MutationManager);
-
-          this.mutationEventHandler = mutationEventHandler; // Mutation events emitted by elements with this class are ignored.
-
-          this.ignoredClass = ignoredClass;
-          this.monitorMutations();
-        }
-
-        _createClass(MutationManager, [{
-          key: "monitorMutations",
-          value: function monitorMutations() {
-            if (window.MutationObserver) {
-              /* for modern browsers */
-              var observer = new MutationObserver(this._mutationHandler.bind(this));
-              observer.observe(document.body, {
-                childList: true,
-                subtree: true
-              });
-            } else if (window.addEventListener) {
-              /* for IE 9 and 10 */
-              document.body.addEventListener('DOMNodeInserted', this._domNodeModifiedHandler.bind(this), false);
-              document.body.addEventListener('DOMNodeRemoved', this._domNodeModifiedHandler.bind(this), false);
-            } else {
-              if (window.console) {
-                console.info('AddressFinder Error - please use a more modern browser');
-              }
-            }
-          }
-        }, {
-          key: "_mutationHandler",
-          value: function _mutationHandler(mutations) {
-            var _this = this;
-
-            var changedNodes = mutations.reduce(function (nodes, mutation) {
-              // ignore this mutation if the target is the AddressFinder UL element
-              if (mutation.target && mutation.target.classList && mutation.target.classList.contains(_this.ignoredClass)) {
-                return nodes;
-              }
-
-              return nodes.concat(_toConsumableArray(mutation.addedNodes)).concat(_toConsumableArray(mutation.removedNodes));
-            }, []);
-            var anyBigCommerceChanges = changedNodes.find(function (node) {
-              return !(node.classList && node.classList.contains(_this.ignoredClass));
-            });
-
-            if (!anyBigCommerceChanges) {
-              return; // ignore AddressFinder changes
-            }
-
-            this._setMutationTimeout();
-          }
-        }, {
-          key: "_domNodeModifiedHandler",
-          value: function _domNodeModifiedHandler(event) {
-            if (event.target.className && event.target.className.includes(this.ignoredClass) || event.relatedNode && event.relatedNode.className && event.relatedNode.className.includes(this.ignoredClass)) {
-              return; // ignore AddressFinder changes
-            }
-
-            _setMutationTimeout();
-          }
-        }, {
-          key: "_setMutationTimeout",
-          value: function _setMutationTimeout() {
-            if (this._mutationTimeout) {
-              clearTimeout(this._mutationTimeout); // reset previous timeout
-            } // ignore any further changes for the next 750 mS
-
-
-            this._mutationTimeout = setTimeout(this.mutationEventHandler, 750);
-          }
-        }]);
-
-        return MutationManager;
-      }();
+    function (module, exports, __webpack_require__) {
+      module.exports = __webpack_require__(49);
       /***/
-
     },
     /* 49 */
-
-    /***/
-    function (module, exports, __webpack_require__) {
-      module.exports = __webpack_require__(50);
-      /***/
-    },
-    /* 50 */
 
     /***/
     function (module, __webpack_exports__, __webpack_require__) {
@@ -1888,7 +1749,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       });
       /* harmony import */
 
-      var __WEBPACK_IMPORTED_MODULE_0_core_js_fn_symbol__ = __webpack_require__(51);
+      var __WEBPACK_IMPORTED_MODULE_0_core_js_fn_symbol__ = __webpack_require__(50);
       /* harmony import */
 
 
@@ -1896,7 +1757,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       /* harmony import */
 
 
-      var __WEBPACK_IMPORTED_MODULE_1_core_js_fn_symbol_iterator__ = __webpack_require__(65);
+      var __WEBPACK_IMPORTED_MODULE_1_core_js_fn_symbol_iterator__ = __webpack_require__(64);
       /* harmony import */
 
 
@@ -1904,7 +1765,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       /* harmony import */
 
 
-      var __WEBPACK_IMPORTED_MODULE_2_core_js_fn_string_includes__ = __webpack_require__(72);
+      var __WEBPACK_IMPORTED_MODULE_2_core_js_fn_string_includes__ = __webpack_require__(71);
       /* harmony import */
 
 
@@ -1912,7 +1773,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       /* harmony import */
 
 
-      var __WEBPACK_IMPORTED_MODULE_3_core_js_fn_object_values__ = __webpack_require__(77);
+      var __WEBPACK_IMPORTED_MODULE_3_core_js_fn_object_values__ = __webpack_require__(76);
       /* harmony import */
 
 
@@ -1920,7 +1781,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       /* harmony import */
 
 
-      var __WEBPACK_IMPORTED_MODULE_4_core_js_fn_array_find__ = __webpack_require__(80);
+      var __WEBPACK_IMPORTED_MODULE_4_core_js_fn_array_find__ = __webpack_require__(79);
       /* harmony import */
 
 
@@ -1928,7 +1789,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       /* harmony import */
 
 
-      var __WEBPACK_IMPORTED_MODULE_5_core_js_fn_array_from__ = __webpack_require__(84);
+      var __WEBPACK_IMPORTED_MODULE_5_core_js_fn_array_from__ = __webpack_require__(83);
       /* harmony import */
 
 
@@ -1936,7 +1797,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       /* harmony import */
 
 
-      var __WEBPACK_IMPORTED_MODULE_6_core_js_fn_array_includes__ = __webpack_require__(91);
+      var __WEBPACK_IMPORTED_MODULE_6_core_js_fn_array_includes__ = __webpack_require__(90);
       /* harmony import */
 
 
@@ -1944,7 +1805,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       /* harmony import */
 
 
-      var __WEBPACK_IMPORTED_MODULE_7_core_js_fn_array_map__ = __webpack_require__(93);
+      var __WEBPACK_IMPORTED_MODULE_7_core_js_fn_array_map__ = __webpack_require__(92);
       /* harmony import */
 
 
@@ -1952,7 +1813,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       /* harmony import */
 
 
-      var __WEBPACK_IMPORTED_MODULE_8_core_js_fn_array_filter__ = __webpack_require__(95);
+      var __WEBPACK_IMPORTED_MODULE_8_core_js_fn_array_filter__ = __webpack_require__(94);
       /* harmony import */
 
 
@@ -1960,7 +1821,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       /* harmony import */
 
 
-      var __WEBPACK_IMPORTED_MODULE_9__page_manager__ = __webpack_require__(97);
+      var __WEBPACK_IMPORTED_MODULE_9__page_manager__ = __webpack_require__(96);
       /* harmony import */
 
 
@@ -1968,7 +1829,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       /* harmony import */
 
 
-      var __WEBPACK_IMPORTED_MODULE_11__mutation_manager__ = __webpack_require__(48);
+      var __WEBPACK_IMPORTED_MODULE_11__mutation_manager__ = __webpack_require__(97);
       /* harmony reexport (binding) */
 
 
@@ -1991,22 +1852,22 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       /***/
 
     },
-    /* 51 */
+    /* 50 */
 
     /***/
     function (module, exports, __webpack_require__) {
-      __webpack_require__(52);
+      __webpack_require__(51);
+
+      __webpack_require__(61);
 
       __webpack_require__(62);
 
       __webpack_require__(63);
 
-      __webpack_require__(64);
-
       module.exports = __webpack_require__(1).Symbol;
       /***/
     },
-    /* 52 */
+    /* 51 */
 
     /***/
     function (module, exports, __webpack_require__) {
@@ -2022,7 +1883,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
       var redefine = __webpack_require__(13);
 
-      var META = __webpack_require__(55).KEY;
+      var META = __webpack_require__(54).KEY;
 
       var $fails = __webpack_require__(10);
 
@@ -2038,7 +1899,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
       var wksDefine = __webpack_require__(26);
 
-      var enumKeys = __webpack_require__(56);
+      var enumKeys = __webpack_require__(55);
 
       var isArray = __webpack_require__(40);
 
@@ -2054,9 +1915,9 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
       var _create = __webpack_require__(41);
 
-      var gOPNExt = __webpack_require__(60);
+      var gOPNExt = __webpack_require__(59);
 
-      var $GOPD = __webpack_require__(61);
+      var $GOPD = __webpack_require__(60);
 
       var $DP = __webpack_require__(6);
 
@@ -2318,14 +2179,14 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       setToStringTag(global.JSON, 'JSON', true);
       /***/
     },
-    /* 53 */
+    /* 52 */
 
     /***/
     function (module, exports, __webpack_require__) {
       module.exports = __webpack_require__(17)('native-function-to-string', Function.toString);
       /***/
     },
-    /* 54 */
+    /* 53 */
 
     /***/
     function (module, exports) {
@@ -2336,7 +2197,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       /***/
 
     },
-    /* 55 */
+    /* 54 */
 
     /***/
     function (module, exports, __webpack_require__) {
@@ -2413,7 +2274,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       };
       /***/
     },
-    /* 56 */
+    /* 55 */
 
     /***/
     function (module, exports, __webpack_require__) {
@@ -2444,7 +2305,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       /***/
 
     },
-    /* 57 */
+    /* 56 */
 
     /***/
     function (module, exports, __webpack_require__) {
@@ -2460,7 +2321,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       /***/
 
     },
-    /* 58 */
+    /* 57 */
 
     /***/
     function (module, exports, __webpack_require__) {
@@ -2485,7 +2346,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       };
       /***/
     },
-    /* 59 */
+    /* 58 */
 
     /***/
     function (module, exports, __webpack_require__) {
@@ -2494,7 +2355,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       module.exports = document && document.documentElement;
       /***/
     },
-    /* 60 */
+    /* 59 */
 
     /***/
     function (module, exports, __webpack_require__) {
@@ -2520,7 +2381,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       /***/
 
     },
-    /* 61 */
+    /* 60 */
 
     /***/
     function (module, exports, __webpack_require__) {
@@ -2549,7 +2410,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       };
       /***/
     },
-    /* 62 */
+    /* 61 */
 
     /***/
     function (module, exports, __webpack_require__) {
@@ -2568,7 +2429,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       /***/
 
     },
-    /* 63 */
+    /* 62 */
 
     /***/
     function (module, exports, __webpack_require__) {
@@ -2576,7 +2437,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       /***/
 
     },
-    /* 64 */
+    /* 63 */
 
     /***/
     function (module, exports, __webpack_require__) {
@@ -2584,18 +2445,18 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       /***/
 
     },
-    /* 65 */
+    /* 64 */
 
     /***/
     function (module, exports, __webpack_require__) {
       __webpack_require__(44);
 
-      __webpack_require__(69);
+      __webpack_require__(68);
 
       module.exports = __webpack_require__(25).f('iterator');
       /***/
     },
-    /* 66 */
+    /* 65 */
 
     /***/
     function (module, exports, __webpack_require__) {
@@ -2619,7 +2480,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       /***/
 
     },
-    /* 67 */
+    /* 66 */
 
     /***/
     function (module, exports, __webpack_require__) {
@@ -2646,7 +2507,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       /***/
 
     },
-    /* 68 */
+    /* 67 */
 
     /***/
     function (module, exports, __webpack_require__) {
@@ -2672,11 +2533,11 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       /***/
 
     },
-    /* 69 */
+    /* 68 */
 
     /***/
     function (module, exports, __webpack_require__) {
-      var $iterators = __webpack_require__(70);
+      var $iterators = __webpack_require__(69);
 
       var getKeys = __webpack_require__(15);
 
@@ -2749,7 +2610,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       /***/
 
     },
-    /* 70 */
+    /* 69 */
 
     /***/
     function (module, exports, __webpack_require__) {
@@ -2757,7 +2618,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
       var addToUnscopables = __webpack_require__(32);
 
-      var step = __webpack_require__(71);
+      var step = __webpack_require__(70);
 
       var Iterators = __webpack_require__(16);
 
@@ -2795,7 +2656,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       addToUnscopables('entries');
       /***/
     },
-    /* 71 */
+    /* 70 */
 
     /***/
     function (module, exports) {
@@ -2808,16 +2669,16 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       /***/
 
     },
-    /* 72 */
+    /* 71 */
 
     /***/
     function (module, exports, __webpack_require__) {
-      __webpack_require__(73);
+      __webpack_require__(72);
 
       module.exports = __webpack_require__(1).String.includes;
       /***/
     },
-    /* 73 */
+    /* 72 */
 
     /***/
     function (module, exports, __webpack_require__) {
@@ -2825,10 +2686,10 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
       var $export = __webpack_require__(3);
 
-      var context = __webpack_require__(74);
+      var context = __webpack_require__(73);
 
       var INCLUDES = 'includes';
-      $export($export.P + $export.F * __webpack_require__(76)(INCLUDES), 'String', {
+      $export($export.P + $export.F * __webpack_require__(75)(INCLUDES), 'String', {
         includes: function includes(searchString
         /* , position = 0 */
         ) {
@@ -2837,12 +2698,12 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       });
       /***/
     },
-    /* 74 */
+    /* 73 */
 
     /***/
     function (module, exports, __webpack_require__) {
       // helper for String#{startsWith, endsWith, includes}
-      var isRegExp = __webpack_require__(75);
+      var isRegExp = __webpack_require__(74);
 
       var defined = __webpack_require__(20);
 
@@ -2853,7 +2714,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       /***/
 
     },
-    /* 75 */
+    /* 74 */
 
     /***/
     function (module, exports, __webpack_require__) {
@@ -2871,7 +2732,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       /***/
 
     },
-    /* 76 */
+    /* 75 */
 
     /***/
     function (module, exports, __webpack_require__) {
@@ -2896,23 +2757,23 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       /***/
 
     },
-    /* 77 */
+    /* 76 */
 
     /***/
     function (module, exports, __webpack_require__) {
-      __webpack_require__(78);
+      __webpack_require__(77);
 
       module.exports = __webpack_require__(1).Object.values;
       /***/
     },
-    /* 78 */
+    /* 77 */
 
     /***/
     function (module, exports, __webpack_require__) {
       // https://github.com/tc39/proposal-object-values-entries
       var $export = __webpack_require__(3);
 
-      var $values = __webpack_require__(79)(false);
+      var $values = __webpack_require__(78)(false);
 
       $export($export.S, 'Object', {
         values: function values(it) {
@@ -2921,7 +2782,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       });
       /***/
     },
-    /* 79 */
+    /* 78 */
 
     /***/
     function (module, exports, __webpack_require__) {
@@ -2952,16 +2813,16 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       /***/
 
     },
-    /* 80 */
+    /* 79 */
 
     /***/
     function (module, exports, __webpack_require__) {
-      __webpack_require__(81);
+      __webpack_require__(80);
 
       module.exports = __webpack_require__(1).Array.find;
       /***/
     },
-    /* 81 */
+    /* 80 */
 
     /***/
     function (module, exports, __webpack_require__) {
@@ -2989,12 +2850,12 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       /***/
 
     },
-    /* 82 */
+    /* 81 */
 
     /***/
     function (module, exports, __webpack_require__) {
       // 9.4.2.3 ArraySpeciesCreate(originalArray, length)
-      var speciesConstructor = __webpack_require__(83);
+      var speciesConstructor = __webpack_require__(82);
 
       module.exports = function (original, length) {
         return new (speciesConstructor(original))(length);
@@ -3002,7 +2863,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       /***/
 
     },
-    /* 83 */
+    /* 82 */
 
     /***/
     function (module, exports, __webpack_require__) {
@@ -3031,18 +2892,18 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       /***/
 
     },
-    /* 84 */
+    /* 83 */
 
     /***/
     function (module, exports, __webpack_require__) {
       __webpack_require__(44);
 
-      __webpack_require__(85);
+      __webpack_require__(84);
 
       module.exports = __webpack_require__(1).Array.from;
       /***/
     },
-    /* 85 */
+    /* 84 */
 
     /***/
     function (module, exports, __webpack_require__) {
@@ -3054,17 +2915,17 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
       var toObject = __webpack_require__(31);
 
-      var call = __webpack_require__(86);
+      var call = __webpack_require__(85);
 
-      var isArrayIter = __webpack_require__(87);
+      var isArrayIter = __webpack_require__(86);
 
       var toLength = __webpack_require__(27);
 
-      var createProperty = __webpack_require__(88);
+      var createProperty = __webpack_require__(87);
 
-      var getIterFn = __webpack_require__(89);
+      var getIterFn = __webpack_require__(88);
 
-      $export($export.S + $export.F * !__webpack_require__(90)(function (iter) {
+      $export($export.S + $export.F * !__webpack_require__(89)(function (iter) {
         Array.from(iter);
       }), 'Array', {
         // 22.1.2.1 Array.from(arrayLike, mapfn = undefined, thisArg = undefined)
@@ -3099,7 +2960,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       });
       /***/
     },
-    /* 86 */
+    /* 85 */
 
     /***/
     function (module, exports, __webpack_require__) {
@@ -3118,7 +2979,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       /***/
 
     },
-    /* 87 */
+    /* 86 */
 
     /***/
     function (module, exports, __webpack_require__) {
@@ -3135,7 +2996,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       /***/
 
     },
-    /* 88 */
+    /* 87 */
 
     /***/
     function (module, exports, __webpack_require__) {
@@ -3151,7 +3012,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       /***/
 
     },
-    /* 89 */
+    /* 88 */
 
     /***/
     function (module, exports, __webpack_require__) {
@@ -3167,7 +3028,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       /***/
 
     },
-    /* 90 */
+    /* 89 */
 
     /***/
     function (module, exports, __webpack_require__) {
@@ -3218,16 +3079,16 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       /***/
 
     },
-    /* 91 */
+    /* 90 */
 
     /***/
     function (module, exports, __webpack_require__) {
-      __webpack_require__(92);
+      __webpack_require__(91);
 
       module.exports = __webpack_require__(1).Array.includes;
       /***/
     },
-    /* 92 */
+    /* 91 */
 
     /***/
     function (module, exports, __webpack_require__) {
@@ -3249,16 +3110,16 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       /***/
 
     },
-    /* 93 */
+    /* 92 */
 
     /***/
     function (module, exports, __webpack_require__) {
-      __webpack_require__(94);
+      __webpack_require__(93);
 
       module.exports = __webpack_require__(1).Array.map;
       /***/
     },
-    /* 94 */
+    /* 93 */
 
     /***/
     function (module, exports, __webpack_require__) {
@@ -3278,16 +3139,16 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       });
       /***/
     },
-    /* 95 */
+    /* 94 */
 
     /***/
     function (module, exports, __webpack_require__) {
-      __webpack_require__(96);
+      __webpack_require__(95);
 
       module.exports = __webpack_require__(1).Array.filter;
       /***/
     },
-    /* 96 */
+    /* 95 */
 
     /***/
     function (module, exports, __webpack_require__) {
@@ -3307,7 +3168,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       });
       /***/
     },
-    /* 97 */
+    /* 96 */
 
     /***/
     function (module, __webpack_exports__, __webpack_require__) {
@@ -3321,47 +3182,39 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
 
       var __WEBPACK_IMPORTED_MODULE_0__form_manager__ = __webpack_require__(47);
-      /* harmony import */
 
+      function _objectSpread(target) {
+        for (var i = 1; i < arguments.length; i++) {
+          var source = arguments[i] != null ? arguments[i] : {};
+          var ownKeys = Object.keys(source);
 
-      var __WEBPACK_IMPORTED_MODULE_1__mutation_manager__ = __webpack_require__(48);
-
-      function _slicedToArray(arr, i) {
-        return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest();
-      }
-
-      function _nonIterableRest() {
-        throw new TypeError("Invalid attempt to destructure non-iterable instance");
-      }
-
-      function _iterableToArrayLimit(arr, i) {
-        var _arr = [];
-        var _n = true;
-        var _d = false;
-        var _e = undefined;
-
-        try {
-          for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) {
-            _arr.push(_s.value);
-
-            if (i && _arr.length === i) break;
+          if (typeof Object.getOwnPropertySymbols === 'function') {
+            ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) {
+              return Object.getOwnPropertyDescriptor(source, sym).enumerable;
+            }));
           }
-        } catch (err) {
-          _d = true;
-          _e = err;
-        } finally {
-          try {
-            if (!_n && _i["return"] != null) _i["return"]();
-          } finally {
-            if (_d) throw _e;
-          }
+
+          ownKeys.forEach(function (key) {
+            _defineProperty(target, key, source[key]);
+          });
         }
 
-        return _arr;
+        return target;
       }
 
-      function _arrayWithHoles(arr) {
-        if (Array.isArray(arr)) return arr;
+      function _defineProperty(obj, key, value) {
+        if (key in obj) {
+          Object.defineProperty(obj, key, {
+            value: value,
+            enumerable: true,
+            configurable: true,
+            writable: true
+          });
+        } else {
+          obj[key] = value;
+        }
+
+        return obj;
       }
 
       function _classCallCheck(instance, Constructor) {
@@ -3406,47 +3259,9 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
         }
 
         _createClass(PageManager, [{
-          key: "areAllElementsStillInTheDOM",
-          value: function areAllElementsStillInTheDOM() {
-            var _this = this;
-
-            var elementsInDOM = true;
-
-            if (this.identifiedFormHelperConfig.length === 0) {
-              elementsInDOM = false;
-            }
-
-            this.identifiedFormHelperConfig.forEach(function (config) {
-              if (!document.body.contains(config.countryElement)) {
-                elementsInDOM = false;
-              }
-
-              if (_this.testForCountryCode(config, 'nz')) {
-                elementsInDOM = false;
-              }
-
-              if (_this.testForCountryCode(config, 'au')) {
-                elementsInDOM = false;
-              }
-            });
-            return elementsInDOM;
-          }
-        }, {
-          key: "testForCountryCode",
-          value: function testForCountryCode(config, countryCode) {
-            var elements = Object.entries(config[countryCode].elements);
-            return elements.every(function (_ref2) {
-              var _ref3 = _slicedToArray(_ref2, 2),
-                  key = _ref3[0],
-                  element = _ref3[1];
-
-              return document.body.contains(element);
-            });
-          }
-        }, {
           key: "reload",
           value: function reload(addressFormConfigurations) {
-            if (!this.areAllElementsStillInTheDOM()) {
+            if (!this._areAllElementsStillInTheDOM()) {
               this.identifiedFormHelperConfig = [];
               this.addressFormConfigurations = addressFormConfigurations;
               this.loadFormHelpers();
@@ -3466,6 +3281,50 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
             this.identifiedAddressFormConfigurations.forEach(this._initialiseFormHelper.bind(this));
           }
         }, {
+          key: "_getCurrentCountryValue",
+          value: function _getCurrentCountryValue(config) {
+            var currentCountryCode = null;
+            var countryCodes = ['nz', 'au'];
+            countryCodes.forEach(function (countryCode) {
+              if (config.countryElement.value === config[countryCode].countryValue) {
+                currentCountryCode = countryCode;
+              }
+            });
+            return currentCountryCode;
+          }
+        }, {
+          key: "_areAllElementsStillInTheDOM",
+          value: function _areAllElementsStillInTheDOM() {
+            var _this = this;
+
+            if (this.identifiedFormHelperConfig.length === 0) {
+              return false;
+            }
+
+            return this.identifiedFormHelperConfig.every(function (config) {
+              var currentCountryCode = _this._getCurrentCountryValue(config);
+
+              if (!currentCountryCode) {
+                return true;
+              }
+
+              if (!document.body.contains(config.countryElement)) {
+                return false;
+              } else if (!_this._areAllElementsStillInTheDOMForCountryCode(config, currentCountryCode)) {
+                return false;
+              } else {
+                return true;
+              }
+            });
+          }
+        }, {
+          key: "_areAllElementsStillInTheDOMForCountryCode",
+          value: function _areAllElementsStillInTheDOMForCountryCode(config, countryCode) {
+            return Object.values(config[countryCode].elements).every(function (element) {
+              return element !== null && document.body.contains(element);
+            });
+          }
+        }, {
           key: "_identifyAddressForms",
           value: function _identifyAddressForms() {
             var _iteratorNormalCompletion = true;
@@ -3475,9 +3334,11 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
             try {
               for (var _iterator = this.addressFormConfigurations[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
                 var addressFormConfig = _step.value;
-                var identifyingElement = document.querySelector(addressFormConfig.layoutSelector);
+                var foundIdentifyingElements = addressFormConfig.layoutSelector.every(function (selector) {
+                  return document.querySelector(selector) !== null;
+                });
 
-                if (identifyingElement) {
+                if (foundIdentifyingElements) {
                   this.log("Identified layout named: ".concat(addressFormConfig.label));
                   this.identifiedAddressFormConfigurations.push(addressFormConfig);
                 }
@@ -3512,7 +3373,6 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
                   countryValue: addressFormConfig.nz.countryValue,
                   elements: {
                     address_line_1: document.querySelector(addressFormConfig.nz.elements.address1),
-                    address_line_2: document.querySelector(addressFormConfig.nz.elements.address2),
                     suburb: document.querySelector(addressFormConfig.nz.elements.suburb),
                     city: document.querySelector(addressFormConfig.nz.elements.city),
                     region: document.querySelector(addressFormConfig.nz.elements.region),
@@ -3526,13 +3386,19 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
                     address_line_1: document.querySelector(addressFormConfig.au.elements.address1),
                     address_line_2: document.querySelector(addressFormConfig.au.elements.address2),
                     locality_name: document.querySelector(addressFormConfig.au.elements.suburb),
-                    city: null,
                     state_territory: document.querySelector(addressFormConfig.au.elements.state),
                     postcode: document.querySelector(addressFormConfig.au.elements.postcode)
                   },
                   stateMappings: addressFormConfig.au.stateMappings
                 }
               };
+
+              if (addressFormConfig.nz.elements.address2) {
+                formHelperConfig.nz.elements = _objectSpread({
+                  address_line_2: document.querySelector(addressFormConfig.nz.elements.address2)
+                }, formHelperConfig.nz.elements);
+              }
+
               this.identifiedFormHelperConfig.push(formHelperConfig);
               var helper = new __WEBPACK_IMPORTED_MODULE_0__form_manager__["a"
               /* default */
@@ -3556,6 +3422,145 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
         }]);
 
         return PageManager;
+      }();
+      /***/
+
+    },
+    /* 97 */
+
+    /***/
+    function (module, __webpack_exports__, __webpack_require__) {
+      "use strict";
+      /* harmony export (binding) */
+
+      __webpack_require__.d(__webpack_exports__, "a", function () {
+        return MutationManager;
+      });
+
+      function _toConsumableArray(arr) {
+        return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread();
+      }
+
+      function _nonIterableSpread() {
+        throw new TypeError("Invalid attempt to spread non-iterable instance");
+      }
+
+      function _iterableToArray(iter) {
+        if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter);
+      }
+
+      function _arrayWithoutHoles(arr) {
+        if (Array.isArray(arr)) {
+          for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) {
+            arr2[i] = arr[i];
+          }
+
+          return arr2;
+        }
+      }
+
+      function _classCallCheck(instance, Constructor) {
+        if (!(instance instanceof Constructor)) {
+          throw new TypeError("Cannot call a class as a function");
+        }
+      }
+
+      function _defineProperties(target, props) {
+        for (var i = 0; i < props.length; i++) {
+          var descriptor = props[i];
+          descriptor.enumerable = descriptor.enumerable || false;
+          descriptor.configurable = true;
+          if ("value" in descriptor) descriptor.writable = true;
+          Object.defineProperty(target, descriptor.key, descriptor);
+        }
+      }
+
+      function _createClass(Constructor, protoProps, staticProps) {
+        if (protoProps) _defineProperties(Constructor.prototype, protoProps);
+        if (staticProps) _defineProperties(Constructor, staticProps);
+        return Constructor;
+      }
+
+      var MutationManager =
+      /*#__PURE__*/
+      function () {
+        function MutationManager(_ref) {
+          var mutationEventHandler = _ref.mutationEventHandler,
+              ignoredClass = _ref.ignoredClass;
+
+          _classCallCheck(this, MutationManager);
+
+          this.mutationEventHandler = mutationEventHandler; // Mutation events emitted by elements with this class are ignored.
+
+          this.ignoredClass = ignoredClass;
+          this.monitorMutations();
+        }
+
+        _createClass(MutationManager, [{
+          key: "monitorMutations",
+          value: function monitorMutations() {
+            if (window.MutationObserver) {
+              /* for modern browsers */
+              var observer = new MutationObserver(this._mutationHandler.bind(this));
+              observer.observe(document.body, {
+                childList: true,
+                subtree: true
+              });
+            } else if (window.addEventListener) {
+              /* for IE 9 and 10 */
+              document.body.addEventListener('DOMNodeInserted', this._domNodeModifiedHandler.bind(this), false);
+              document.body.addEventListener('DOMNodeRemoved', this._domNodeModifiedHandler.bind(this), false);
+            } else {
+              if (window.console) {
+                console.info('AddressFinder Error - please use a more modern browser');
+              }
+            }
+          }
+        }, {
+          key: "_mutationHandler",
+          value: function _mutationHandler(mutations) {
+            var _this = this;
+
+            var changedNodes = mutations.reduce(function (nodes, mutation) {
+              // ignore this mutation if the target is the AddressFinder UL element
+              if (mutation.target && mutation.target.classList && mutation.target.classList.contains(_this.ignoredClass)) {
+                return nodes;
+              }
+
+              return nodes.concat(_toConsumableArray(mutation.addedNodes)).concat(_toConsumableArray(mutation.removedNodes));
+            }, []);
+            var anyBigCommerceChanges = changedNodes.find(function (node) {
+              return !(node.classList && node.classList.contains(_this.ignoredClass));
+            });
+
+            if (!anyBigCommerceChanges) {
+              return; // ignore AddressFinder changes
+            }
+
+            this._setMutationTimeout();
+          }
+        }, {
+          key: "_domNodeModifiedHandler",
+          value: function _domNodeModifiedHandler(event) {
+            if (event.target.className && event.target.className.includes(this.ignoredClass) || event.relatedNode && event.relatedNode.className && event.relatedNode.className.includes(this.ignoredClass)) {
+              return; // ignore AddressFinder changes
+            }
+
+            _setMutationTimeout();
+          }
+        }, {
+          key: "_setMutationTimeout",
+          value: function _setMutationTimeout() {
+            if (this._mutationTimeout) {
+              clearTimeout(this._mutationTimeout); // reset previous timeout
+            } // ignore any further changes for the next 750 mS
+
+
+            this._mutationTimeout = setTimeout(this.mutationEventHandler, 750);
+          }
+        }]);
+
+        return MutationManager;
       }();
       /***/
 
@@ -3649,7 +3654,7 @@ function () {
 "use strict";
 /* harmony default export */ __webpack_exports__["a"] = ({
   label: "Optimized one-page checkout (Early access)",
-  layoutSelector: "#micro-app-ng-checkout",
+  layoutSelector: ["#micro-app-ng-checkout"],
   countryIdentifier: '#countryCodeInput',
   searchIdentifier: "#addressLine1Input",
   nz: {
@@ -3696,7 +3701,7 @@ function () {
 
 /* harmony default export */ __webpack_exports__["a"] = ([{
   label: "One-page checkout (Billing details)",
-  layoutSelector: "#CheckoutStepBillingAddress",
+  layoutSelector: ["#CheckoutStepBillingAddress"],
   countryIdentifier: '#FormField_11',
   searchIdentifier: "#FormField_8",
   nz: {
@@ -3724,7 +3729,7 @@ function () {
   }
 }, {
   label: "One-page checkout (Shipping details)",
-  layoutSelector: "#CheckoutStepShippingAddress",
+  layoutSelector: ["#CheckoutStepShippingAddress"],
   countryIdentifier: "#FormField_21",
   searchIdentifier: "#FormField_18",
   nz: {
@@ -3761,55 +3766,82 @@ function () {
 
 /* harmony default export */ __webpack_exports__["a"] = ([{
   label: "Address book (Blueprint)",
-  layoutSelector: "#AddressEditForm",
-  countryIdentifier: '#FormField_11',
+  layoutSelector: ["#AddressEditForm"],
+  countryIdentifier: "#FormField_11",
   searchIdentifier: "#FormField_8",
   nz: {
     countryValue: "New Zealand",
     elements: {
-      address1: '#FormField_8',
-      suburb: '#FormField_9',
-      city: '#FormField_10',
-      region: '#FormField_12',
-      postcode: '#FormField_13'
+      address1: "#FormField_8",
+      suburb: "#FormField_9",
+      city: "#FormField_10",
+      region: "#FormField_12",
+      postcode: "#FormField_13"
     },
     regionMappings: null
   },
   au: {
     countryValue: "Australia",
     elements: {
-      address1: '#FormField_8',
-      address2: '#FormField_9',
-      suburb: '#FormField_10',
-      state: '#FormField_12',
-      postcode: '#FormField_13'
+      address1: "#FormField_8",
+      address2: "#FormField_9",
+      suburb: "#FormField_10",
+      state: "#FormField_12",
+      postcode: "#FormField_13"
     },
     stateMappings: __WEBPACK_IMPORTED_MODULE_0__default_state_mappings__["a" /* default */]
   }
 }, {
-  label: "Address book (Stencil)",
-  layoutSelector: "form[data-address-form]",
-  countryIdentifier: '#FormField_11_select',
+  label: "Address book - Add New Address (Stencil)",
+  layoutSelector: ["form[data-address-form]", "#FormField_12_input"],
+  countryIdentifier: "#FormField_11_select",
   searchIdentifier: "#FormField_8_input",
   nz: {
     countryValue: "New Zealand",
     elements: {
-      address1: '#FormField_8_input',
-      suburb: '#FormField_9_input',
-      city: '#FormField_10_input',
-      region: '#FormField_12_input',
-      postcode: '#FormField_13_input'
+      address1: "#FormField_8_input",
+      suburb: "#FormField_9_input",
+      city: "#FormField_10_input",
+      region: "#FormField_12_input",
+      postcode: "#FormField_13_input"
     },
     regionMappings: null
   },
   au: {
     countryValue: "Australia",
     elements: {
-      address1: '#FormField_8_input',
-      address2: '#FormField_9_input',
-      suburb: '#FormField_10_input',
-      state: '#FormField_12_input',
-      postcode: '#FormField_13_input'
+      address1: "#FormField_8_input",
+      address2: "#FormField_9_input",
+      suburb: "#FormField_10_input",
+      state: "#FormField_12_input",
+      postcode: "#FormField_13_input"
+    },
+    stateMappings: __WEBPACK_IMPORTED_MODULE_0__default_state_mappings__["a" /* default */]
+  }
+}, {
+  label: "Address book - Edit Address (Stencil)",
+  layoutSelector: ["form[data-address-form]", "#FormField_12_select"],
+  countryIdentifier: "#FormField_11_select",
+  searchIdentifier: "#FormField_8_input",
+  nz: {
+    countryValue: "New Zealand",
+    elements: {
+      address1: "#FormField_8_input",
+      suburb: "#FormField_9_input",
+      city: "#FormField_10_input",
+      region: "#FormField_12_select",
+      postcode: "#FormField_13_input"
+    },
+    regionMappings: null
+  },
+  au: {
+    countryValue: "Australia",
+    elements: {
+      address1: "#FormField_8_input",
+      address2: "#FormField_9_input",
+      suburb: "#FormField_10_input",
+      state: "#FormField_12_select",
+      postcode: "#FormField_13_input"
     },
     stateMappings: __WEBPACK_IMPORTED_MODULE_0__default_state_mappings__["a" /* default */]
   }
@@ -3824,7 +3856,7 @@ function () {
 
 /* harmony default export */ __webpack_exports__["a"] = ([{
   label: "Create account (Blueprint)",
-  layoutSelector: "#CreateAccountForm",
+  layoutSelector: ["#CreateAccountForm"],
   countryIdentifier: '#FormField_11',
   searchIdentifier: "#FormField_8",
   nz: {
@@ -3851,7 +3883,7 @@ function () {
   }
 }, {
   label: "Create account (Stencil)",
-  layoutSelector: "form[data-create-account-form]",
+  layoutSelector: ["form[data-create-account-form]"],
   countryIdentifier: '#FormField_11_select',
   searchIdentifier: "#FormField_8_input",
   nz: {

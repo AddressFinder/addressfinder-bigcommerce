@@ -3,7 +3,7 @@ import defaultStateMappings from './default_state_mappings'
 export default [
   {
     label: "Create account (Blueprint)",
-    layoutSelector: "#CreateAccountForm",
+    layoutSelector: ["#CreateAccountForm"],
     countryIdentifier: '#FormField_11',
     searchIdentifier: "#FormField_8",
     nz: {
@@ -31,7 +31,7 @@ export default [
   },
   {
     label: "Create account (Stencil)",
-    layoutSelector: "form[data-create-account-form]",
+    layoutSelector: ["form[data-create-account-form]"],
     countryIdentifier: '#FormField_11_select',
     searchIdentifier: "#FormField_8_input",
     nz: {
