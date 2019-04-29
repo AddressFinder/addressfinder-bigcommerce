@@ -17,6 +17,11 @@ import ConfigManager from './config_manager'
         mutationEventHandler: this.mutationEventHandler.bind(this),
         ignoredClass: "af_list"
       })
+
+      this.events = {
+        dispatchOnAddressSelected: 'change', // When an address is selected dispatch this event so the store knows fields have changed
+        listenOnCountryElement: 'change' // Listen for this event type on the country element to set the active country
+      }
   
       this._initPlugin()
     }
@@ -42,7 +47,7 @@ import ConfigManager from './config_manager'
       this.PageManager = new PageManager({
         addressFormConfigurations: this.ConfigManager.load(),
         widgetConfig,
-        eventToDispatch: 'change',
+        events: this.events
       })
     
       window.AddressFinder._bigcommercePlugin = this.PageManager
