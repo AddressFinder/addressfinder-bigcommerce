@@ -34,7 +34,7 @@ import ConfigManager from './config_manager'
         auKey: window.AddressFinderConfig.key,
         nzWidgetOptions: window.AddressFinderConfig.nzWidgetOptions || window.AddressFinderConfig.widgetOptions || {},
         auWidgetOptions: window.AddressFinderConfig.auWidgetOptions || window.AddressFinderConfig.widgetOptions || {},
-        debug: window.AddressFinderConfig.debug || true
+        debug: window.AddressFinderConfig.debug || false
       }
   
       this.PageManager = new PageManager({
