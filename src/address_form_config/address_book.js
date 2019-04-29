@@ -30,7 +30,7 @@ export default [
     }
   },
   {
-    label: "Address book - Add New Address (Stencil)",
+    label: "Address book (Stencil)",
     layoutSelector: ["form[data-address-form]", "#FormField_12_input"],
     countryIdentifier: "#FormField_11_select",
     searchIdentifier: "#FormField_8_input",

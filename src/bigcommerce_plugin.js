@@ -1,4 +1,4 @@
-import { PageManager, MutationManager } from './addressfinder_webpage_tools'
+import { PageManager, MutationManager } from '@addressfinder/addressfinder-webpage-tools'
 import ConfigManager from './config_manager'
 
 (function(d,w) {
@@ -34,7 +34,7 @@ import ConfigManager from './config_manager'
         auKey: window.AddressFinderConfig.key,
         nzWidgetOptions: window.AddressFinderConfig.nzWidgetOptions || window.AddressFinderConfig.widgetOptions || {},
         auWidgetOptions: window.AddressFinderConfig.auWidgetOptions || window.AddressFinderConfig.widgetOptions || {},
-        debug: window.AddressFinderConfig.debug || false
+        debug: window.AddressFinderConfig.debug || true
       }
   
       this.PageManager = new PageManager({
