@@ -3,7 +3,7 @@ import defaultStateMappings from './default_state_mappings'
 export default [
   {
     label: "Address book (Blueprint)",
-    layoutSelector: ["#AddressEditForm"],
+    layoutSelectors: ["#AddressEditForm"],
     countryIdentifier: "#FormField_11",
     searchIdentifier: "#FormField_8",
     nz: {
@@ -31,7 +31,7 @@ export default [
   },
   {
     label: "Address book (Stencil)",
-    layoutSelector: ["form[data-address-form]", "#FormField_12_input"],
+    layoutSelectors: ["form[data-address-form]", "#FormField_12_input"],
     countryIdentifier: "#FormField_11_select",
     searchIdentifier: "#FormField_8_input",
     nz: {
@@ -59,7 +59,7 @@ export default [
   },
   {
     label: "Address book - Edit Address (Stencil)",
-    layoutSelector: ["form[data-address-form]", "#FormField_12_select"],
+    layoutSelectors: ["form[data-address-form]", "#FormField_12_select"],
     countryIdentifier: "#FormField_11_select",
     searchIdentifier: "#FormField_8_input",
     nz: {

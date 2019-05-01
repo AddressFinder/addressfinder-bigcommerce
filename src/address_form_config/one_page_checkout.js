@@ -5,7 +5,7 @@ import defaultStateMappings from './default_state_mappings'
 export default [
   {
     label: "One-page checkout (Billing details)",
-    layoutSelector: ["#CheckoutStepBillingAddress"],
+    layoutSelectors: ["#CheckoutStepBillingAddress"],
     countryIdentifier: '#FormField_11',
     searchIdentifier: "#FormField_8",
     nz: {
@@ -34,7 +34,7 @@ export default [
   },
   {
     label: "One-page checkout (Shipping details)",
-    layoutSelector: ["#CheckoutStepShippingAddress"],
+    layoutSelectors: ["#CheckoutStepShippingAddress"],
     countryIdentifier: "#FormField_21",
     searchIdentifier: "#FormField_18",
     nz: {

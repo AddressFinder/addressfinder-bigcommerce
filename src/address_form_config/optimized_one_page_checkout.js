@@ -1,6 +1,6 @@
 export default {
   label: "Optimized one-page checkout (Early access)",
-  layoutSelector: ["#micro-app-ng-checkout"],
+  layoutSelectors: ["#micro-app-ng-checkout"],
   countryIdentifier: '#countryCodeInput',
   searchIdentifier: "#addressLine1Input",
   nz: {
