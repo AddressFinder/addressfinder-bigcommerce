@@ -1,7 +1,5 @@
 import defaultStateMappings from './default_state_mappings'
 
-// Starting to rework
-
 export default [
   {
     label: "One-page checkout (Billing details)",
