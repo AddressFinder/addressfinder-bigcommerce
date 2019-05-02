@@ -3,11 +3,11 @@ const pathLib = require("path");
 
 const config = {
   entry: [
-    "./src/main.js"
+    "./src/bigcommerce_plugin.js"
   ],
-  devtool: "source-map",
   output: {
     path: pathLib.resolve(__dirname, "./dist"),
+    libraryTarget: 'umd'
   },
   module: {
     rules: [
@@ -17,7 +17,7 @@ const config = {
         use: {
           loader: 'babel-loader',
           options: {
-            presets: ['es2015']
+            presets: ['@babel/preset-env']
           }
         }
       }
