@@ -27,11 +27,11 @@ import ConfigManager from './config_manager'
     _initPlugin(){
     
       const widgetConfig = {
-        nzKey: w.AddressFinderConfig.key,
-        auKey: w.AddressFinderConfig.key,
-        nzWidgetOptions: w.AddressFinderConfig.nzWidgetOptions || w.AddressFinderConfig.widgetOptions || {},
-        auWidgetOptions: w.AddressFinderConfig.auWidgetOptions || w.AddressFinderConfig.widgetOptions || {},
-        debug: w.AddressFinderConfig.debug || false
+        nzKey: window.AddressFinderConfig.key_nz || window.AddressFinderConfig.key || window.AddressFinderConfig.key_au,
+        auKey: window.AddressFinderConfig.key_au || window.AddressFinderConfig.key || window.AddressFinderConfig.key_nz,
+        nzWidgetOptions: window.AddressFinderConfig.nzWidgetOptions || window.AddressFinderConfig.widgetOptions || {},
+        auWidgetOptions: window.AddressFinderConfig.auWidgetOptions || window.AddressFinderConfig.widgetOptions || {},
+        debug: window.AddressFinderConfig.debug || false
       }
 
       this.ConfigManager = new ConfigManager()
