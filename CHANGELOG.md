@@ -1,3 +1,6 @@
+# AddressFinder 1.4.0 (May 2, 2019)
+* Uses addressfinder-webpage-tools npm package
+
 # AddressFinder 1.3.0 (November 10, 2017)
 * adds configuration for account creation on stencil themes
 * adds configuration for address book on stencil and blueprint themes
