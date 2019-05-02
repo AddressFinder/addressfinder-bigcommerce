@@ -121,7 +121,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
     function BigcommercePlugin() {
       _classCallCheck(this, BigcommercePlugin);
 
-      this.version = "1.4.0"; // Manages the mapping of the form configurations to the DOM. 
+      this.version = "1.4.1"; // Manages the mapping of the form configurations to the DOM. 
 
       this.PageManager = null; // Manages the form configuraions, and creates any dynamic forms
 
@@ -144,11 +144,11 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       key: "_initPlugin",
       value: function _initPlugin() {
         var widgetConfig = {
-          nzKey: w.AddressFinderConfig.key,
-          auKey: w.AddressFinderConfig.key,
-          nzWidgetOptions: w.AddressFinderConfig.nzWidgetOptions || w.AddressFinderConfig.widgetOptions || {},
-          auWidgetOptions: w.AddressFinderConfig.auWidgetOptions || w.AddressFinderConfig.widgetOptions || {},
-          debug: w.AddressFinderConfig.debug || false
+          nzKey: window.AddressFinderConfig.key_nz || window.AddressFinderConfig.key || window.AddressFinderConfig.key_au,
+          auKey: window.AddressFinderConfig.key_au || window.AddressFinderConfig.key || window.AddressFinderConfig.key_nz,
+          nzWidgetOptions: window.AddressFinderConfig.nzWidgetOptions || window.AddressFinderConfig.widgetOptions || {},
+          auWidgetOptions: window.AddressFinderConfig.auWidgetOptions || window.AddressFinderConfig.widgetOptions || {},
+          debug: window.AddressFinderConfig.debug || false
         };
         this.ConfigManager = new __WEBPACK_IMPORTED_MODULE_1__config_manager__["a" /* default */](); // Listens for mutations and calls the mutationEventHandler when the DOM mutates, for example, an input field being removed from the page.
 
