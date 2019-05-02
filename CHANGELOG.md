@@ -1,3 +1,7 @@
+# AddressFinder 1.3.0 (November 10, 2017)
+* adds configuration for account creation on stencil themes
+* adds configuration for address book on stencil and blueprint themes
+
 # AddressFinder 1.2.2 (August 15, 2017)
 * Internet Explorer v9 fixes
 
