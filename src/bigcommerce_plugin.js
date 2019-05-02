@@ -11,17 +11,7 @@ import ConfigManager from './config_manager'
       this.PageManager = null
   
       // Manages the form configuraions, and creates any dynamic forms
-      this.ConfigManager = new ConfigManager()
-
-      new MutationManager({
-        mutationEventHandler: this.mutationEventHandler.bind(this),
-        ignoredClass: "af_list"
-      })
-
-      this.events = {
-        dispatchOnAddressSelected: 'change', // When an address is selected dispatch this event so the store knows fields have changed
-        listenOnCountryElement: 'change' // Listen for this event type on the country element to set the active country
-      }
+      this.ConfigManager = null
   
       this._initPlugin()
     }
@@ -37,17 +27,28 @@ import ConfigManager from './config_manager'
     _initPlugin(){
     
       const widgetConfig = {
-        nzKey: window.AddressFinderConfig.key,
-        auKey: window.AddressFinderConfig.key,
-        nzWidgetOptions: window.AddressFinderConfig.nzWidgetOptions || window.AddressFinderConfig.widgetOptions || {},
-        auWidgetOptions: window.AddressFinderConfig.auWidgetOptions || window.AddressFinderConfig.widgetOptions || {},
-        debug: window.AddressFinderConfig.debug || false
+        nzKey: w.AddressFinderConfig.key,
+        auKey: w.AddressFinderConfig.key,
+        nzWidgetOptions: w.AddressFinderConfig.nzWidgetOptions || w.AddressFinderConfig.widgetOptions || {},
+        auWidgetOptions: w.AddressFinderConfig.auWidgetOptions || w.AddressFinderConfig.widgetOptions || {},
+        debug: w.AddressFinderConfig.debug || false
       }
+
+      this.ConfigManager = new ConfigManager()
+
+      // Listens for mutations and calls the mutationEventHandler when the DOM mutates, for example, an input field being removed from the page.
+      new MutationManager({
+        mutationEventHandler: this.mutationEventHandler.bind(this),
+        ignoredClass: "af_list"
+      })
   
       this.PageManager = new PageManager({
         addressFormConfigurations: this.ConfigManager.load(),
         widgetConfig,
-        events: this.events
+        // When an address is selected dispatch this event on all the updated form fields. This tells the store the fields have been changed.
+        formFieldChangeEventToDispatch: 'change',
+        // An event listener with this event type is attached to country element. When the country changes the active country for the widget is set.
+        countryChangeEventToListenFor: 'change'
       })
     
       window.AddressFinder._bigcommercePlugin = this.PageManager
