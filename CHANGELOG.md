@@ -1,3 +1,6 @@
+# AddressFinder 1.4.1 (May 2, 2019)
+* Fixed bug with referencing api keys
+
 # AddressFinder 1.4.0 (May 2, 2019)
 * Uses addressfinder-webpage-tools npm package
 
