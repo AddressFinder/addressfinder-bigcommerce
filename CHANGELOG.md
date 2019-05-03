@@ -1,3 +1,6 @@
+# AddressFinder 1.4.2 (May 3, 2019)
+* Added additional create account configuration
+
 # AddressFinder 1.4.1 (May 2, 2019)
 * Fixed bug with referencing api keys
 
