@@ -472,8 +472,8 @@ function () {
     stateMappings: __WEBPACK_IMPORTED_MODULE_0__default_state_mappings__["a" /* default */]
   }
 }, {
-  label: "Create account (Stencil)",
-  layoutSelectors: ["form[data-create-account-form]"],
+  label: "Create account with Region/State input (Stencil)",
+  layoutSelectors: ["form[data-create-account-form]", "#FormField_12_input"],
   countryIdentifier: '#FormField_11_select',
   searchIdentifier: "#FormField_8_input",
   nz: {
@@ -494,6 +494,33 @@ function () {
       address2: '#FormField_9_input',
       suburb: '#FormField_10_input',
       state: '#FormField_12_input',
+      postcode: '#FormField_13_input'
+    },
+    stateMappings: __WEBPACK_IMPORTED_MODULE_0__default_state_mappings__["a" /* default */]
+  }
+}, {
+  label: "Create account with Region/State select (Stencil)",
+  layoutSelectors: ["form[data-create-account-form]", "#FormField_12_select"],
+  countryIdentifier: '#FormField_11_select',
+  searchIdentifier: "#FormField_8_input",
+  nz: {
+    countryValue: "New Zealand",
+    elements: {
+      address1: '#FormField_8_input',
+      suburb: '#FormField_9_input',
+      city: '#FormField_10_input',
+      region: '#FormField_12_select',
+      postcode: '#FormField_13_input'
+    },
+    regionMappings: null
+  },
+  au: {
+    countryValue: "Australia",
+    elements: {
+      address1: '#FormField_8_input',
+      address2: '#FormField_9_input',
+      suburb: '#FormField_10_input',
+      state: '#FormField_12_select',
       postcode: '#FormField_13_input'
     },
     stateMappings: __WEBPACK_IMPORTED_MODULE_0__default_state_mappings__["a" /* default */]
