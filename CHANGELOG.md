@@ -1,3 +1,6 @@
+# AddressFinder 1.4.3 (May 6, 2019)
+* Updated addressfinder_webpage_tools package to handle excessive mutations
+
 # AddressFinder 1.4.2 (May 3, 2019)
 * Added additional create account configuration
 
