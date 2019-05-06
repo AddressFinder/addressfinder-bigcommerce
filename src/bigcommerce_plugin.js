@@ -38,6 +38,7 @@ import ConfigManager from './config_manager'
 
       // Listens for mutations and calls the mutationEventHandler when the DOM mutates, for example, an input field being removed from the page.
       new MutationManager({
+        widgetConfig: widgetConfig,
         mutationEventHandler: this.mutationEventHandler.bind(this),
         ignoredClass: "af_list"
       })
