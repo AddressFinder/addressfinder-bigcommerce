@@ -5,14 +5,14 @@ import ConfigManager from './config_manager'
   class BigcommercePlugin {
     constructor() {
 
-      this.version = "1.4.3"
+      this.version = "1.4.4"
 
-      // Manages the mapping of the form configurations to the DOM. 
+      // Manages the mapping of the form configurations to the DOM.
       this.PageManager = null
-  
+
       // Manages the form configuraions, and creates any dynamic forms
       this.ConfigManager = null
-  
+
       this._initPlugin()
     }
 
@@ -23,9 +23,9 @@ import ConfigManager from './config_manager'
         this.PageManager.reload(addressFormConfigurations)
       }
     }
-  
+
     _initPlugin(){
-    
+
       const widgetConfig = {
         nzKey: window.AddressFinderConfig.key_nz || window.AddressFinderConfig.key || window.AddressFinderConfig.key_au,
         auKey: window.AddressFinderConfig.key_au || window.AddressFinderConfig.key || window.AddressFinderConfig.key_nz,
@@ -42,7 +42,7 @@ import ConfigManager from './config_manager'
         mutationEventHandler: this.mutationEventHandler.bind(this),
         ignoredClass: "af_list"
       })
-  
+
       this.PageManager = new PageManager({
         addressFormConfigurations: this.ConfigManager.load(),
         widgetConfig,
@@ -51,11 +51,11 @@ import ConfigManager from './config_manager'
         // An event listener with this event type is attached to country element. When the country changes the active country for the widget is set.
         countryChangeEventToListenFor: 'change'
       })
-    
+
       window.AddressFinder._bigcommercePlugin = this.PageManager
     }
   }
-  
+
   var s = document.createElement('script')
   s.src = 'https://api.addressfinder.io/assets/v3/widget.js'
   s.async = 1

@@ -1,3 +1,6 @@
+# AddressFinder 1.4.4 (August 2, 2019)
+* Change country key values for optimized one page checkout config
+
 # AddressFinder 1.4.3 (May 6, 2019)
 * Updated addressfinder_webpage_tools package to handle excessive mutations
 
