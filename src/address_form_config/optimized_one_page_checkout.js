@@ -24,15 +24,6 @@ export default {
       state: '#provinceCodeInput',
       postcode: '#postCodeInput'
     },
-    stateMappings: {
-      'ACT': 'string:ACT',
-      'NSW': 'string:NSW',
-      'NT' : 'string:NT',
-      'QLD': 'string:QLD',
-      'SA' : 'string:SA',
-      'TAS': 'string:TAS',
-      'VIC': 'string:VIC',
-      'WA' : 'string:WA'
-    }
+    stateMappings: null
   }
 }
