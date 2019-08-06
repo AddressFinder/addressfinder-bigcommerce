@@ -4,7 +4,7 @@ export default {
   countryIdentifier: '#countryCodeInput',
   searchIdentifier: "#addressLine1Input",
   nz: {
-    countryValue: "string:NZ",
+    countryValue: "NZ",
     elements: {
       address1: '#addressLine1Input',
       address2: null,
@@ -16,7 +16,7 @@ export default {
     regionMappings: null
   },
   au: {
-    countryValue: "string:AU",
+    countryValue: "AU",
     elements: {
       address1: '#addressLine1Input',
       address2: '#addressLine2Input',
@@ -24,15 +24,6 @@ export default {
       state: '#provinceCodeInput',
       postcode: '#postCodeInput'
     },
-    stateMappings: {
-      'ACT': 'string:ACT',
-      'NSW': 'string:NSW',
-      'NT' : 'string:NT',
-      'QLD': 'string:QLD',
-      'SA' : 'string:SA',
-      'TAS': 'string:TAS',
-      'VIC': 'string:VIC',
-      'WA' : 'string:WA'
-    }
+    stateMappings: null
   }
 }
