@@ -5,7 +5,7 @@ import ConfigManager from './config_manager'
   class BigcommercePlugin {
     constructor() {
 
-      this.version = "1.4.4"
+      this.version = "1.5.0"
 
       // Manages the mapping of the form configurations to the DOM.
       this.PageManager = null
