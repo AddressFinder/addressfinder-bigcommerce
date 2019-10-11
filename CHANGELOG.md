@@ -1,3 +1,6 @@
+# AddressFinder 1.5.1 (October 11, 2019)
+* Corrected error with installing out of date webpage tools
+
 # AddressFinder 1.5.0 (October 11, 2019)
 * Updated Optimised One Page Checkout layout selector
 * Added debugMode function
