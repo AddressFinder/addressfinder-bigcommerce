@@ -1,3 +1,7 @@
+# AddressFinder 1.5.0 (October 11, 2019)
+* Updated Optimised One Page Checkout layout selector
+* Added debugMode function
+
 # AddressFinder 1.4.4 (August 2, 2019)
 * Change country key values for optimized one page checkout config
 * Updated addressfinder_webpage_tools package to handle React sites
