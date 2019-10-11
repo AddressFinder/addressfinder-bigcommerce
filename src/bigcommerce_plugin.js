@@ -14,6 +14,9 @@ import ConfigManager from './config_manager'
       this.ConfigManager = null
 
       this._initPlugin()
+
+      this.addressfinderDebugMode = this.addressfinderDebugMode.bind(this)
+      w.addressfinderDebugMode = this.addressfinderDebugMode
     }
 
     mutationEventHandler() {
@@ -53,6 +56,15 @@ import ConfigManager from './config_manager'
       })
 
       window.AddressFinder._bigcommercePlugin = this.PageManager
+    }
+
+    /*
+    * When addressfinderDebugMode() is typed into the Javascript console the plugin will be reinitialised with debug set to true.
+    * This allows us to debug more easily on customer sites.
+    */
+    addressfinderDebugMode() {
+      w.AddressFinderConfig.debug = true
+      this._initPlugin()
     }
   }
 

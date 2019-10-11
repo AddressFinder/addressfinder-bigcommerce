@@ -28,3 +28,8 @@ In a separate window, run:
 1. `npm run watch`
 
 Then whenever a file is edited, it will be re-compiled and available for reloading.
+
+# Debugging
+If you are debugging a customer site, you can type `addressfinderDebugMode()` into the javascript console. This will reinitialise the widget,
+with the debug flag set to true, so you can see console logs from the addressfinder-webpage-tools npm package.
+This works in Chrome and FireFox
