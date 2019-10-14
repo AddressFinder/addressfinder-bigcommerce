@@ -55,7 +55,15 @@ import ConfigManager from './config_manager'
         countryChangeEventToListenFor: 'change'
       })
 
+      this._setVersionNumbers()
+
       window.AddressFinder._bigcommercePlugin = this.PageManager
+    }
+
+    _setVersionNumbers() {
+      // rename webpage tools version from 'version' to 'webpageToolsVersion'
+      this.PageManager['webpageToolsVersion'] = this.PageManager.version
+      this.PageManager.version = this.version
     }
 
     /*
