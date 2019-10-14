@@ -1,3 +1,6 @@
+# AddressFinder 1.5.2 (October 15, 2019)
+* Differentiate between Bigcommerce version and webpage tools version
+
 # AddressFinder 1.5.1 (October 11, 2019)
 * Corrected error with installing out of date webpage tools
 
