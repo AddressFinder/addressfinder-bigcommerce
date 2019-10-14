@@ -10,7 +10,7 @@ This will open up a browser window (https://127.0.0.1:8080) with the `dist` dire
 
 To develop and test this plugin, you should:
 
-1. Visit https://bigcommerce.com and create a trial account.
+1. Visit https://login.bigcommerce.com/login to login. Credentials are in 1Password
 1. On the store's admin pages, click Advanced Settings then Web Analytics
 1. Tick Google Analytics then Save
 1. Select the Google Analytics tab
