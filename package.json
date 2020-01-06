@@ -15,7 +15,7 @@
     "webpack": "^3.5.1"
   },
   "dependencies": {
-    "@addressfinder/addressfinder-webpage-tools": "^1.6.0",
+    "@addressfinder/addressfinder-webpage-tools": "^1.8.1",
     "core-js": "^2.5.0"
   },
   "scripts": {
