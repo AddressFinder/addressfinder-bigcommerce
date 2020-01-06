@@ -1,14 +1,4 @@
-(function webpackUniversalModuleDefinition(root, factory) {
-	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory();
-	else if(typeof define === 'function' && define.amd)
-		define([], factory);
-	else {
-		var a = factory();
-		for(var i in a) (typeof exports === 'object' ? exports : root)[i] = a[i];
-	}
-})(typeof self !== 'undefined' ? self : this, function() {
-return /******/ (function(modules) { // webpackBootstrap
+/******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
 /******/
@@ -46,12 +36,32 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// define getter function for harmony exports
 /******/ 	__webpack_require__.d = function(exports, name, getter) {
 /******/ 		if(!__webpack_require__.o(exports, name)) {
-/******/ 			Object.defineProperty(exports, name, {
-/******/ 				configurable: false,
-/******/ 				enumerable: true,
-/******/ 				get: getter
-/******/ 			});
+/******/ 			Object.defineProperty(exports, name, { enumerable: true, get: getter });
 /******/ 		}
+/******/ 	};
+/******/
+/******/ 	// define __esModule on exports
+/******/ 	__webpack_require__.r = function(exports) {
+/******/ 		if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 			Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 		}
+/******/ 		Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 	};
+/******/
+/******/ 	// create a fake namespace object
+/******/ 	// mode & 1: value is a module id, require it
+/******/ 	// mode & 2: merge all properties of value into the ns
+/******/ 	// mode & 4: return value when already ns object
+/******/ 	// mode & 8|1: behave like require
+/******/ 	__webpack_require__.t = function(value, mode) {
+/******/ 		if(mode & 1) value = __webpack_require__(value);
+/******/ 		if(mode & 8) return value;
+/******/ 		if((mode & 4) && typeof value === 'object' && value && value.__esModule) return value;
+/******/ 		var ns = Object.create(null);
+/******/ 		__webpack_require__.r(ns);
+/******/ 		Object.defineProperty(ns, 'default', { enumerable: true, value: value });
+/******/ 		if(mode & 2 && typeof value != 'string') for(var key in value) __webpack_require__.d(ns, key, function(key) { return value[key]; }.bind(null, key));
+/******/ 		return ns;
 /******/ 	};
 /******/
 /******/ 	// getDefaultExport function for compatibility with non-harmony modules
@@ -69,158 +79,19 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// __webpack_public_path__
 /******/ 	__webpack_require__.p = "";
 /******/
+/******/
 /******/ 	// Load entry module and return exports
 /******/ 	return __webpack_require__(__webpack_require__.s = 1);
 /******/ })
 /************************************************************************/
 /******/ ([
 /* 0 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony default export */ __webpack_exports__["a"] = ({
-  'ACT': 'Australian Capital Territory',
-  'NSW': 'New South Wales',
-  'NT': 'Northern Territory',
-  'QLD': 'Queensland',
-  'SA': 'South Australia',
-  'TAS': 'Tasmania',
-  'VIC': 'Victoria',
-  'WA': 'Western Australia'
-});
-
-/***/ }),
-/* 1 */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = __webpack_require__(2);
-
-
-/***/ }),
-/* 2 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__addressfinder_addressfinder_webpage_tools__ = __webpack_require__(3);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__addressfinder_addressfinder_webpage_tools___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__addressfinder_addressfinder_webpage_tools__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__config_manager__ = __webpack_require__(4);
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
-
-
-
-
-(function (d, w) {
-  var BigcommercePlugin =
-  /*#__PURE__*/
-  function () {
-    function BigcommercePlugin() {
-      _classCallCheck(this, BigcommercePlugin);
-
-      this.version = "1.5.2"; // Manages the mapping of the form configurations to the DOM.
-
-      this.PageManager = null; // Manages the form configuraions, and creates any dynamic forms
-
-      this.ConfigManager = null;
-
-      this._initPlugin();
-
-      this.addressfinderDebugMode = this.addressfinderDebugMode.bind(this);
-      w.addressfinderDebugMode = this.addressfinderDebugMode;
-    }
-
-    _createClass(BigcommercePlugin, [{
-      key: "mutationEventHandler",
-      value: function mutationEventHandler() {
-        // When the form mutates, reload our form configurations, and reload the form helpers in the page manager.
-        var addressFormConfigurations = this.ConfigManager.load();
-
-        if (this.PageManager) {
-          this.PageManager.reload(addressFormConfigurations);
-        }
-      }
-    }, {
-      key: "_initPlugin",
-      value: function _initPlugin() {
-        var widgetConfig = {
-          nzKey: window.AddressFinderConfig.key_nz || window.AddressFinderConfig.key || window.AddressFinderConfig.key_au,
-          auKey: window.AddressFinderConfig.key_au || window.AddressFinderConfig.key || window.AddressFinderConfig.key_nz,
-          nzWidgetOptions: window.AddressFinderConfig.nzWidgetOptions || window.AddressFinderConfig.widgetOptions || {},
-          auWidgetOptions: window.AddressFinderConfig.auWidgetOptions || window.AddressFinderConfig.widgetOptions || {},
-          debug: window.AddressFinderConfig.debug || false
-        };
-        this.ConfigManager = new __WEBPACK_IMPORTED_MODULE_1__config_manager__["a" /* default */](); // Listens for mutations and calls the mutationEventHandler when the DOM mutates, for example, an input field being removed from the page.
-
-        new __WEBPACK_IMPORTED_MODULE_0__addressfinder_addressfinder_webpage_tools__["MutationManager"]({
-          widgetConfig: widgetConfig,
-          mutationEventHandler: this.mutationEventHandler.bind(this),
-          ignoredClass: "af_list"
-        });
-        this.PageManager = new __WEBPACK_IMPORTED_MODULE_0__addressfinder_addressfinder_webpage_tools__["PageManager"]({
-          addressFormConfigurations: this.ConfigManager.load(),
-          widgetConfig: widgetConfig,
-          // When an address is selected dispatch this event on all the updated form fields. This tells the store the fields have been changed.
-          formFieldChangeEventToDispatch: 'change',
-          // An event listener with this event type is attached to country element. When the country changes the active country for the widget is set.
-          countryChangeEventToListenFor: 'change'
-        });
-
-        this._setVersionNumbers();
-
-        window.AddressFinder._bigcommercePlugin = this.PageManager;
-      }
-    }, {
-      key: "_setVersionNumbers",
-      value: function _setVersionNumbers() {
-        // rename webpage tools version from 'version' to 'webpageToolsVersion'
-        this.PageManager['webpageToolsVersion'] = this.PageManager.version;
-        this.PageManager.version = this.version;
-      }
-      /*
-      * When addressfinderDebugMode() is typed into the Javascript console the plugin will be reinitialised with debug set to true.
-      * This allows us to debug more easily on customer sites.
-      */
-
-    }, {
-      key: "addressfinderDebugMode",
-      value: function addressfinderDebugMode() {
-        w.AddressFinderConfig.debug = true;
-
-        this._initPlugin();
-      }
-    }]);
-
-    return BigcommercePlugin;
-  }();
-
-  var s = document.createElement('script');
-  s.src = 'https://api.addressfinder.io/assets/v3/widget.js';
-  s.async = 1;
-
-  s.onload = function () {
-    new BigcommercePlugin();
-  };
-
-  document.body.appendChild(s);
-})(document, window);
-
-/***/ }),
-/* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(true)
 		module.exports = factory();
-	else if(typeof define === 'function' && define.amd)
-		define([], factory);
-	else {
-		var a = factory();
-		for(var i in a) (typeof exports === 'object' ? exports : root)[i] = a[i];
-	}
+	else { var i, a; }
 })(window, function() {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
@@ -2964,61 +2835,24 @@ function () {
 //# sourceMappingURL=addressfinder-webpage-tools.js.map
 
 /***/ }),
-/* 4 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/* 1 */
+/***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return ConfigManager; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__address_form_config_optimized_one_page_checkout__ = __webpack_require__(5);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__address_form_config_one_page_checkout__ = __webpack_require__(6);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__address_form_config_address_book__ = __webpack_require__(7);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__address_form_config_create_account__ = __webpack_require__(8);
-function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
-
-function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
-
-function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
-
-function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
-
-
-
-
-
-
-var ConfigManager =
-/*#__PURE__*/
-function () {
-  function ConfigManager() {
-    _classCallCheck(this, ConfigManager);
-  }
-
-  _createClass(ConfigManager, [{
-    key: "load",
-    value: function load() {
-      // This function is called when the page mutates and returns our form configurations
-      var addressFormConfigurations = [__WEBPACK_IMPORTED_MODULE_0__address_form_config_optimized_one_page_checkout__["a" /* default */]].concat(_toConsumableArray(__WEBPACK_IMPORTED_MODULE_1__address_form_config_one_page_checkout__["a" /* default */]), _toConsumableArray(__WEBPACK_IMPORTED_MODULE_2__address_form_config_address_book__["a" /* default */]), _toConsumableArray(__WEBPACK_IMPORTED_MODULE_3__address_form_config_create_account__["a" /* default */]));
-      return addressFormConfigurations;
-    }
-  }]);
-
-  return ConfigManager;
-}();
-
+module.exports = __webpack_require__(2);
 
 
 /***/ }),
-/* 5 */
+/* 2 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony default export */ __webpack_exports__["a"] = ({
+__webpack_require__.r(__webpack_exports__);
+
+// EXTERNAL MODULE: ./node_modules/@addressfinder/addressfinder-webpage-tools/lib/addressfinder-webpage-tools.js
+var addressfinder_webpage_tools = __webpack_require__(0);
+
+// CONCATENATED MODULE: ./src/address_form_config/optimized_one_page_checkout.js
+/* harmony default export */ var optimized_one_page_checkout = ({
   label: "Optimized one-page checkout (Early access)",
   layoutSelectors: ["#addressLine1Input"],
   countryIdentifier: '#countryCodeInput',
@@ -3047,15 +2881,20 @@ function () {
     stateMappings: null
   }
 });
+// CONCATENATED MODULE: ./src/address_form_config/default_state_mappings.js
+/* harmony default export */ var default_state_mappings = ({
+  'ACT': 'Australian Capital Territory',
+  'NSW': 'New South Wales',
+  'NT': 'Northern Territory',
+  'QLD': 'Queensland',
+  'SA': 'South Australia',
+  'TAS': 'Tasmania',
+  'VIC': 'Victoria',
+  'WA': 'Western Australia'
+});
+// CONCATENATED MODULE: ./src/address_form_config/one_page_checkout.js
 
-/***/ }),
-/* 6 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__default_state_mappings__ = __webpack_require__(0);
-
-/* harmony default export */ __webpack_exports__["a"] = ([{
+/* harmony default export */ var one_page_checkout = ([{
   label: "One-page checkout (Billing details)",
   layoutSelectors: ["#CheckoutStepBillingAddress"],
   countryIdentifier: '#FormField_11',
@@ -3081,7 +2920,7 @@ function () {
       state: '#FormField_12',
       postcode: '#FormField_13'
     },
-    stateMappings: __WEBPACK_IMPORTED_MODULE_0__default_state_mappings__["a" /* default */]
+    stateMappings: default_state_mappings
   }
 }, {
   label: "One-page checkout (Shipping details)",
@@ -3109,18 +2948,12 @@ function () {
       state: '#FormField_22',
       postcode: '#FormField_23'
     },
-    stateMappings: __WEBPACK_IMPORTED_MODULE_0__default_state_mappings__["a" /* default */]
+    stateMappings: default_state_mappings
   }
 }]);
+// CONCATENATED MODULE: ./src/address_form_config/address_book.js
 
-/***/ }),
-/* 7 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__default_state_mappings__ = __webpack_require__(0);
-
-/* harmony default export */ __webpack_exports__["a"] = ([{
+/* harmony default export */ var address_book = ([{
   label: "Address book (Blueprint)",
   layoutSelectors: ["#AddressEditForm"],
   countryIdentifier: "#FormField_11",
@@ -3145,7 +2978,7 @@ function () {
       state: "#FormField_12",
       postcode: "#FormField_13"
     },
-    stateMappings: __WEBPACK_IMPORTED_MODULE_0__default_state_mappings__["a" /* default */]
+    stateMappings: default_state_mappings
   }
 }, {
   label: "Address book (Stencil)",
@@ -3172,7 +3005,7 @@ function () {
       state: "#FormField_12_input",
       postcode: "#FormField_13_input"
     },
-    stateMappings: __WEBPACK_IMPORTED_MODULE_0__default_state_mappings__["a" /* default */]
+    stateMappings: default_state_mappings
   }
 }, {
   label: "Address book - Edit Address (Stencil)",
@@ -3199,18 +3032,12 @@ function () {
       state: "#FormField_12_select",
       postcode: "#FormField_13_input"
     },
-    stateMappings: __WEBPACK_IMPORTED_MODULE_0__default_state_mappings__["a" /* default */]
+    stateMappings: default_state_mappings
   }
 }]);
+// CONCATENATED MODULE: ./src/address_form_config/create_account.js
 
-/***/ }),
-/* 8 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__default_state_mappings__ = __webpack_require__(0);
-
-/* harmony default export */ __webpack_exports__["a"] = ([{
+/* harmony default export */ var create_account = ([{
   label: "Create account (Blueprint)",
   layoutSelectors: ["#CreateAccountForm"],
   countryIdentifier: '#FormField_11',
@@ -3235,7 +3062,7 @@ function () {
       state: '#FormField_12',
       postcode: '#FormField_13'
     },
-    stateMappings: __WEBPACK_IMPORTED_MODULE_0__default_state_mappings__["a" /* default */]
+    stateMappings: default_state_mappings
   }
 }, {
   label: "Create account with Region/State input (Stencil)",
@@ -3262,7 +3089,7 @@ function () {
       state: '#FormField_12_input',
       postcode: '#FormField_13_input'
     },
-    stateMappings: __WEBPACK_IMPORTED_MODULE_0__default_state_mappings__["a" /* default */]
+    stateMappings: default_state_mappings
   }
 }, {
   label: "Create account with Region/State select (Stencil)",
@@ -3289,10 +3116,153 @@ function () {
       state: '#FormField_12_select',
       postcode: '#FormField_13_input'
     },
-    stateMappings: __WEBPACK_IMPORTED_MODULE_0__default_state_mappings__["a" /* default */]
+    stateMappings: default_state_mappings
   }
 }]);
+// CONCATENATED MODULE: ./src/config_manager.js
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
+
+function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+
+
+
+
+
+var config_manager_ConfigManager =
+/*#__PURE__*/
+function () {
+  function ConfigManager() {
+    _classCallCheck(this, ConfigManager);
+  }
+
+  _createClass(ConfigManager, [{
+    key: "load",
+    value: function load() {
+      // This function is called when the page mutates and returns our form configurations
+      var addressFormConfigurations = [optimized_one_page_checkout].concat(_toConsumableArray(one_page_checkout), _toConsumableArray(address_book), _toConsumableArray(create_account));
+      return addressFormConfigurations;
+    }
+  }]);
+
+  return ConfigManager;
+}();
+
+
+// CONCATENATED MODULE: ./src/bigcommerce_plugin.js
+function bigcommerce_plugin_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function bigcommerce_plugin_defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function bigcommerce_plugin_createClass(Constructor, protoProps, staticProps) { if (protoProps) bigcommerce_plugin_defineProperties(Constructor.prototype, protoProps); if (staticProps) bigcommerce_plugin_defineProperties(Constructor, staticProps); return Constructor; }
+
+
+
+
+(function (d, w) {
+  var BigcommercePlugin =
+  /*#__PURE__*/
+  function () {
+    function BigcommercePlugin() {
+      bigcommerce_plugin_classCallCheck(this, BigcommercePlugin);
+
+      this.version = "1.5.2"; // Manages the mapping of the form configurations to the DOM.
+
+      this.PageManager = null; // Manages the form configuraions, and creates any dynamic forms
+
+      this.ConfigManager = null;
+
+      this._initPlugin();
+
+      this.addressfinderDebugMode = this.addressfinderDebugMode.bind(this);
+      w.addressfinderDebugMode = this.addressfinderDebugMode;
+    }
+
+    bigcommerce_plugin_createClass(BigcommercePlugin, [{
+      key: "mutationEventHandler",
+      value: function mutationEventHandler() {
+        // When the form mutates, reload our form configurations, and reload the form helpers in the page manager.
+        var addressFormConfigurations = this.ConfigManager.load();
+
+        if (this.PageManager) {
+          this.PageManager.reload(addressFormConfigurations);
+        }
+      }
+    }, {
+      key: "_initPlugin",
+      value: function _initPlugin() {
+        var widgetConfig = {
+          nzKey: window.AddressFinderConfig.key_nz || window.AddressFinderConfig.key || window.AddressFinderConfig.key_au,
+          auKey: window.AddressFinderConfig.key_au || window.AddressFinderConfig.key || window.AddressFinderConfig.key_nz,
+          nzWidgetOptions: window.AddressFinderConfig.nzWidgetOptions || window.AddressFinderConfig.widgetOptions || {},
+          auWidgetOptions: window.AddressFinderConfig.auWidgetOptions || window.AddressFinderConfig.widgetOptions || {},
+          debug: window.AddressFinderConfig.debug || false
+        };
+        this.ConfigManager = new config_manager_ConfigManager(); // Listens for mutations and calls the mutationEventHandler when the DOM mutates, for example, an input field being removed from the page.
+
+        new addressfinder_webpage_tools["MutationManager"]({
+          widgetConfig: widgetConfig,
+          mutationEventHandler: this.mutationEventHandler.bind(this),
+          ignoredClass: "af_list"
+        });
+        this.PageManager = new addressfinder_webpage_tools["PageManager"]({
+          addressFormConfigurations: this.ConfigManager.load(),
+          widgetConfig: widgetConfig,
+          // When an address is selected dispatch this event on all the updated form fields. This tells the store the fields have been changed.
+          formFieldChangeEventToDispatch: 'change',
+          // An event listener with this event type is attached to country element. When the country changes the active country for the widget is set.
+          countryChangeEventToListenFor: 'change'
+        });
+
+        this._setVersionNumbers();
+
+        window.AddressFinder._bigcommercePlugin = this.PageManager;
+      }
+    }, {
+      key: "_setVersionNumbers",
+      value: function _setVersionNumbers() {
+        // rename webpage tools version from 'version' to 'webpageToolsVersion'
+        this.PageManager['webpageToolsVersion'] = this.PageManager.version;
+        this.PageManager.version = this.version;
+      }
+      /*
+      * When addressfinderDebugMode() is typed into the Javascript console the plugin will be reinitialised with debug set to true.
+      * This allows us to debug more easily on customer sites.
+      */
+
+    }, {
+      key: "addressfinderDebugMode",
+      value: function addressfinderDebugMode() {
+        w.AddressFinderConfig.debug = true;
+
+        this._initPlugin();
+      }
+    }]);
+
+    return BigcommercePlugin;
+  }();
+
+  var s = document.createElement('script');
+  s.src = 'https://api.addressfinder.io/assets/v3/widget.js';
+  s.async = 1;
+
+  s.onload = function () {
+    new BigcommercePlugin();
+  };
+
+  document.body.appendChild(s);
+})(document, window);
 
 /***/ })
 /******/ ]);
-});
+//# sourceMappingURL=bigcommerce-boot.js.map
