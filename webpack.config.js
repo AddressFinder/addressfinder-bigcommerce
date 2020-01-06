@@ -27,7 +27,7 @@ const config = {
 
 switch (process.env.NODE_ENV) {
   case "production":
-    config.output.filename = "boot-min.js";
+    config.output.filename = "boot.min.js";
     config.optimization = {
       minimizer: [
         new TerserPlugin({
