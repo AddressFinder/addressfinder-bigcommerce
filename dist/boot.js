@@ -3265,4 +3265,4 @@ function bigcommerce_plugin_createClass(Constructor, protoProps, staticProps) { 
 
 /***/ })
 /******/ ]);
-//# sourceMappingURL=bigcommerce-boot.js.map
+//# sourceMappingURL=boot.js.map

@@ -27,7 +27,7 @@ const config = {
 
 switch (process.env.NODE_ENV) {
   case "production":
-    config.output.filename = "bigcommerce-boot-min.js";
+    config.output.filename = "boot-min.js";
     config.optimization = {
       minimizer: [
         new TerserPlugin({
@@ -39,7 +39,7 @@ switch (process.env.NODE_ENV) {
     }
     break;
   default:
-    config.output.filename = "bigcommerce-boot.js";
+    config.output.filename = "boot.js";
     config.optimization = {
       minimizer: []
     }
