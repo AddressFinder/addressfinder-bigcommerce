@@ -1,3 +1,7 @@
+# AddressFinder 1.5.3 (January 7, 2020)
+* Add sourcemaps
+* Updated dependencies
+
 # AddressFinder 1.5.2 (October 15, 2019)
 * Differentiate between Bigcommerce version and webpage tools version
 

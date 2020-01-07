@@ -1,19 +1,19 @@
-const webpack = require("webpack");
+const TerserPlugin = require('terser-webpack-plugin');
 const pathLib = require("path");
 
 const config = {
   entry: [
     "./src/bigcommerce_plugin.js"
   ],
+  devtool: 'source-map',
   output: {
     path: pathLib.resolve(__dirname, "./dist"),
-    libraryTarget: 'umd'
   },
   module: {
     rules: [
       {
         test: /\.js$/,
-        exclude: /(node_modules|bower_components)/,
+        exclude: /(node_modules)/,
         use: {
           loader: 'babel-loader',
           options: {
@@ -27,16 +27,22 @@ const config = {
 
 switch (process.env.NODE_ENV) {
   case "production":
-    config.output.filename = "bigcommerce-v1-boot-min.js";
-    config.plugins = [
-      new webpack.optimize.UglifyJsPlugin({
-        compress: { warnings: false }
-      })
-    ]
+    config.output.filename = "boot.min.js";
+    config.optimization = {
+      minimizer: [
+        new TerserPlugin({
+          terserOptions: {
+            warnings: false
+          }
+        })
+      ]
+    }
     break;
   default:
-    config.output.filename = "bigcommerce-v1-boot.js";
-    config.plugins = [];
+    config.output.filename = "boot.js";
+    config.optimization = {
+      minimizer: []
+    }
 }
 
 module.exports = config;
