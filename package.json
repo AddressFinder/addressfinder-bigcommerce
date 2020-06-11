@@ -7,17 +7,17 @@
   "author": "@Abletech",
   "license": "GPL",
   "devDependencies": {
-    "@babel/cli": "^7.6.4",
-    "@babel/core": "^7.6.4",
-    "@babel/preset-env": "^7.6.3",
-    "babel-loader": "^8.0.6",
-    "terser-webpack-plugin": "^2.2.1",
-    "webpack": "^4.41.2",
-    "webpack-cli": "^3.3.9"
+    "@babel/cli": "^7.10.1",
+    "@babel/core": "^7.10.2",
+    "@babel/preset-env": "^7.10.2",
+    "babel-loader": "^8.1.0",
+    "terser-webpack-plugin": "^2.3.7",
+    "webpack": "^4.43.0",
+    "webpack-cli": "^3.3.11"
   },
   "dependencies": {
-    "@addressfinder/addressfinder-webpage-tools": "^1.8.1",
-    "core-js": "^2.5.0"
+    "@addressfinder/addressfinder-webpage-tools": "^1.8.2",
+    "core-js": "^2.6.11"
   },
   "scripts": {
     "watch": "webpack -w --config webpack.config.js",

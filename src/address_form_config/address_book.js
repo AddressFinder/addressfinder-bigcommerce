@@ -10,6 +10,7 @@ export default [
       countryValue: "New Zealand",
       elements: {
         address1: "#FormField_8",
+        address2: null,
         suburb: "#FormField_9",
         city: "#FormField_10",
         region: "#FormField_12",
@@ -38,6 +39,7 @@ export default [
       countryValue: "New Zealand",
       elements: {
         address1: "#FormField_8_input",
+        address2: null,
         suburb: "#FormField_9_input",
         city: "#FormField_10_input",
         region: "#FormField_12_input",
@@ -66,6 +68,7 @@ export default [
       countryValue: "New Zealand",
       elements: {
         address1: "#FormField_8_input",
+        address2: null,
         suburb: "#FormField_9_input",
         city: "#FormField_10_input",
         region: "#FormField_12_select",
