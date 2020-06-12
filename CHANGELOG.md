@@ -1,3 +1,6 @@
+# AddressFinder 1.5.4 (June 12, 2020)
+* Bug fix - prevent plugin reloading when suburb field is missing for NZ addresses
+
 # AddressFinder 1.5.3 (January 7, 2020)
 * Add sourcemaps
 * Updated dependencies
