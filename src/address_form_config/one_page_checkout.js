@@ -6,6 +6,9 @@ export default [
     layoutSelectors: ["#CheckoutStepBillingAddress"],
     countryIdentifier: '#FormField_11',
     searchIdentifier: "#FormField_8",
+    getCountryValue: function() {
+      return document.querySelector("#uniform-FormField_11 > span").textContent
+    },
     nz: {
       countryValue: "New Zealand",
       elements: {
@@ -35,6 +38,9 @@ export default [
     layoutSelectors: ["#CheckoutStepShippingAddress"],
     countryIdentifier: "#FormField_21",
     searchIdentifier: "#FormField_18",
+    getCountryValue: function() {
+      return document.querySelector("#uniform-FormField_11 > span").textContent
+    },
     nz: {
       countryValue: "New Zealand",
       elements: {

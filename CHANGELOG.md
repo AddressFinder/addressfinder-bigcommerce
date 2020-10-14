@@ -1,3 +1,6 @@
+# AddressFinder 1.5.5 (October 14, 2020)
+* Bug fix - prevent plugin reloading on Express Checkout
+
 # AddressFinder 1.5.4 (June 12, 2020)
 * Bug fix - prevent plugin reloading when suburb field is missing for NZ addresses
 

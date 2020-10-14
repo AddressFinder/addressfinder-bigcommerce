@@ -2203,7 +2203,7 @@ var FormManager = /*#__PURE__*/function () {
          */
         this.formHelperConfig.countryElement.addEventListener(this.countryChangeEventToListenFor, this.boundCountryChangedListener);
         this.boundCountryChangedListener();
-      } else if (this.widgetConfig.defaultCountry) {
+      } else {
         // Sometimes there is no countryElement (WooCommerce). Not calling the changeHandler means that the widget can remain enabled.
         this._setActiveCountry(this.widgetConfig.defaultCountry);
       }
@@ -2429,7 +2429,7 @@ function _objectEntries(obj) {
   return entries;
 }
 
-function _createForOfIteratorHelper(o) { if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (o = _unsupportedIterableToArray(o))) { var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e2) { throw _e2; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var it, normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e3) { didErr = true; err = _e3; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+function _createForOfIteratorHelper(o, allowArrayLike) { var it; if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e2) { throw _e2; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e3) { didErr = true; err = _e3; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
 
 function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
 
@@ -2460,9 +2460,11 @@ var page_manager_PageManager = /*#__PURE__*/function () {
 
     page_manager_classCallCheck(this, PageManager);
 
-    this.version = "1.8.2"; // Each formHelper is an instance of the FormManager class
+    this.version = "1.8.5"; // Each formHelper is an instance of the FormManager class
 
     this.formHelpers = []; // An object containing identifying information about an address form, such as the id values
+
+    this.countryElementWasPresent = false; // We want to keep a record of the county element ever being present, if it is detected and then disappears, we have to reload the widget
 
     this.addressFormConfigurations = addressFormConfigurations; // Configuration provided by the user, such as keys and widget options
 
@@ -2503,10 +2505,18 @@ var page_manager_PageManager = /*#__PURE__*/function () {
   }, {
     key: "_getCurrentCountryValue",
     value: function _getCurrentCountryValue(config) {
+      // If the user does not provide a country element, we set the current country value to the default
+      if (!config.countryElement) return this.widgetConfig.defaultCountry;
       var currentCountryCode = null;
       var countryCodes = ['nz', 'au'];
       countryCodes.forEach(function (countryCode) {
-        if (config.countryElement.value === config[countryCode].countryValue) {
+        var countryElementValue = config.countryElement.value;
+
+        if (!countryElementValue && config.getCountryValue) {
+          countryElementValue = config.getCountryValue();
+        }
+
+        if (countryElementValue === config[countryCode].countryValue) {
           currentCountryCode = countryCode;
         }
       });
@@ -2538,8 +2548,11 @@ var page_manager_PageManager = /*#__PURE__*/function () {
           return false;
         }
 
-        if (!document.body.contains(config.countryElement)) {
-          // if the country element is missing we must reload
+        if (config.countryElement != null && !document.body.contains(config.countryElement) && _this.countryElementWasPresent) {
+          /**
+           * if the country element is missing and was never present we must reload
+           * a null country element will give a false positive, so first we check that it is not null
+           */
           return false;
         }
 
@@ -2633,6 +2646,7 @@ var page_manager_PageManager = /*#__PURE__*/function () {
           searchElement: document.querySelector(addressFormConfig.searchIdentifier),
           label: addressFormConfig.label,
           layoutSelectors: addressFormConfig.layoutSelectors,
+          getCountryValue: addressFormConfig.getCountryValue,
           nz: {
             countryValue: addressFormConfig.nz.countryValue,
             elements: {
@@ -2656,10 +2670,15 @@ var page_manager_PageManager = /*#__PURE__*/function () {
               postcode: document.querySelector(addressFormConfig.au.elements.postcode)
             },
             stateMappings: addressFormConfig.au.stateMappings,
-            optionalElements: []
+            optionalElements: ['address_line_2']
           }
         };
-        this.identifiedFormHelperConfig.push(formHelperConfig);
+        this.identifiedFormHelperConfig.push(formHelperConfig); // if the country element is present, we set countryElementWasPresent to true
+
+        if (formHelperConfig.countryElement != null && document.body.contains(formHelperConfig.countryElement)) {
+          this.countryElementWasPresent = true;
+        }
+
         var helper = new FormManager(this.widgetConfig, formHelperConfig, this.formFieldChangeEventToDispatch, this.countryChangeEventToListenFor);
         this.formHelpers.push(helper);
       }
@@ -2925,6 +2944,9 @@ var addressfinder_webpage_tools = __webpack_require__(0);
   layoutSelectors: ["#CheckoutStepBillingAddress"],
   countryIdentifier: '#FormField_11',
   searchIdentifier: "#FormField_8",
+  getCountryValue: function getCountryValue() {
+    return document.querySelector("#uniform-FormField_11 > span").textContent;
+  },
   nz: {
     countryValue: "New Zealand",
     elements: {
@@ -2953,6 +2975,9 @@ var addressfinder_webpage_tools = __webpack_require__(0);
   layoutSelectors: ["#CheckoutStepShippingAddress"],
   countryIdentifier: "#FormField_21",
   searchIdentifier: "#FormField_18",
+  getCountryValue: function getCountryValue() {
+    return document.querySelector("#uniform-FormField_11 > span").textContent;
+  },
   nz: {
     countryValue: "New Zealand",
     elements: {
@@ -3208,7 +3233,7 @@ function bigcommerce_plugin_createClass(Constructor, protoProps, staticProps) { 
     function BigcommercePlugin() {
       bigcommerce_plugin_classCallCheck(this, BigcommercePlugin);
 
-      this.version = "1.5.4"; // Manages the mapping of the form configurations to the DOM.
+      this.version = "1.5.5"; // Manages the mapping of the form configurations to the DOM.
 
       this.PageManager = null; // Manages the form configuraions, and creates any dynamic forms
 
