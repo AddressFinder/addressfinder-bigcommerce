@@ -2937,102 +2937,9 @@ var addressfinder_webpage_tools = __webpack_require__(0);
   'VIC': 'Victoria',
   'WA': 'Western Australia'
 });
-// CONCATENATED MODULE: ./src/address_form_config/one_page_checkout.js
-
-/* harmony default export */ var one_page_checkout = ([{
-  label: "One-page checkout (Billing details)",
-  layoutSelectors: ["#CheckoutStepBillingAddress"],
-  countryIdentifier: '#FormField_11',
-  searchIdentifier: "#FormField_8",
-  getCountryValue: function getCountryValue() {
-    return document.querySelector("#uniform-FormField_11 > span").textContent;
-  },
-  nz: {
-    countryValue: "New Zealand",
-    elements: {
-      address1: '#FormField_8',
-      address2: null,
-      suburb: '#FormField_9',
-      city: '#FormField_10',
-      region: '#FormField_12',
-      postcode: '#FormField_13'
-    },
-    regionMappings: null
-  },
-  au: {
-    countryValue: "Australia",
-    elements: {
-      address1: '#FormField_8',
-      address2: '#FormField_9',
-      suburb: '#FormField_10',
-      state: '#FormField_12',
-      postcode: '#FormField_13'
-    },
-    stateMappings: default_state_mappings
-  }
-}, {
-  label: "One-page checkout (Shipping details)",
-  layoutSelectors: ["#CheckoutStepShippingAddress"],
-  countryIdentifier: "#FormField_21",
-  searchIdentifier: "#FormField_18",
-  getCountryValue: function getCountryValue() {
-    return document.querySelector("#uniform-FormField_11 > span").textContent;
-  },
-  nz: {
-    countryValue: "New Zealand",
-    elements: {
-      address1: '#FormField_18',
-      address2: null,
-      suburb: '#FormField_19',
-      city: '#FormField_20',
-      region: '#FormField_22',
-      postcode: '#FormField_23'
-    },
-    regionMappings: null
-  },
-  au: {
-    countryValue: "Australia",
-    elements: {
-      address1: '#FormField_18',
-      address2: '#FormField_19',
-      suburb: '#FormField_20',
-      state: '#FormField_22',
-      postcode: '#FormField_23'
-    },
-    stateMappings: default_state_mappings
-  }
-}]);
 // CONCATENATED MODULE: ./src/address_form_config/address_book.js
 
 /* harmony default export */ var address_book = ([{
-  label: "Address book (Blueprint)",
-  layoutSelectors: ["#AddressEditForm"],
-  countryIdentifier: "#FormField_11",
-  searchIdentifier: "#FormField_8",
-  nz: {
-    countryValue: "New Zealand",
-    elements: {
-      address1: "#FormField_8",
-      address2: null,
-      suburb: "#FormField_9",
-      city: "#FormField_10",
-      region: "#FormField_12",
-      postcode: "#FormField_13"
-    },
-    regionMappings: null
-  },
-  au: {
-    countryValue: "Australia",
-    elements: {
-      address1: "#FormField_8",
-      address2: "#FormField_9",
-      suburb: "#FormField_10",
-      state: "#FormField_12",
-      postcode: "#FormField_13"
-    },
-    stateMappings: default_state_mappings
-  }
-}, {
   label: "Address book (Stencil)",
   layoutSelectors: ["form[data-address-form]", "#FormField_12_input"],
   countryIdentifier: "#FormField_11_select",
@@ -3092,34 +2999,6 @@ var addressfinder_webpage_tools = __webpack_require__(0);
 // CONCATENATED MODULE: ./src/address_form_config/create_account.js
 
 /* harmony default export */ var create_account = ([{
-  label: "Create account (Blueprint)",
-  layoutSelectors: ["#CreateAccountForm"],
-  countryIdentifier: '#FormField_11',
-  searchIdentifier: "#FormField_8",
-  nz: {
-    countryValue: "New Zealand",
-    elements: {
-      address1: '#FormField_8',
-      address2: null,
-      suburb: '#FormField_9',
-      city: '#FormField_10',
-      region: '#FormField_12',
-      postcode: '#FormField_13'
-    },
-    regionMappings: null
-  },
-  au: {
-    countryValue: "Australia",
-    elements: {
-      address1: '#FormField_8',
-      address2: '#FormField_9',
-      suburb: '#FormField_10',
-      state: '#FormField_12',
-      postcode: '#FormField_13'
-    },
-    stateMappings: default_state_mappings
-  }
-}, {
   label: "Create account with Region/State input (Stencil)",
   layoutSelectors: ["form[data-create-account-form]", "#FormField_12_input"],
   countryIdentifier: '#FormField_11_select',
@@ -3199,7 +3078,6 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
 
 
-
 var config_manager_ConfigManager = /*#__PURE__*/function () {
   function ConfigManager() {
     _classCallCheck(this, ConfigManager);
@@ -3209,7 +3087,7 @@ var config_manager_ConfigManager = /*#__PURE__*/function () {
     key: "load",
     value: function load() {
       // This function is called when the page mutates and returns our form configurations
-      var addressFormConfigurations = [optimized_one_page_checkout].concat(_toConsumableArray(one_page_checkout), _toConsumableArray(address_book), _toConsumableArray(create_account));
+      var addressFormConfigurations = [optimized_one_page_checkout].concat(_toConsumableArray(address_book), _toConsumableArray(create_account));
       return addressFormConfigurations;
     }
   }]);
@@ -3233,7 +3111,7 @@ function bigcommerce_plugin_createClass(Constructor, protoProps, staticProps) { 
     function BigcommercePlugin() {
       bigcommerce_plugin_classCallCheck(this, BigcommercePlugin);
 
-      this.version = "1.5.5"; // Manages the mapping of the form configurations to the DOM.
+      this.version = "2.0.0"; // Manages the mapping of the form configurations to the DOM.
 
       this.PageManager = null; // Manages the form configuraions, and creates any dynamic forms
 

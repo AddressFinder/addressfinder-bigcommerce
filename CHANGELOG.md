@@ -1,3 +1,6 @@
+# AddressFinder 2.0.0 (November 18, 2020)
+* Drop support for Blueprint themes and Express Checkout
+
 # AddressFinder 1.5.5 (October 14, 2020)
 * Bug fix - prevent plugin reloading on Express Checkout
 
