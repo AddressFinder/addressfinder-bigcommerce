@@ -46,10 +46,15 @@ These instructions are compatible with themes from BigCommerce's new Stencil the
 
 If you are using a Blueprint theme you can find the alternate setup instructions on the [AddressFinder website](https://addressfinder.nz/docs/bigcommerce_instructions_for_other_themes/)
 
-1.  Log into the control panel for your site, and navigate to Advanced Settings > Web Analytics.
-2.  Click 'Google Analytics' in the Providers panel and save your changes.
-3.  Click on the 'Google Analytics' tab that appears beside the 'General Settings Tab'
-4.  Copy and paste the following javascript snippet into the 'Tracking Code' box
+1. Open the BigCommerce Admin Dashboard
+2. Click Settings in the sidebar
+3. Scroll down to the Advanced section
+4. Click Data solutions
+5. Select 'Site Verification Tags' and click Connect
+
+![image](https://user-images.githubusercontent.com/100241767/205749716-7083dedb-56d2-42e2-9ccc-8fa86e9f5ea0.png)
+
+6. Copy and paste the following javascript snippet into the input field.
 
         <script>
         (function(d,w){
@@ -66,7 +71,10 @@ If you are using a Blueprint theme you can find the alternate setup instructions
         })(document, window);
         </script>
 
-6. Replace the `ADDRESSFINDER_DEMO_KEY` placeholder in the snippet you added in the previous step with your own AddressFinder key and save.
+![image](https://user-images.githubusercontent.com/100241767/205750203-32b4d7d2-fdd3-4ab7-af45-2bee1f9d723b.png)
+
+7. Replace the ADDRESSFINDER_DEMO_KEY in the snippet with your account key and click Connect.
+8. Test on your website. The autocomplete service should now be working on the checkout and create account pages.
 
 #### Obtaining a licence key
 
