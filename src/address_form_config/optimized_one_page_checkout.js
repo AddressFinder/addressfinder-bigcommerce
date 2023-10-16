@@ -10,7 +10,7 @@ export default {
       address2: null,
       suburb: '#addressLine2Input',
       city: '#cityInput',
-      region: '#provinceInput',
+      region: '#provinceCodeInput',
       postcode: '#postCodeInput'
     },
     regionMappings: null
