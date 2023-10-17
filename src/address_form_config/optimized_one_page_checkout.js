@@ -1,3 +1,5 @@
+import defaultRegionMappingsToCodes from './default_region_mappings_to_codes'
+
 export default {
   label: "Optimized one-page checkout (Early access)",
   layoutSelectors: ["#addressLine1Input"],
@@ -13,7 +15,7 @@ export default {
       region: '#provinceCodeInput',
       postcode: '#postCodeInput'
     },
-    regionMappings: null
+    regionMappings: defaultRegionMappingsToCodes
   },
   au: {
     countryValue: "AU",
