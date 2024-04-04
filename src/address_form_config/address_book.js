@@ -4,7 +4,7 @@ import defaultStateMappings from './default_state_mappings'
 export default [
   {
     label: "Address book (Stencil)",
-    layoutSelectors: ["#FormField_12"],
+    layoutSelectors: ["form[data-address-form]",  "#FormField_12"],
     countryIdentifier: "#FormField_11",
     searchIdentifier: "#FormField_8",
     nz: {
@@ -33,7 +33,7 @@ export default [
   },
   {
     label: "Address book - Edit Address (Stencil)",
-    layoutSelectors: ["#FormField_12"],
+    layoutSelectors: ["form[data-address-form]", "#FormField_12"],
     countryIdentifier: "#FormField_11",
     searchIdentifier: "#FormField_8",
     nz: {
