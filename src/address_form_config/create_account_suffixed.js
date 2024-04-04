@@ -3,7 +3,7 @@ import defaultStateMappings from './default_state_mappings'
 
 export default [
   {
-    label: "Create account with Region/State input v2 (Stencil)",
+    label: "Create account with Region/State input suffixed (Stencil)",
     layoutSelectors: ["form[data-create-account-form]", "#FormField_12_select"],
     countryIdentifier: "#FormField_11_select",
     searchIdentifier: "#FormField_8_input",

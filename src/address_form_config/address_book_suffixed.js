@@ -3,7 +3,7 @@ import defaultStateMappings from './default_state_mappings'
 
 export default [
   {
-    label: "Address book v2 (Stencil)",
+    label: "Address book suffixed (Stencil)",
     layoutSelectors: ["form[data-address-form]", "#FormField_12_select"],
     countryIdentifier: "#FormField_11_select",
     searchIdentifier: "#FormField_8_input",
@@ -32,7 +32,7 @@ export default [
     }
   },
   {
-    label: "Address book - Edit Address v2 (Stencil)",
+    label: "Address book - Edit Address suffixed (Stencil)",
     layoutSelectors: ["form[data-address-form]", "#FormField_12_select"],
     countryIdentifier: "#FormField_11_select",
     searchIdentifier: "#FormField_8_input",
