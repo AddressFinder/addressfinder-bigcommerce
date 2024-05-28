@@ -4,7 +4,7 @@ export default {
   "Canterbury Region": "CAN",
   "Gisborne Region": "GIS",
   "Hawke's Bay Region": "HKB",
-  "Manawatu-Wanganui Region": "MWT",
+  "Manawatū-Whanganui Region": "MWT",
   "Marlborough Region": "MBH",
   "Nelson Region": "NSN",
   "Northland Region": "NTL",

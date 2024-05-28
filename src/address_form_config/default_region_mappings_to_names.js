@@ -4,7 +4,7 @@ export default {
   "Canterbury Region": "Canterbury",
   "Gisborne Region": "Gisbourne",
   "Hawke's Bay Region": "Hawke's Bay",
-  "Manawatu-Wanganui Region": "Manawatū-Whanganui",
+  "Manawatū-Whanganui Region": "Manawatū-Whanganui",
   "Marlborough Region": "MBMarlboroughH",
   "Nelson Region": "Nelson",
   "Northland Region": "Northland",
