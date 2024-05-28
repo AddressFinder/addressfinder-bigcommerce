@@ -2186,10 +2186,13 @@ var FormManager = /*#__PURE__*/function () {
       this.widgets["nz"] = nzWidget;
       var auWidget = new window.AddressFinder.Widget(this.formHelperConfig.searchElement, this.widgetConfig.auKey, "au", this.widgetConfig.auWidgetOptions);
       auWidget.on("result:select", this._auAddressSelected.bind(this));
-      this.widgets["au"] = auWidget;
-      var intWidget = new window.AddressFinder.Widget(this.formHelperConfig.searchElement, this.widgetConfig.auKey, "us", {});
-      intWidget.on("result:select", this._intAddressSelected.bind(this));
-      this.widgets["int"] = intWidget;
+      this.widgets["au"] = auWidget; // Prevents the widget from throwing errors if the activeCountry is not 'nz' or 'au'
+
+      this.widgets["null"] = {
+        enable: function enable() {},
+        disable: function disable() {},
+        destroy: function destroy() {}
+      };
       this.boundCountryChangedListener = this._countryChanged.bind(this); // save this so we can unbind in the destroy() method
 
       if (this.formHelperConfig.countryElement) {
@@ -2220,13 +2223,8 @@ var FormManager = /*#__PURE__*/function () {
           activeCountry = "au";
           break;
 
-        case "":
-        case null:
-          activeCountry = "null";
-          break;
-
         default:
-          activeCountry = this.formHelperConfig["int"].countryValue[this.formHelperConfig.countryElement.value] || "null";
+          activeCountry = "null";
       }
 
       this._setActiveCountry(activeCountry);
@@ -2240,16 +2238,7 @@ var FormManager = /*#__PURE__*/function () {
         return widget.disable();
       });
 
-      if (countryCode == "null") {
-        return;
-      }
-
-      if (["nz", "au"].includes(countryCode)) {
-        this.widgets[countryCode].enable();
-      } else {
-        this.widgets["int"].enable();
-        this.widgets["int"].setCountry(countryCode);
-      }
+      this.widgets[countryCode].enable();
     }
   }, {
     key: "_combineAddressElements",
@@ -2341,38 +2330,6 @@ var FormManager = /*#__PURE__*/function () {
         this._setElementValue(elements.state_territory, translatedStateValue, "state_territory");
       } else {
         this._setElementValue(elements.state_territory, metaData.state_territory, "state_territory");
-      }
-    }
-  }, {
-    key: "_intAddressSelected",
-    value: function _intAddressSelected(fullAddress, metaData) {
-      var elements = this.formHelperConfig["int"].elements;
-
-      if (!elements.address_line_2) {
-        // If we only have address_line_1, put both address 1 and 2 into this line
-        var combined = this._combineAddressElements([metaData.address.address_line_1, metaData.address.address_line_2]);
-
-        this._setElementValue(elements.address_line_1, combined, "address_line_1");
-      } else {
-        this._setElementValue(elements.address_line_1, metaData.address.address_line_1, "address_line_1"); // metaData.address_line_2 could be undefined, in which case we replace it with an empty string
-
-
-        var address_line_2 = metaData.address.address_line_2 || "";
-
-        this._setElementValue(elements.address_line_2, address_line_2, "address_line_2");
-      }
-
-      this._setElementValue(elements.locality_name, metaData.address.city, "suburb");
-
-      this._setElementValue(elements.postcode, metaData.address.postcode, "postcode");
-
-      if (this.formHelperConfig["int"].stateMappings && this.formHelperConfig["int"].stateMappings[metaData.address.country_code]) {
-        // matches the state returned by the api with the state values in the select field
-        var translatedStateValue = this.formHelperConfig["int"].stateMappings[metaData.address.country_code][metaData.address.state];
-
-        this._setElementValue(elements.state_territory, translatedStateValue, "state_territory");
-      } else {
-        this._setElementValue(elements.state_territory, metaData.address.state, "state_territory");
       }
     }
   }, {
@@ -2503,7 +2460,7 @@ var page_manager_PageManager = /*#__PURE__*/function () {
 
     page_manager_classCallCheck(this, PageManager);
 
-    this.version = "2.0.0"; // Each formHelper is an instance of the FormManager class
+    this.version = "1.8.6"; // Each formHelper is an instance of the FormManager class
 
     this.formHelpers = []; // An object containing identifying information about an address form, such as the id values
 
@@ -2525,7 +2482,7 @@ var page_manager_PageManager = /*#__PURE__*/function () {
   page_manager_createClass(PageManager, [{
     key: "reload",
     value: function reload(addressFormConfigurations) {
-      if (!this._areAllElementsStillInTheDOM() || this._newFormsIdentified(addressFormConfigurations)) {
+      if (!this._areAllElementsStillInTheDOM()) {
         this.identifiedFormHelperConfig = [];
         this.addressFormConfigurations = addressFormConfigurations;
         this.loadFormHelpers();
@@ -2551,7 +2508,7 @@ var page_manager_PageManager = /*#__PURE__*/function () {
       // If the user does not provide a country element, we set the current country value to the default
       if (!config.countryElement) return this.widgetConfig.defaultCountry;
       var currentCountryCode = null;
-      var countryCodes = ['nz', 'au', 'int'];
+      var countryCodes = ['nz', 'au'];
       countryCodes.forEach(function (countryCode) {
         var countryElementValue = config.countryElement.value;
 
@@ -2559,14 +2516,8 @@ var page_manager_PageManager = /*#__PURE__*/function () {
           countryElementValue = config.getCountryValue();
         }
 
-        if (countryCode == 'int') {
-          if (config[countryCode].countryValue[countryElementValue]) {
-            currentCountryCode = config[countryCode].countryValue[countryElementValue];
-          }
-        } else {
-          if (countryElementValue === config[countryCode].countryValue) {
-            currentCountryCode = countryCode;
-          }
+        if (countryElementValue === config[countryCode].countryValue) {
+          currentCountryCode = countryCode;
         }
       });
       return currentCountryCode;
@@ -2605,13 +2556,7 @@ var page_manager_PageManager = /*#__PURE__*/function () {
           return false;
         }
 
-        var currentCountryCode = _this._getCurrentCountryValue(config); // currentCountryCode will be null for non supported countries.
-        // return true to avoid continuously reloading the widget, which otherwise would be looking for elements associated with a null currentCountryCode.
-
-
-        if (currentCountryCode == null) {
-          return true;
-        }
+        var currentCountryCode = _this._getCurrentCountryValue(config);
 
         if (!_this._areAllElementsStillInTheDOMForCountryCode(config, currentCountryCode)) {
           // if the dom doesn't contain all the elements associated with the current country we must reload
@@ -2626,31 +2571,17 @@ var page_manager_PageManager = /*#__PURE__*/function () {
     value: function _ignoreOptionalNullElements(config, countryCode) {
       var filteredElements = {};
 
-      if (['au', 'nz'].includes(countryCode)) {
-        _objectEntries(config[countryCode].elements).forEach(function (_ref2) {
-          var _ref3 = _slicedToArray(_ref2, 2),
-              key = _ref3[0],
-              element = _ref3[1];
+      _objectEntries(config[countryCode].elements).forEach(function (_ref2) {
+        var _ref3 = _slicedToArray(_ref2, 2),
+            key = _ref3[0],
+            element = _ref3[1];
 
-          // Some forms don't have the address_line_2 or suburb fields.
-          // We allow these fields to be missing without reloading the widget
-          if (!(config[countryCode].optionalElements.includes(key) && element === null)) {
-            filteredElements[key] = element;
-          }
-        });
-      } else {
-        _objectEntries(config['int'].elements).forEach(function (_ref4) {
-          var _ref5 = _slicedToArray(_ref4, 2),
-              key = _ref5[0],
-              element = _ref5[1];
-
-          // Some forms don't have the address_line_2 or suburb fields.
-          // We allow these fields to be missing without reloading the widget
-          if (!(config['int'].optionalElements[countryCode].includes(key) && element === null)) {
-            filteredElements[key] = element;
-          }
-        });
-      }
+        // Some forms don't have the address_line_2 or suburb fields.
+        // We allow these fields to be missing without reloading the widget
+        if (!(config[countryCode].optionalElements.includes(key) && element === null)) {
+          filteredElements[key] = element;
+        }
+      });
 
       return filteredElements;
     }
@@ -2702,38 +2633,6 @@ var page_manager_PageManager = /*#__PURE__*/function () {
       } finally {
         _iterator.f();
       }
-    } // Checks if additional forms have been identified since last 'reload'.
-
-  }, {
-    key: "_newFormsIdentified",
-    value: function _newFormsIdentified(addressFormConfigurations) {
-      var identifiedForms = [];
-
-      var _iterator2 = _createForOfIteratorHelper(addressFormConfigurations),
-          _step2;
-
-      try {
-        for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
-          var addressFormConfig = _step2.value;
-
-          if (this._identifyingElementsPresentAndVisible(addressFormConfig)) {
-            identifiedForms.push(addressFormConfig);
-          }
-        } // returns true if additional forms have been identified.
-        // this will trigger a full reload of all the widgets for each form.
-
-      } catch (err) {
-        _iterator2.e(err);
-      } finally {
-        _iterator2.f();
-      }
-
-      if (identifiedForms.length > this.identifiedAddressFormConfigurations.length) {
-        this.log("Identified addtional forms");
-        return true;
-      }
-
-      return false;
     } // For each configuration, create a formHelperConfig. This maps our form configurations to the corresponding DOM elements.
 
   }, {
@@ -2772,18 +2671,6 @@ var page_manager_PageManager = /*#__PURE__*/function () {
             },
             stateMappings: addressFormConfig.au.stateMappings,
             optionalElements: ['address_line_2']
-          },
-          "int": {
-            countryValue: addressFormConfig["int"].countryValue,
-            elements: {
-              address_line_1: document.querySelector(addressFormConfig["int"].elements.address1),
-              address_line_2: document.querySelector(addressFormConfig["int"].elements.address2),
-              locality_name: document.querySelector(addressFormConfig["int"].elements.suburb),
-              state_territory: document.querySelector(addressFormConfig["int"].elements.state),
-              postcode: document.querySelector(addressFormConfig["int"].elements.postcode)
-            },
-            stateMappings: addressFormConfig["int"].stateMappings,
-            optionalElements: addressFormConfig["int"].optionalElements
           }
         };
         this.identifiedFormHelperConfig.push(formHelperConfig); // if the country element is present, we set countryElementWasPresent to true
@@ -2937,7 +2824,7 @@ var MutationManager = /*#__PURE__*/function () {
      * If the store continously triggers mutations the mutationEventHandler will never be called. If it is reset 20 times in a row,
      * the page is considered to be mutating excessively. In this case we initialise AddressFinder, and in debug mode we warn the user
      * that excessive mutations may stop AddressFinder from working.
-     *
+     * 
      */
 
   }, {
