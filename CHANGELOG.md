@@ -1,3 +1,6 @@
+# AddressFinder 2.0.1 (May 29, 2024)
+* Update the NZ region mapping and added support for different theme types
+
 # AddressFinder 2.0.0 (November 18, 2020)
 * Drop support for Blueprint themes and Express Checkout
 
