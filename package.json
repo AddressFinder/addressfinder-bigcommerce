@@ -1,6 +1,6 @@
 {
   "name": "addressfinder-bigcommerce",
-  "version": "2.0.1",
+  "version": "2.1.0",
   "description": "An address verification tool for BigCommerce stores serving New Zealand and Australian customers",
   "main": "src/index.js",
   "repository": "git@github.com:AbleTech/addressfinder-bigcommerce.git",
@@ -16,7 +16,7 @@
     "webpack-cli": "^3.3.11"
   },
   "dependencies": {
-    "@addressfinder/addressfinder-webpage-tools": "^1.8.6",
+    "@addressfinder/addressfinder-webpage-tools": "^2.0.0",
     "core-js": "^2.6.11"
   },
   "scripts": {

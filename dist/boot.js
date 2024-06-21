@@ -2186,13 +2186,10 @@ var FormManager = /*#__PURE__*/function () {
       this.widgets["nz"] = nzWidget;
       var auWidget = new window.AddressFinder.Widget(this.formHelperConfig.searchElement, this.widgetConfig.auKey, "au", this.widgetConfig.auWidgetOptions);
       auWidget.on("result:select", this._auAddressSelected.bind(this));
-      this.widgets["au"] = auWidget; // Prevents the widget from throwing errors if the activeCountry is not 'nz' or 'au'
-
-      this.widgets["null"] = {
-        enable: function enable() {},
-        disable: function disable() {},
-        destroy: function destroy() {}
-      };
+      this.widgets["au"] = auWidget;
+      var intWidget = new window.AddressFinder.Widget(this.formHelperConfig.searchElement, this.widgetConfig.auKey, "us", {});
+      intWidget.on("result:select", this._intAddressSelected.bind(this));
+      this.widgets["int"] = intWidget;
       this.boundCountryChangedListener = this._countryChanged.bind(this); // save this so we can unbind in the destroy() method
 
       if (this.formHelperConfig.countryElement) {
@@ -2223,8 +2220,13 @@ var FormManager = /*#__PURE__*/function () {
           activeCountry = "au";
           break;
 
-        default:
+        case "":
+        case null:
           activeCountry = "null";
+          break;
+
+        default:
+          activeCountry = this.formHelperConfig["int"].countryValue[this.formHelperConfig.countryElement.value] || "null";
       }
 
       this._setActiveCountry(activeCountry);
@@ -2238,7 +2240,16 @@ var FormManager = /*#__PURE__*/function () {
         return widget.disable();
       });
 
-      this.widgets[countryCode].enable();
+      if (countryCode == "null") {
+        return;
+      }
+
+      if (["nz", "au"].includes(countryCode)) {
+        this.widgets[countryCode].enable();
+      } else {
+        this.widgets["int"].enable();
+        this.widgets["int"].setCountry(countryCode);
+      }
     }
   }, {
     key: "_combineAddressElements",
@@ -2330,6 +2341,38 @@ var FormManager = /*#__PURE__*/function () {
         this._setElementValue(elements.state_territory, translatedStateValue, "state_territory");
       } else {
         this._setElementValue(elements.state_territory, metaData.state_territory, "state_territory");
+      }
+    }
+  }, {
+    key: "_intAddressSelected",
+    value: function _intAddressSelected(fullAddress, metaData) {
+      var elements = this.formHelperConfig["int"].elements;
+
+      if (!elements.address_line_2) {
+        // If we only have address_line_1, put both address 1 and 2 into this line
+        var combined = this._combineAddressElements([metaData.address.address_line_1, metaData.address.address_line_2]);
+
+        this._setElementValue(elements.address_line_1, combined, "address_line_1");
+      } else {
+        this._setElementValue(elements.address_line_1, metaData.address.address_line_1, "address_line_1"); // metaData.address_line_2 could be undefined, in which case we replace it with an empty string
+
+
+        var address_line_2 = metaData.address.address_line_2 || "";
+
+        this._setElementValue(elements.address_line_2, address_line_2, "address_line_2");
+      }
+
+      this._setElementValue(elements.locality_name, metaData.address.city, "suburb");
+
+      this._setElementValue(elements.postcode, metaData.address.postcode, "postcode");
+
+      if (this.formHelperConfig["int"].stateMappings && this.formHelperConfig["int"].stateMappings[metaData.address.country_code]) {
+        // matches the state returned by the api with the state values in the select field
+        var translatedStateValue = this.formHelperConfig["int"].stateMappings[metaData.address.country_code][metaData.address.state];
+
+        this._setElementValue(elements.state_territory, translatedStateValue, "state_territory");
+      } else {
+        this._setElementValue(elements.state_territory, metaData.address.state, "state_territory");
       }
     }
   }, {
@@ -2460,7 +2503,7 @@ var page_manager_PageManager = /*#__PURE__*/function () {
 
     page_manager_classCallCheck(this, PageManager);
 
-    this.version = "1.8.6"; // Each formHelper is an instance of the FormManager class
+    this.version = "2.0.0"; // Each formHelper is an instance of the FormManager class
 
     this.formHelpers = []; // An object containing identifying information about an address form, such as the id values
 
@@ -2482,7 +2525,7 @@ var page_manager_PageManager = /*#__PURE__*/function () {
   page_manager_createClass(PageManager, [{
     key: "reload",
     value: function reload(addressFormConfigurations) {
-      if (!this._areAllElementsStillInTheDOM()) {
+      if (!this._areAllElementsStillInTheDOM() || this._newFormsIdentified(addressFormConfigurations)) {
         this.identifiedFormHelperConfig = [];
         this.addressFormConfigurations = addressFormConfigurations;
         this.loadFormHelpers();
@@ -2508,7 +2551,7 @@ var page_manager_PageManager = /*#__PURE__*/function () {
       // If the user does not provide a country element, we set the current country value to the default
       if (!config.countryElement) return this.widgetConfig.defaultCountry;
       var currentCountryCode = null;
-      var countryCodes = ['nz', 'au'];
+      var countryCodes = ['nz', 'au', 'int'];
       countryCodes.forEach(function (countryCode) {
         var countryElementValue = config.countryElement.value;
 
@@ -2516,8 +2559,14 @@ var page_manager_PageManager = /*#__PURE__*/function () {
           countryElementValue = config.getCountryValue();
         }
 
-        if (countryElementValue === config[countryCode].countryValue) {
-          currentCountryCode = countryCode;
+        if (countryCode == 'int') {
+          if (config[countryCode].countryValue[countryElementValue]) {
+            currentCountryCode = config[countryCode].countryValue[countryElementValue];
+          }
+        } else {
+          if (countryElementValue === config[countryCode].countryValue) {
+            currentCountryCode = countryCode;
+          }
         }
       });
       return currentCountryCode;
@@ -2556,7 +2605,13 @@ var page_manager_PageManager = /*#__PURE__*/function () {
           return false;
         }
 
-        var currentCountryCode = _this._getCurrentCountryValue(config);
+        var currentCountryCode = _this._getCurrentCountryValue(config); // currentCountryCode will be null for non supported countries.
+        // return true to avoid continuously reloading the widget, which otherwise would be looking for elements associated with a null currentCountryCode.
+
+
+        if (currentCountryCode == null) {
+          return true;
+        }
 
         if (!_this._areAllElementsStillInTheDOMForCountryCode(config, currentCountryCode)) {
           // if the dom doesn't contain all the elements associated with the current country we must reload
@@ -2571,17 +2626,31 @@ var page_manager_PageManager = /*#__PURE__*/function () {
     value: function _ignoreOptionalNullElements(config, countryCode) {
       var filteredElements = {};
 
-      _objectEntries(config[countryCode].elements).forEach(function (_ref2) {
-        var _ref3 = _slicedToArray(_ref2, 2),
-            key = _ref3[0],
-            element = _ref3[1];
+      if (['au', 'nz'].includes(countryCode)) {
+        _objectEntries(config[countryCode].elements).forEach(function (_ref2) {
+          var _ref3 = _slicedToArray(_ref2, 2),
+              key = _ref3[0],
+              element = _ref3[1];
 
-        // Some forms don't have the address_line_2 or suburb fields.
-        // We allow these fields to be missing without reloading the widget
-        if (!(config[countryCode].optionalElements.includes(key) && element === null)) {
-          filteredElements[key] = element;
-        }
-      });
+          // Some forms don't have the address_line_2 or suburb fields.
+          // We allow these fields to be missing without reloading the widget
+          if (!(config[countryCode].optionalElements.includes(key) && element === null)) {
+            filteredElements[key] = element;
+          }
+        });
+      } else {
+        _objectEntries(config['int'].elements).forEach(function (_ref4) {
+          var _ref5 = _slicedToArray(_ref4, 2),
+              key = _ref5[0],
+              element = _ref5[1];
+
+          // Some forms don't have the address_line_2 or suburb fields.
+          // We allow these fields to be missing without reloading the widget
+          if (!(config['int'].optionalElements[countryCode].includes(key) && element === null)) {
+            filteredElements[key] = element;
+          }
+        });
+      }
 
       return filteredElements;
     }
@@ -2633,6 +2702,38 @@ var page_manager_PageManager = /*#__PURE__*/function () {
       } finally {
         _iterator.f();
       }
+    } // Checks if additional forms have been identified since last 'reload'.
+
+  }, {
+    key: "_newFormsIdentified",
+    value: function _newFormsIdentified(addressFormConfigurations) {
+      var identifiedForms = [];
+
+      var _iterator2 = _createForOfIteratorHelper(addressFormConfigurations),
+          _step2;
+
+      try {
+        for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
+          var addressFormConfig = _step2.value;
+
+          if (this._identifyingElementsPresentAndVisible(addressFormConfig)) {
+            identifiedForms.push(addressFormConfig);
+          }
+        } // returns true if additional forms have been identified.
+        // this will trigger a full reload of all the widgets for each form.
+
+      } catch (err) {
+        _iterator2.e(err);
+      } finally {
+        _iterator2.f();
+      }
+
+      if (identifiedForms.length > this.identifiedAddressFormConfigurations.length) {
+        this.log("Identified addtional forms");
+        return true;
+      }
+
+      return false;
     } // For each configuration, create a formHelperConfig. This maps our form configurations to the corresponding DOM elements.
 
   }, {
@@ -2671,6 +2772,18 @@ var page_manager_PageManager = /*#__PURE__*/function () {
             },
             stateMappings: addressFormConfig.au.stateMappings,
             optionalElements: ['address_line_2']
+          },
+          "int": {
+            countryValue: addressFormConfig["int"].countryValue,
+            elements: {
+              address_line_1: document.querySelector(addressFormConfig["int"].elements.address1),
+              address_line_2: document.querySelector(addressFormConfig["int"].elements.address2),
+              locality_name: document.querySelector(addressFormConfig["int"].elements.suburb),
+              state_territory: document.querySelector(addressFormConfig["int"].elements.state),
+              postcode: document.querySelector(addressFormConfig["int"].elements.postcode)
+            },
+            stateMappings: addressFormConfig["int"].stateMappings,
+            optionalElements: addressFormConfig["int"].optionalElements
           }
         };
         this.identifiedFormHelperConfig.push(formHelperConfig); // if the country element is present, we set countryElementWasPresent to true
@@ -2824,7 +2937,7 @@ var MutationManager = /*#__PURE__*/function () {
      * If the store continously triggers mutations the mutationEventHandler will never be called. If it is reset 20 times in a row,
      * the page is considered to be mutating excessively. In this case we initialise AddressFinder, and in debug mode we warn the user
      * that excessive mutations may stop AddressFinder from working.
-     * 
+     *
      */
 
   }, {
@@ -2917,7 +3030,64 @@ var addressfinder_webpage_tools = __webpack_require__(0);
   "Area Outside Region": "CIT",
   "No Region": "CIT"
 });
+// CONCATENATED MODULE: ./src/address_form_config/international_state_mappings_to_codes.js
+var _ES;
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+/* harmony default export */ var international_state_mappings_to_codes = ({
+  'ES': (_ES = {
+    "A Coruña": "C",
+    "Alacant*": "A",
+    "Albacete": "AB",
+    "Almería": "AL",
+    "Andalucía": "AN",
+    "Araba*": "VI",
+    "Aragón": "AR",
+    "Asturias": "O",
+    "Principado de Asturias": "AS",
+    "Badajoz": "BA",
+    "Barcelona": "B",
+    "Bizkaia": "BI",
+    "Burgos": "BU",
+    "Canarias": "CN",
+    "Cantabria": "S"
+  }, _defineProperty(_ES, "Cantabria", "CB"), _defineProperty(_ES, "Castelló*", "CS"), _defineProperty(_ES, "Castilla y León", "CL"), _defineProperty(_ES, "Castilla-La Mancha", "CM"), _defineProperty(_ES, "Catalunya", "CT"), _defineProperty(_ES, "Ceuta", "CE"), _defineProperty(_ES, "Ciudad Real", "CR"), _defineProperty(_ES, "Cuenca", "CU"), _defineProperty(_ES, "Cáceres", "CC"), _defineProperty(_ES, "Cádiz", "CA"), _defineProperty(_ES, "Córdoba", "CO"), _defineProperty(_ES, "Euskal Herria", "PV"), _defineProperty(_ES, "Extremadura", "EX"), _defineProperty(_ES, "Galicia", "GA"), _defineProperty(_ES, "Gipuzkoa", "SS"), _defineProperty(_ES, "Girona", "GI"), _defineProperty(_ES, "Granada", "GR"), _defineProperty(_ES, "Guadalajara", "GU"), _defineProperty(_ES, "Huelva", "H"), _defineProperty(_ES, "Huesca", "HU"), _defineProperty(_ES, "Illes Balears", "PM"), _defineProperty(_ES, "Illes Balears", "IB"), _defineProperty(_ES, "Jaén", "J"), _defineProperty(_ES, "La Rioja", "LO"), _defineProperty(_ES, "La Rioja", "RI"), _defineProperty(_ES, "Las Palmas", "GC"), _defineProperty(_ES, "León", "LE"), _defineProperty(_ES, "Lleida", "L"), _defineProperty(_ES, "Lugo", "LU"), _defineProperty(_ES, "Madrid", "M"), _defineProperty(_ES, "Comunidad de Madrid", "MD"), _defineProperty(_ES, "Melilla", "ML"), _defineProperty(_ES, "Murcia", "MU"), _defineProperty(_ES, "Región de Murcia", "MC"), _defineProperty(_ES, "Málaga", "MA"), _defineProperty(_ES, "Nafarroa*", "NA"), _defineProperty(_ES, "Nafarroako Foru Komunitatea*", "NC"), _defineProperty(_ES, "Ourense", "OR"), _defineProperty(_ES, "Palencia", "P"), _defineProperty(_ES, "Pontevedra", "PO"), _defineProperty(_ES, "Salamanca", "SA"), _defineProperty(_ES, "Santa Cruz de Tenerife", "TF"), _defineProperty(_ES, "Segovia", "SG"), _defineProperty(_ES, "Sevilla", "SE"), _defineProperty(_ES, "Soria", "SO"), _defineProperty(_ES, "Tarragona", "T"), _defineProperty(_ES, "Teruel", "TE"), _defineProperty(_ES, "Toledo", "TO"), _defineProperty(_ES, "Valencia", "V"), _defineProperty(_ES, "Comunidad Valenciana", "V"), _defineProperty(_ES, "Valladolid", "VA"), _defineProperty(_ES, "Zamora", "ZA"), _defineProperty(_ES, "Zargoza", "Z"), _defineProperty(_ES, "Ávila", "AV"), _ES),
+  'IE': {
+    "County Cavan": "CN",
+    "County Clare": "CE",
+    "County Westmeath": "WH",
+    "County Longford": "LD",
+    "County Munster": "M",
+    "County Meath": "MH",
+    "County Dublin": "D",
+    "County Carlow": "CW",
+    "County Kerry": "KY",
+    "County Kilkenny": "KK",
+    "County Kildare": "KE",
+    "County Wicklow": "WW",
+    "County Connaught": "C",
+    "County Cork": "CO",
+    "County Donegal": "DL",
+    "County Galway": "G",
+    "County Leinster": "L",
+    "County Laois": "LS",
+    "County Leitrim": "LM",
+    "County Limerick": "LK",
+    "County Wexford": "WX",
+    "County Louth": "LH",
+    "County Mayo": "MO",
+    "County Monaghan": "MN",
+    "County Offaly": "OY",
+    "County Waterford": "WD",
+    "County Roscommon": "RN",
+    "County Sligo": "SO",
+    "County Tipperary": "TA",
+    "County Ulster": "U"
+  }
+});
 // CONCATENATED MODULE: ./src/address_form_config/optimized_one_page_checkout.js
+
 
 /* harmony default export */ var optimized_one_page_checkout = ({
   label: "Optimized one-page checkout (Early access)",
@@ -2946,6 +3116,48 @@ var addressfinder_webpage_tools = __webpack_require__(0);
       postcode: '#postCodeInput'
     },
     stateMappings: null
+  },
+  "int": {
+    countryValue: {
+      'BE': 'be',
+      'CA': 'ca',
+      'CZ': 'cz',
+      'DE': 'de',
+      'FR': 'fr',
+      'DK': 'dk',
+      'IE': 'ie',
+      'NL': 'nl',
+      'PT': 'pt',
+      'SG': 'sg',
+      'ES': 'es',
+      'SE': 'se',
+      'GB': 'gb',
+      'US': 'us'
+    },
+    elements: {
+      address1: '#addressLine1Input',
+      address2: '#addressLine2Input',
+      suburb: '#cityInput',
+      state: '#provinceCodeInput',
+      postcode: '#postCodeInput'
+    },
+    stateMappings: international_state_mappings_to_codes,
+    optionalElements: {
+      'be': ['address_line_2', 'state_territory'],
+      'ca': ['address_line_2'],
+      'cz': ['address_line_2', 'state_territory'],
+      'de': ['address_line_2'],
+      'fr': ['address_line_2', 'state_territory'],
+      'dk': ['address_line_2', 'state_territory'],
+      'ie': ['address_line_2'],
+      'nl': ['address_line_2', 'state_territory'],
+      'pt': ['address_line_2', 'state_territory'],
+      'sg': ['address_line_2', 'state_territory'],
+      'es': ['address_line_2'],
+      'se': ['address_line_2', 'state_territory'],
+      'gb': ['address_line_2', 'state_territory'],
+      'us': ['address_line_2']
+    }
   }
 });
 // CONCATENATED MODULE: ./src/address_form_config/default_region_mappings_to_names.js
@@ -2980,7 +3192,176 @@ var addressfinder_webpage_tools = __webpack_require__(0);
   'VIC': 'Victoria',
   'WA': 'Western Australia'
 });
+// CONCATENATED MODULE: ./src/address_form_config/international_state_mappings_to_names.js
+/* harmony default export */ var international_state_mappings_to_names = ({
+  'CA': {
+    "AB": "Alberta",
+    "BC": "British Columbia",
+    "MB": "Manitoba",
+    "NB": "New Brunswick",
+    "NL": "Newfoundland and Labrador",
+    "NS": "Nova Scotia",
+    "NT": "Northwest Territories",
+    "NU": "Nunavut",
+    "ON": "Ontario",
+    "PE": "Prince Edward Island",
+    "QC": "Quebec",
+    "SK": "Saskatchewan",
+    "YT": "Yukon"
+  },
+  'ES': {
+    "A Coruña": "A Coruña",
+    "Alacant*": "Alacant",
+    "Albacete": "Albacete",
+    "Alicante": "Alicante",
+    "Almería": "Almeria",
+    "Andalucía": "Andalucía",
+    "Araba*": "Araba",
+    "Aragón": "Aragon",
+    "Asturias": "Asturias",
+    "Principado de Asturias": "Principado de Asturias",
+    "Badajoz": "Badajoz",
+    "Barcelona": "Barcelona",
+    "Bizkaia": "Bizkaia",
+    "Burgos": "Burgos",
+    "Canarias": "Canarias",
+    "Cantabria": "Cantabria",
+    "Castelló*": "Castello",
+    "Castilla y León": "Castilla y Leon",
+    "Castilla-La Mancha": "Castilla-La Mancha",
+    "Catalunya": "Catalunya",
+    "Ceuta": "Ceuta",
+    "Ciudad Real": "Ciudad Real",
+    "Cuenca": "Cuenca",
+    "Cáceres": "Caceres",
+    "Cádiz": "Cadiz",
+    "Córdoba": "Cordoba",
+    "Euskal Herria": "Euskal Herria",
+    "Extremadura": "Extremadura",
+    "Galicia": "Galicia",
+    "Gipuzkoa": "Gipuzkoa",
+    "Girona": "Girona",
+    "Granada": "Granada",
+    "Guadalajara": "Guadalajara",
+    "Huelva": "Huelva",
+    "Huesca": "Huesca",
+    "Illes Balears": "Illes Balears",
+    "Jaén": "Jaen",
+    "La Rioja": "La Rioja",
+    "Las Palmas": "Las Palmas",
+    "León": "Leon",
+    "Lleida": "Lleida",
+    "Lugo": "Lugo",
+    "Madrid": "Madrid",
+    "Comunidad de Madrid": "Comunidad de Madrid",
+    "Melilla": "Melilla",
+    "Murcia": "Murcia",
+    "Región de Murcia": "Region de Murcia",
+    "Málaga": "Malaga",
+    "Nafarroa*": "Nafarroa",
+    "Navarra": "Navarra",
+    "Nafarroako Foru Komunitatea*": "Nafarroako Foru Komunitatea",
+    "Ourense": "Ourense",
+    "Palencia": "Palencia",
+    "Pontevedra": "Pontevedra",
+    "Salamanca": "Salamanca",
+    "Santa Cruz de Tenerife": "Santa Cruz de Tenerife",
+    "Segovia": "Segovia",
+    "Sevilla": "Sevilla",
+    "Soria": "Soria",
+    "Tarragona": "Tarragona",
+    "Teruel": "Teruel",
+    "Toledo": "Toledo",
+    "Valencia": "Valencia",
+    "Comunidad Valenciana": "Comunidad Valenciana",
+    "Valladolid": "Valladolid",
+    "Zamora": "Zamora",
+    "Zargoza": "Zargoza",
+    "Ávila": "Avila"
+  },
+  'IE': {
+    "County Carlow": "Carlow",
+    "County Cavan": "Cavan",
+    "County Clare": "Clare",
+    "County Cork": "Cork",
+    "County Donegal": "Donegal",
+    "County Dublin": "Dublin",
+    "County Galway": "Galway",
+    "County Kerry": "Kerry",
+    "County Kildare": "Kildare",
+    "County Kilkenny": "Kilkenny",
+    "County Laois": "Laois",
+    "County Leitrim": "Leitrim",
+    "County Limerick": "Limerick",
+    "County Longford": "Longford",
+    "County Louth": "Louth",
+    "County Mayo": "Mayo",
+    "County Meath": "Meath",
+    "County Monaghan": "Monaghan",
+    "County Offaly": "Offaly",
+    "County Roscommon": "Roscommon",
+    "County Sligo": "Sligo",
+    "County Tipperary": "Tipperary",
+    "County Waterford": "Waterford",
+    "County Westmeath": "Westmeath",
+    "County Wexford": "Wexford",
+    "County Wicklow": "Wicklow"
+  },
+  'US': {
+    "AL": "Alabama",
+    "AK": "Alaska",
+    "AZ": "Arizona",
+    "AR": "Arkansas",
+    "CA": "California",
+    "CO": "Colorado",
+    "CT": "Connecticut",
+    "DE": "Delaware",
+    "FL": "Florida",
+    "GA": "Georgia",
+    "HI": "Hawaii",
+    "ID": "Idaho",
+    "IL": "Illinois",
+    "IN": "Indiana",
+    "IA": "Iowa",
+    "KS": "Kansas",
+    "KY": "Kentucky",
+    "LA": "Louisiana",
+    "ME": "Maine",
+    "MD": "Maryland",
+    "MA": "Massachusetts",
+    "MI": "Michigan",
+    "MN": "Minnesota",
+    "MS": "Mississippi",
+    "MO": "Missouri",
+    "MT": "Montana",
+    "NE": "Nebraska",
+    "NV": "Nevada",
+    "NH": "New Hampshire",
+    "NJ": "New Jersey",
+    "NM": "New Mexico",
+    "NY": "New York",
+    "NC": "North Carolina",
+    "ND": "North Dakota",
+    "OH": "Ohio",
+    "OK": "Oklahoma",
+    "OR": "Oregon",
+    "PA": "Pennsylvania",
+    "RI": "Rhode Island",
+    "SC": "South Carolina",
+    "SD": "South Dakota",
+    "TN": "Tennessee",
+    "TX": "Texas",
+    "UT": "Utah",
+    "VT": "Vermont",
+    "VA": "Virginia",
+    "WA": "Washington",
+    "WV": "West Virginia",
+    "WI": "Wisconsin",
+    "WY": "Wyoming"
+  }
+});
 // CONCATENATED MODULE: ./src/address_form_config/address_book.js
+
 
 
 /* harmony default export */ var address_book = ([{
@@ -3010,6 +3391,49 @@ var addressfinder_webpage_tools = __webpack_require__(0);
       postcode: "#FormField_13"
     },
     stateMappings: default_state_mappings
+  },
+  "int": {
+    countryValue: {
+      'Belgium': 'be',
+      'Canada': 'ca',
+      'Czechia': 'cz',
+      'Czech Republic': 'cz',
+      'Denmark': 'dk',
+      'France': 'fr',
+      'Germany': 'de',
+      'Ireland': 'ie',
+      'Netherlands': 'nl',
+      'Portugal': 'pt',
+      'Singapore': 'sg',
+      'Spain': 'es',
+      'Sweden': 'se',
+      'United Kingdom': 'gb',
+      'United States': 'us'
+    },
+    elements: {
+      address1: '#FormField_8',
+      address2: '#FormField_9',
+      suburb: '#FormField_10',
+      state: '#FormField_12',
+      postcode: '#FormField_13'
+    },
+    stateMappings: international_state_mappings_to_names,
+    optionalElements: {
+      'be': ['address_line_2', 'state_territory'],
+      'ca': ['address_line_2'],
+      'cz': ['address_line_2', 'state_territory'],
+      'de': ['address_line_2'],
+      'fr': ['address_line_2', 'state_territory'],
+      'dk': ['address_line_2', 'state_territory'],
+      'ie': ['address_line_2'],
+      'nl': ['address_line_2', 'state_territory'],
+      'pt': ['address_line_2', 'state_territory'],
+      'sg': ['address_line_2', 'state_territory'],
+      'es': ['address_line_2'],
+      'se': ['address_line_2', 'state_territory'],
+      'gb': ['address_line_2', 'state_territory'],
+      'us': ['address_line_2']
+    }
   }
 }, {
   label: "Address book - Edit Address (Stencil)",
@@ -3038,9 +3462,53 @@ var addressfinder_webpage_tools = __webpack_require__(0);
       postcode: "#FormField_13"
     },
     stateMappings: default_state_mappings
+  },
+  "int": {
+    countryValue: {
+      'Belgium': 'be',
+      'Canada': 'ca',
+      'Czechia': 'cz',
+      'Czech Republic': 'cz',
+      'Denmark': 'dk',
+      'France': 'fr',
+      'Germany': 'de',
+      'Ireland': 'ie',
+      'Netherlands': 'nl',
+      'Portugal': 'pt',
+      'Singapore': 'sg',
+      'Spain': 'es',
+      'Sweden': 'se',
+      'United Kingdom': 'gb',
+      'United States': 'us'
+    },
+    elements: {
+      address1: '#FormField_8',
+      address2: '#FormField_9',
+      suburb: '#FormField_10',
+      state: '#FormField_12',
+      postcode: '#FormField_13'
+    },
+    stateMappings: international_state_mappings_to_names,
+    optionalElements: {
+      'be': ['address_line_2', 'state_territory'],
+      'ca': ['address_line_2'],
+      'cz': ['address_line_2', 'state_territory'],
+      'de': ['address_line_2'],
+      'fr': ['address_line_2', 'state_territory'],
+      'dk': ['address_line_2', 'state_territory'],
+      'ie': ['address_line_2'],
+      'nl': ['address_line_2', 'state_territory'],
+      'pt': ['address_line_2', 'state_territory'],
+      'sg': ['address_line_2', 'state_territory'],
+      'es': ['address_line_2'],
+      'se': ['address_line_2', 'state_territory'],
+      'gb': ['address_line_2', 'state_territory'],
+      'us': ['address_line_2']
+    }
   }
 }]);
 // CONCATENATED MODULE: ./src/address_form_config/address_book_suffixed.js
+
 
 
 /* harmony default export */ var address_book_suffixed = ([{
@@ -3070,6 +3538,49 @@ var addressfinder_webpage_tools = __webpack_require__(0);
       postcode: "#FormField_13_input"
     },
     stateMappings: default_state_mappings
+  },
+  "int": {
+    countryValue: {
+      'Belgium': 'be',
+      'Canada': 'ca',
+      'Czechia': 'cz',
+      'Czech Republic': 'cz',
+      'Denmark': 'dk',
+      'France': 'fr',
+      'Germany': 'de',
+      'Ireland': 'ie',
+      'Netherlands': 'nl',
+      'Portugal': 'pt',
+      'Singapore': 'sg',
+      'Spain': 'es',
+      'Sweden': 'se',
+      'United Kingdom': 'gb',
+      'United States': 'us'
+    },
+    elements: {
+      address1: '#FormField_8_input',
+      address2: '#FormField_9_input',
+      suburb: '#FormField_10_input',
+      state: '#FormField_12_select',
+      postcode: '#FormField_13_input'
+    },
+    stateMappings: international_state_mappings_to_names,
+    optionalElements: {
+      'be': ['address_line_2', 'state_territory'],
+      'ca': ['address_line_2'],
+      'cz': ['address_line_2', 'state_territory'],
+      'de': ['address_line_2'],
+      'fr': ['address_line_2', 'state_territory'],
+      'dk': ['address_line_2', 'state_territory'],
+      'ie': ['address_line_2'],
+      'nl': ['address_line_2', 'state_territory'],
+      'pt': ['address_line_2', 'state_territory'],
+      'sg': ['address_line_2', 'state_territory'],
+      'es': ['address_line_2'],
+      'se': ['address_line_2', 'state_territory'],
+      'gb': ['address_line_2', 'state_territory'],
+      'us': ['address_line_2']
+    }
   }
 }, {
   label: "Address book - Edit Address suffixed (Stencil)",
@@ -3098,9 +3609,53 @@ var addressfinder_webpage_tools = __webpack_require__(0);
       postcode: "#FormField_13_input"
     },
     stateMappings: default_state_mappings
+  },
+  "int": {
+    countryValue: {
+      'Belgium': 'be',
+      'Canada': 'ca',
+      'Czechia': 'cz',
+      'Czech Republic': 'cz',
+      'Denmark': 'dk',
+      'France': 'fr',
+      'Germany': 'de',
+      'Ireland': 'ie',
+      'Netherlands': 'nl',
+      'Portugal': 'pt',
+      'Singapore': 'sg',
+      'Spain': 'es',
+      'Sweden': 'se',
+      'United Kingdom': 'gb',
+      'United States': 'us'
+    },
+    elements: {
+      address1: '#FormField_8_input',
+      address2: '#FormField_9_input',
+      suburb: '#FormField_10_input',
+      state: '#FormField_12_select',
+      postcode: '#FormField_13_input'
+    },
+    stateMappings: international_state_mappings_to_names,
+    optionalElements: {
+      'be': ['address_line_2', 'state_territory'],
+      'ca': ['address_line_2'],
+      'cz': ['address_line_2', 'state_territory'],
+      'de': ['address_line_2'],
+      'fr': ['address_line_2', 'state_territory'],
+      'dk': ['address_line_2', 'state_territory'],
+      'ie': ['address_line_2'],
+      'nl': ['address_line_2', 'state_territory'],
+      'pt': ['address_line_2', 'state_territory'],
+      'sg': ['address_line_2', 'state_territory'],
+      'es': ['address_line_2'],
+      'se': ['address_line_2', 'state_territory'],
+      'gb': ['address_line_2', 'state_territory'],
+      'us': ['address_line_2']
+    }
   }
 }]);
 // CONCATENATED MODULE: ./src/address_form_config/create_account.js
+
 
 
 /* harmony default export */ var create_account = ([{
@@ -3130,9 +3685,53 @@ var addressfinder_webpage_tools = __webpack_require__(0);
       postcode: '#FormField_13'
     },
     stateMappings: default_state_mappings
+  },
+  "int": {
+    countryValue: {
+      'Belgium': 'be',
+      'Canada': 'ca',
+      'Czechia': 'cz',
+      'Czech Republic': 'cz',
+      'Denmark': 'dk',
+      'France': 'fr',
+      'Germany': 'de',
+      'Ireland': 'ie',
+      'Netherlands': 'nl',
+      'Portugal': 'pt',
+      'Singapore': 'sg',
+      'Spain': 'es',
+      'Sweden': 'se',
+      'United Kingdom': 'gb',
+      'United States': 'us'
+    },
+    elements: {
+      address1: '#FormField_8',
+      address2: '#FormField_9',
+      suburb: '#FormField_10',
+      state: '#FormField_12',
+      postcode: '#FormField_13'
+    },
+    stateMappings: international_state_mappings_to_names,
+    optionalElements: {
+      'be': ['address_line_2', 'state_territory'],
+      'ca': ['address_line_2'],
+      'cz': ['address_line_2', 'state_territory'],
+      'de': ['address_line_2'],
+      'fr': ['address_line_2', 'state_territory'],
+      'dk': ['address_line_2', 'state_territory'],
+      'ie': ['address_line_2'],
+      'nl': ['address_line_2', 'state_territory'],
+      'pt': ['address_line_2', 'state_territory'],
+      'sg': ['address_line_2', 'state_territory'],
+      'es': ['address_line_2'],
+      'se': ['address_line_2', 'state_territory'],
+      'gb': ['address_line_2', 'state_territory'],
+      'us': ['address_line_2']
+    }
   }
 }]);
 // CONCATENATED MODULE: ./src/address_form_config/create_account_suffixed.js
+
 
 
 /* harmony default export */ var create_account_suffixed = ([{
@@ -3162,6 +3761,49 @@ var addressfinder_webpage_tools = __webpack_require__(0);
       postcode: '#FormField_13_input'
     },
     stateMappings: default_state_mappings
+  },
+  "int": {
+    countryValue: {
+      'Belgium': 'be',
+      'Canada': 'ca',
+      'Czechia': 'cz',
+      'Czech Republic': 'cz',
+      'Denmark': 'dk',
+      'France': 'fr',
+      'Germany': 'de',
+      'Ireland': 'ie',
+      'Netherlands': 'nl',
+      'Portugal': 'pt',
+      'Singapore': 'sg',
+      'Spain': 'es',
+      'Sweden': 'se',
+      'United Kingdom': 'gb',
+      'United States': 'us'
+    },
+    elements: {
+      address1: '#FormField_8_input',
+      address2: '#FormField_9_input',
+      suburb: '#FormField_10_input',
+      state: '#FormField_12_select',
+      postcode: '#FormField_13_input'
+    },
+    stateMappings: international_state_mappings_to_names,
+    optionalElements: {
+      'be': ['address_line_2', 'state_territory'],
+      'ca': ['address_line_2'],
+      'cz': ['address_line_2', 'state_territory'],
+      'de': ['address_line_2'],
+      'fr': ['address_line_2', 'state_territory'],
+      'dk': ['address_line_2', 'state_territory'],
+      'ie': ['address_line_2'],
+      'nl': ['address_line_2', 'state_territory'],
+      'pt': ['address_line_2', 'state_territory'],
+      'sg': ['address_line_2', 'state_territory'],
+      'es': ['address_line_2'],
+      'se': ['address_line_2', 'state_territory'],
+      'gb': ['address_line_2', 'state_territory'],
+      'us': ['address_line_2']
+    }
   }
 }]);
 // CONCATENATED MODULE: ./src/config_manager.js
@@ -3222,7 +3864,7 @@ function bigcommerce_plugin_createClass(Constructor, protoProps, staticProps) { 
     function BigcommercePlugin() {
       bigcommerce_plugin_classCallCheck(this, BigcommercePlugin);
 
-      this.version = "2.0.1"; // Manages the mapping of the form configurations to the DOM.
+      this.version = "2.1.0"; // Manages the mapping of the form configurations to the DOM.
 
       this.PageManager = null; // Manages the form configuraions, and creates any dynamic forms
 
