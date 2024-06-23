@@ -35,7 +35,7 @@ If you are debugging a customer site, you can type `addressfinderDebugMode()` in
 with the debug flag set to true, so you can see console logs from the addressfinder-webpage-tools npm package.
 This works in Chrome and FireFox
 
-# Trouble Shooting
+# Troubleshooting
 ### Legacy packages
-Depending on your machine packages you have installed it is posssible you may run into OpenSSL implementations of algorithms that have been deemed legacy.
+Depending on the machine packages you have installed it is possible you may run into OpenSSL implementations of algorithms that have been deemed legacy.
 Simply run `export NODE_OPTIONS=--openssl-legacy-provider` in your terminal.
