@@ -1,3 +1,6 @@
+# AddressFinder 2.1.0 (June 21, 2024)
+* Add support for international countries
+
 # AddressFinder 2.0.1 (May 29, 2024)
 * Update the NZ region mapping and added support for different theme types
 

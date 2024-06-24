@@ -34,3 +34,8 @@ Then whenever a file is edited, it will be re-compiled and available for reloadi
 If you are debugging a customer site, you can type `addressfinderDebugMode()` into the javascript console. This will reinitialise the widget,
 with the debug flag set to true, so you can see console logs from the addressfinder-webpage-tools npm package.
 This works in Chrome and FireFox
+
+# Troubleshooting
+### Legacy packages
+Depending on the machine packages you have installed it is possible you may run into OpenSSL implementations of algorithms that have been deemed legacy.
+Simply run `export NODE_OPTIONS=--openssl-legacy-provider` in your terminal.
