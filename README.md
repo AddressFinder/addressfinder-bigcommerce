@@ -22,10 +22,10 @@ BigCommerce stores.
 
 Register for a free AddressFinder account at one of these links:
 
-* [Free Account for Australia](https://portal.addressfinder.io/signup/au/free?utm_source=bigcommerce%20plugin&utm_medium=plugin&utm_campaign=plugin&utm_term=Australia&utm_content=Free%20Account%20for%20Australia)
-* [Free Account for New Zealand](https://portal.addressfinder.io/signup/nz/free?utm_source=bigcommerce%20plugin&utm_medium=plugin&utm_campaign=plugin&utm_term=New%20Zealand&utm_content=Free%20Account%20for%20New%20Zealand)
+* [Trial Account for Australia](https://portal.addressfinder.net/signup/au/au_business_trial?utm_source=bigcommerce%20plugin&utm_medium=plugin&utm_campaign=plugin&utm_term=Australia&utm_content=Trial%20account%20for%20Australia)
+* [Trial Account for New Zealand](https://portal.addressfinder.net/signup/nz/nz_business_trial?utm_source=bigcommerce%20plugin&utm_medium=plugin&utm_campaign=plugin&utm_term=New%20Zealand&utm_content=Trial%20account%20for%20New%20Zealand)
 
-Existing users can obtain their API key from the [AddressFinder Portal](https://portal.addressfinder.io/?utm_source=bigcommerce%20plugin&utm_medium=plugin&utm_campaign=plugin&utm_term=AddressFinder%20portal&utm_content=exisiting%20users).
+Existing users can obtain their API key from the [AddressFinder Portal](https://portal.addressfinder.net/?utm_source=bigcommerce%20plugin&utm_medium=plugin&utm_campaign=plugin&utm_term=AddressFinder%20portal&utm_content=exisiting%20users).
 
 Read more on the AddressFinder [BigCommerce Plugin](https://addressfinder.nz/docs/bigcommerce?utm_source=bigcommerce%20plugin&utm_medium=plugin&utm_campaign=plugin&utm_term=Bigcommerce%20Plugin&utm_content=Read%20More) page.
 
@@ -79,11 +79,11 @@ If you are using a Blueprint theme you can find the alternate setup instructions
 #### Obtaining a licence key
 
 New users can register for a free AddressFinder account at one of these links:
-* [Free Account for Australia](https://portal.addressfinder.io/signup/au/free?utm_source=bigcommerce%20plugin&utm_medium=plugin&utm_campaign=plugin&utm_term=Free%20Account%20for%20Australia&utm_content=Obtaining%20a%20licence%20key)
-* [Free Account for New Zealand](https://portal.addressfinder.io/signup/nz/free?utm_source=bigcommerce%20plugin&utm_medium=plugin&utm_campaign=plugin&utm_term=Free%20Account%20for%20New%20Zealand&utm_content=Obtaining%20a%20licence%20key)
+* [Trial Account for Australia](https://portal.addressfinder.net/signup/au/au_business_trial?utm_source=bigcommerce%20plugin&utm_medium=plugin&utm_campaign=plugin&utm_term=Australia&utm_content=Trial%20account%20for%20Australia)
+* [Trial Account for New Zealand](https://portal.addressfinder.net/signup/nz/nz_business_trial?utm_source=bigcommerce%20plugin&utm_medium=plugin&utm_campaign=plugin&utm_term=New%20Zealand&utm_content=Trial%20account%20for%20New%20Zealand)
 
 Existing users can obtain their API key from the
-[AddressFinder Portal](https://portal.addressfinder.io/?utm_source=bigcommerce%20plugin&utm_medium=plugin&utm_campaign=plugin&utm_term=AddressFinder%20Portal&utm_content=Obtaining%20a%20licence%20key).
+[AddressFinder Portal](https://portal.addressfinder.net/?utm_source=bigcommerce%20plugin&utm_medium=plugin&utm_campaign=plugin&utm_term=AddressFinder%20Portal&utm_content=Obtaining%20a%20licence%20key).
 
 ### Advanced Usage
 
