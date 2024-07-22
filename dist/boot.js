@@ -3806,6 +3806,82 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     }
   }
 }]);
+// CONCATENATED MODULE: ./src/address_form_config/create_account_shipping.js
+
+
+
+/* harmony default export */ var create_account_shipping = ([{
+  label: "Create account - Shipping address with Region/State input (Stencil)",
+  layoutSelectors: ["#FormField_18"],
+  countryIdentifier: "#FormField_21",
+  searchIdentifier: "#FormField_18",
+  nz: {
+    countryValue: "New Zealand",
+    elements: {
+      address1: '#FormField_18',
+      address2: null,
+      suburb: '#FormField_19',
+      city: '#FormField_20',
+      region: '#FormField_22',
+      postcode: '#FormField_23'
+    },
+    regionMappings: default_region_mappings_to_names
+  },
+  au: {
+    countryValue: "Australia",
+    elements: {
+      address1: '#FormField_18',
+      address2: '#FormField_19',
+      suburb: '#FormField_20',
+      state: '#FormField_22',
+      postcode: '#FormField_23'
+    },
+    stateMappings: default_state_mappings
+  },
+  "int": {
+    countryValue: {
+      'Belgium': 'be',
+      'Canada': 'ca',
+      'Czechia': 'cz',
+      'Czech Republic': 'cz',
+      'Denmark': 'dk',
+      'France': 'fr',
+      'Germany': 'de',
+      'Ireland': 'ie',
+      'Netherlands': 'nl',
+      'Portugal': 'pt',
+      'Singapore': 'sg',
+      'Spain': 'es',
+      'Sweden': 'se',
+      'United Kingdom': 'gb',
+      'United States': 'us'
+    },
+    elements: {
+      address1: '#FormField_18',
+      address2: '#FormField_19',
+      suburb: '#FormField_20',
+      state: '#FormField_22',
+      postcode: '#FormField_23'
+    },
+    stateMappings: international_state_mappings_to_names,
+    optionalElements: {
+      'be': ['address_line_2', 'state_territory'],
+      'ca': ['address_line_2'],
+      'cz': ['address_line_2', 'state_territory'],
+      'de': ['address_line_2'],
+      'fr': ['address_line_2', 'state_territory'],
+      'dk': ['address_line_2', 'state_territory'],
+      'ie': ['address_line_2'],
+      'nl': ['address_line_2', 'state_territory'],
+      'pt': ['address_line_2', 'state_territory'],
+      'sg': ['address_line_2', 'state_territory'],
+      'es': ['address_line_2'],
+      'se': ['address_line_2', 'state_territory'],
+      'gb': ['address_line_2', 'state_territory'],
+      'us': ['address_line_2']
+    }
+  }
+}]);
 // CONCATENATED MODULE: ./src/config_manager.js
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
 
@@ -3831,6 +3907,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
 
 
+
 var config_manager_ConfigManager = /*#__PURE__*/function () {
   function ConfigManager() {
     _classCallCheck(this, ConfigManager);
@@ -3840,7 +3917,7 @@ var config_manager_ConfigManager = /*#__PURE__*/function () {
     key: "load",
     value: function load() {
       // This function is called when the page mutates and returns our form configurations
-      var addressFormConfigurations = [optimized_one_page_checkout].concat(_toConsumableArray(address_book), _toConsumableArray(address_book_suffixed), _toConsumableArray(create_account), _toConsumableArray(create_account_suffixed));
+      var addressFormConfigurations = [optimized_one_page_checkout].concat(_toConsumableArray(address_book), _toConsumableArray(address_book_suffixed), _toConsumableArray(create_account), _toConsumableArray(create_account_suffixed), _toConsumableArray(create_account_shipping));
       return addressFormConfigurations;
     }
   }]);
