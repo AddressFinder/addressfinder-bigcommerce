@@ -1,3 +1,6 @@
+# AddressFinder 2.2.0 (July 23, 2024)
+* Add suport for shipping address forms in the Classic Next theme
+
 # AddressFinder 2.1.0 (June 21, 2024)
 * Add support for international countries
 

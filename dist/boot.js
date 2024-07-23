@@ -3941,7 +3941,7 @@ function bigcommerce_plugin_createClass(Constructor, protoProps, staticProps) { 
     function BigcommercePlugin() {
       bigcommerce_plugin_classCallCheck(this, BigcommercePlugin);
 
-      this.version = "2.1.0"; // Manages the mapping of the form configurations to the DOM.
+      this.version = "2.2.0"; // Manages the mapping of the form configurations to the DOM.
 
       this.PageManager = null; // Manages the form configuraions, and creates any dynamic forms
 
