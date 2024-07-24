@@ -1,4 +1,4 @@
-import { PageManager, MutationManager } from '@addressfinder/addressfinder-webpage-tools'
+import { PageManager, EmailPageManager, PhonePageManager, MutationManager } from '@addressfinder/addressfinder-webpage-tools'
 import ConfigManager from './config_manager'
 
 (function(d,w) {
@@ -10,6 +10,12 @@ import ConfigManager from './config_manager'
       // Manages the mapping of the form configurations to the DOM.
       this.PageManager = null
 
+      // Manages the email mapping of the form configurations to the DOM.
+      this.EmailPageManager = null
+
+      // Manages the phone mapping of the form configurations to the DOM.
+      this.PhonePageManager = null
+
       // Manages the form configuraions, and creates any dynamic forms
       this.ConfigManager = null
 
@@ -20,10 +26,17 @@ import ConfigManager from './config_manager'
     }
 
     mutationEventHandler() {
-      // When the form mutates, reload our form configurations, and reload the form helpers in the page manager.
-      let addressFormConfigurations = this.ConfigManager.load()
+      // When the form mutates, reload our form configurations.
       if (this.PageManager) {
-        this.PageManager.reload(addressFormConfigurations)
+        this.PageManager.reload(this.ConfigManager.load())
+      }
+
+      if (this.EmailPageManager) {
+        this.EmailPageManager.reload(this.ConfigManager.loadEmailConfigurations())
+      }
+
+      if (this.PhonePageManager) {
+        this.PhonePageManager.reload(this.ConfigManager.loadPhoneConfigurations())
       }
     }
 
@@ -34,6 +47,8 @@ import ConfigManager from './config_manager'
         auKey: window.AddressFinderConfig.key_au || window.AddressFinderConfig.key || window.AddressFinderConfig.key_nz,
         nzWidgetOptions: window.AddressFinderConfig.nzWidgetOptions || window.AddressFinderConfig.widgetOptions || {},
         auWidgetOptions: window.AddressFinderConfig.auWidgetOptions || window.AddressFinderConfig.widgetOptions || {},
+        evWidgetOptions: window.AddressFinderConfig.evWidgetOptions || {},
+        pvWidgetOptions: window.AddressFinderConfig.pvWidgetOptions || {},
         debug: window.AddressFinderConfig.debug || false
       }
 
@@ -46,6 +61,21 @@ import ConfigManager from './config_manager'
         ignoredClass: "af_list"
       })
 
+      // Allows address widget to run if not explicitly enabled for backwards compatibility purposes.
+      if (window.AddressFinderConfig.addressWidgetEnabled === undefined || window.AddressFinderConfig.addressWidgetEnabled) {
+        this._initAddressWidget(widgetConfig)
+      }
+
+      if (window.AddressFinderConfig.emailWidgetEnabled) {
+        this._initEmailWidget(widgetConfig)
+      }
+
+      if (window.AddressFinderConfig.phoneWidgetEnabled) {
+        this._initPhoneWidget(widgetConfig)
+      }
+    }
+
+    _initAddressWidget(widgetConfig) {
       this.PageManager = new PageManager({
         addressFormConfigurations: this.ConfigManager.load(),
         widgetConfig,
@@ -58,6 +88,24 @@ import ConfigManager from './config_manager'
       this._setVersionNumbers()
 
       window.AddressFinder._bigcommercePlugin = this.PageManager
+    }
+
+    _initEmailWidget(widgetConfig) {
+      this.EmailPageManager = new EmailPageManager({
+        formConfigurations: this.ConfigManager.loadEmailConfigurations(),
+        widgetConfig
+      })
+
+      window.AddressFinder._bigcommerceEmailPlugin = this.EmailPageManager
+    }
+
+    _initPhoneWidget(widgetConfig) {
+      this.PhonePageManager = new PhonePageManager({
+        formConfigurations: this.ConfigManager.loadPhoneConfigurations(),
+        widgetConfig
+      })
+
+      window.AddressFinder._bigcommercePhonePlugin = this.PhonePageManager
     }
 
     _setVersionNumbers() {
@@ -76,11 +124,25 @@ import ConfigManager from './config_manager'
     }
   }
 
-  var s = document.createElement('script')
-  s.src = 'https://api.addressfinder.io/assets/v3/widget.js'
-  s.async = 1
-  s.onload = function() { new BigcommercePlugin() }
-  document.body.appendChild(s)
+  function loadAddressfinderScripts(index = 0) {
+    let scripts = ['https://api.addressfinder.io/assets/v3/widget.js', 'https://api.staging.addressfinder.io/assets/email/v2/widget.js', 'https://api.staging.addressfinder.io/assets/phone/v2/widget.js']
+
+    let s = document.createElement('script')
+    s.src = scripts[index]
+    s.async = 1
+
+    // Initialize BigcommercePlugin() only once the last script in the array has loaded.
+    index += 1
+    if (index < scripts.length) {
+      s.onload = loadAddressfinderScripts(index)
+    } else {
+      new BigcommercePlugin()
+    }
+
+    document.body.appendChild(s)
+  }
+
+  loadAddressfinderScripts()
 
 })(document, window)
 
