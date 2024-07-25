@@ -3762,7 +3762,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 /* harmony default export */ var optimized_one_page_checkout_create = ({
   layoutSelectors: [".create-account-form", "#email"],
   inputIdentifier: "#email",
-  label: "Optimized one-page checkout create (email)"
+  label: "Optimized one-page create checkout (email)"
 });
 // CONCATENATED MODULE: ./src/email_form_config/create_account.js
 /* harmony default export */ var create_account = ({
@@ -3774,7 +3774,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 /* harmony default export */ var create_account_suffix = ({
   layoutSelectors: ["#FormField_1_input"],
   inputIdentifier: "#FormField_1_input",
-  label: "Create account (email)"
+  label: "Create account suffix (email)"
 });
 // CONCATENATED MODULE: ./src/phone_form_config/optimized_one_page_checkout_billing.js
 /* harmony default export */ var optimized_one_page_checkout_billing = ({
