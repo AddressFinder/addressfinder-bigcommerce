@@ -7,7 +7,7 @@ import optimizedOnePageCheckoutBillingPhone from './phone_form_config/optimized_
 import optimizedOnePageCheckoutPhoneShipping from './phone_form_config/optimized_one_page_checkout_shipping'
 import createAccountPhone from './phone_form_config/create_account'
 import createAccountPhoneSuffix from './phone_form_config/create_account_suffix'
-import EditAccountPhone from './phone_form_config/edit_account'
+import editAccountPhone from './phone_form_config/edit_account'
 import addressBook from './address_form_config/address_book'
 import addressBookSuffixed from './address_form_config/address_book_suffixed'
 import createAccount from './address_form_config/create_account'
@@ -47,7 +47,7 @@ export default class ConfigManager {
       optimizedOnePageCheckoutPhoneShipping,
       createAccountPhone,
       createAccountPhoneSuffix,
-      EditAccountPhone
+      editAccountPhone
     ]
 
     return phoneFormConfigurations

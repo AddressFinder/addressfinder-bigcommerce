@@ -49,6 +49,7 @@ Navigate to Storefront -> Theme market place -> my themes.
 
 # Testing Checkouts
 BigCommerce has different checkouts which can have different input `id`'s and form configurations. To test these you can use the below checkout options.
+
   - Optimised Checkout
   - Multipage Checkout
   - Single Page Checkout
