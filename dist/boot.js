@@ -2509,7 +2509,7 @@ var page_manager_PageManager = /*#__PURE__*/function () {
 
     page_manager_classCallCheck(this, PageManager);
 
-    this.version = "2.1.0"; // Each formHelper is an instance of the FormManager class
+    this.version = "2.1.1"; // Each formHelper is an instance of the FormManager class
 
     this.formHelpers = []; // An object containing identifying information about an address form, such as the id values
 
@@ -3273,6 +3273,8 @@ var PhoneFormManager = /*#__PURE__*/function (_ValidationFormManage) {
   function PhoneFormManager(widgetConfig, formHelperConfig) {
     phone_form_manager_classCallCheck(this, PhoneFormManager);
 
+    // sets the widget country select to the country identifier found in the html form.
+    widgetConfig.pvWidgetOptions.countrySelect = formHelperConfig.countryIdentifier;
     return _super.call(this, widgetConfig, formHelperConfig);
   }
 
@@ -4611,7 +4613,7 @@ function bigcommerce_plugin_createClass(Constructor, protoProps, staticProps) { 
     function BigcommercePlugin() {
       bigcommerce_plugin_classCallCheck(this, BigcommercePlugin);
 
-      this.version = "2.2.0"; // Manages the mapping of the form configurations to the DOM.
+      this.version = "2.3.0"; // Manages the mapping of the form configurations to the DOM.
 
       this.PageManager = null; // Manages the email mapping of the form configurations to the DOM.
 
@@ -4733,25 +4735,22 @@ function bigcommerce_plugin_createClass(Constructor, protoProps, staticProps) { 
     return BigcommercePlugin;
   }();
 
-  function loadAddressfinderScripts() {
-    var index = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
-    var scripts = ['https://api.addressfinder.io/assets/v3/widget.js', 'https://api.staging.addressfinder.io/assets/email/v2/widget.js', 'https://api.staging.addressfinder.io/assets/phone/v2/widget.js'];
+  function loadAddressfinderScript(script, callback) {
     var s = document.createElement('script');
-    s.src = scripts[index];
-    s.async = 1; // Initialize BigcommercePlugin() only once the last script in the array has loaded.
-
-    index += 1;
-
-    if (index < scripts.length) {
-      s.onload = loadAddressfinderScripts(index);
-    } else {
-      new BigcommercePlugin();
-    }
-
+    s.src = script;
+    s.async = 1;
+    s.onload = callback;
     document.body.appendChild(s);
-  }
+  } // Nested callbacks to load our scripts asynchronously and sequentially.
 
-  loadAddressfinderScripts();
+
+  loadAddressfinderScript('https://api.addressfinder.io/assets/v3/widget.js', function () {
+    loadAddressfinderScript('https://api.addressfinder.io/assets/email/v2/widget.js', function () {
+      loadAddressfinderScript('https://api.addressfinder.io/assets/phone/v2/widget.js', function () {
+        new BigcommercePlugin();
+      });
+    });
+  });
 })(document, window);
 
 /***/ })

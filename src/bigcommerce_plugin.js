@@ -5,7 +5,7 @@ import ConfigManager from './config_manager'
   class BigcommercePlugin {
     constructor() {
 
-      this.version = "2.2.0"
+      this.version = "2.3.0"
 
       // Manages the mapping of the form configurations to the DOM.
       this.PageManager = null
@@ -124,25 +124,22 @@ import ConfigManager from './config_manager'
     }
   }
 
-  function loadAddressfinderScripts(index = 0) {
-    let scripts = ['https://api.addressfinder.io/assets/v3/widget.js', 'https://api.staging.addressfinder.io/assets/email/v2/widget.js', 'https://api.staging.addressfinder.io/assets/phone/v2/widget.js']
-
+  function loadAddressfinderScript(script, callback) {
     let s = document.createElement('script')
-    s.src = scripts[index]
+    s.src = script
     s.async = 1
-
-    // Initialize BigcommercePlugin() only once the last script in the array has loaded.
-    index += 1
-    if (index < scripts.length) {
-      s.onload = loadAddressfinderScripts(index)
-    } else {
-      new BigcommercePlugin()
-    }
-
+    s.onload = callback
     document.body.appendChild(s)
   }
 
-  loadAddressfinderScripts()
+  // Nested callbacks to load our scripts asynchronously and sequentially.
+  loadAddressfinderScript('https://api.addressfinder.io/assets/v3/widget.js',
+    function () { loadAddressfinderScript('https://api.addressfinder.io/assets/email/v2/widget.js',
+      function () { loadAddressfinderScript('https://api.addressfinder.io/assets/phone/v2/widget.js',
+        function() { new BigcommercePlugin }
+      )}
+    )}
+  )
 
 })(document, window)
 
