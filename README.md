@@ -114,6 +114,54 @@ If you need to add different options for each country you can enter them in obje
   };
 ```
 
+### Enabling Email and Phone Validation
+```
+w.AddressFinderConfig = {
+  key: "ADDRESSFINDER_DEMO_KEY",
+
+  // Options: (true/false) to toggle each widget on/off. 
+  // The address widget is enabled by default
+  addressWidgetEnabled: true,
+  emailWidgetEnabled: true,
+  phoneWidgetEnabled: true,
+
+  // visit https://addressfinder.nz/docs/javascript_widget_reference_nz/ for a full list of NZ widget options
+  // visit https://addressfinder.com/r/docs/javascript_widget_reference_au/ for a full list of AU widget options
+  widgetOptions: {
+    // address widget options go here
+  },
+
+  // visit https://addressfinder.com/r/docs/email/javascript-reference/ for a full list of email validation options
+  evWidgetOptions: {
+    check: "connection",
+    rules: {
+      role: {
+        rule: "block",
+        message: "We do not accept role email addresses, please enter a different email to continue"
+      }
+    }
+  },
+
+  // visit https://addressfinder.com/r/docs/phone/javascript-reference/ for a full list of phone validation options
+  pvWidgetOptions: {
+
+    // defaultCountryCode will only be used for pages where there is no country select
+    defaultCountryCode: "NZ",
+    allowedCountryCodes: "AU,NZ",
+    
+    // This will format the number after it has been verified
+    // Options include: "rawNational", "formattedNational", "rawInternational", "formattedInternational"
+    formatNumber: "formattedInternational",
+    rules: {
+      nonMobile: {
+        rule: "block"
+      }
+    }
+  },
+  debug: true,
+};
+```
+
 For the full list of [NZ specific options](https://addressfinder.nz/docs/widget_docs/?utm_source=bigcommerce%20plugin&utm_medium=plugin&utm_campaign=plugin&utm_term=Widget%20Documentation&utm_content=Country%20Specific%20Options)
 For the full list of [AU specific options](https://addressfinder.com.au/docs/widget_docs/?utm_source=bigcommerce%20plugin&utm_medium=plugin&utm_campaign=plugin&utm_term=Widget%20Documentation&utm_content=Country%20Specific%20Options)
 
