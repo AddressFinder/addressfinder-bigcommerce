@@ -2095,7 +2095,13 @@ __webpack_require__.r(__webpack_exports__);
 
 // EXPORTS
 __webpack_require__.d(__webpack_exports__, "PageManager", function() { return /* reexport */ page_manager_PageManager; });
+__webpack_require__.d(__webpack_exports__, "ValidationPageManager", function() { return /* reexport */ ValidationPageManager; });
+__webpack_require__.d(__webpack_exports__, "EmailPageManager", function() { return /* reexport */ email_page_manager_EmailPageManager; });
+__webpack_require__.d(__webpack_exports__, "PhonePageManager", function() { return /* reexport */ phone_page_manager_PhonePageManager; });
 __webpack_require__.d(__webpack_exports__, "FormManager", function() { return /* reexport */ FormManager; });
+__webpack_require__.d(__webpack_exports__, "ValidationFormManager", function() { return /* reexport */ ValidationFormManager; });
+__webpack_require__.d(__webpack_exports__, "EmailFormManager", function() { return /* reexport */ EmailFormManager; });
+__webpack_require__.d(__webpack_exports__, "PhoneFormManager", function() { return /* reexport */ PhoneFormManager; });
 __webpack_require__.d(__webpack_exports__, "MutationManager", function() { return /* reexport */ MutationManager; });
 
 // EXTERNAL MODULE: ./node_modules/core-js/fn/symbol/index.js
@@ -2503,7 +2509,7 @@ var page_manager_PageManager = /*#__PURE__*/function () {
 
     page_manager_classCallCheck(this, PageManager);
 
-    this.version = "2.0.0"; // Each formHelper is an instance of the FormManager class
+    this.version = "2.1.1"; // Each formHelper is an instance of the FormManager class
 
     this.formHelpers = []; // An object containing identifying information about an address form, such as the id values
 
@@ -2729,7 +2735,7 @@ var page_manager_PageManager = /*#__PURE__*/function () {
       }
 
       if (identifiedForms.length > this.identifiedAddressFormConfigurations.length) {
-        this.log("Identified addtional forms");
+        this.log("Identified additional forms");
         return true;
       }
 
@@ -2813,6 +2819,586 @@ var page_manager_PageManager = /*#__PURE__*/function () {
 
   return PageManager;
 }();
+
+
+// CONCATENATED MODULE: ./src/validation_managers/validation_page_manager.js
+function validation_page_manager_createForOfIteratorHelper(o, allowArrayLike) { var it; if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = validation_page_manager_unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+
+function validation_page_manager_unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return validation_page_manager_arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return validation_page_manager_arrayLikeToArray(o, minLen); }
+
+function validation_page_manager_arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+function validation_page_manager_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function validation_page_manager_defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function validation_page_manager_createClass(Constructor, protoProps, staticProps) { if (protoProps) validation_page_manager_defineProperties(Constructor.prototype, protoProps); if (staticProps) validation_page_manager_defineProperties(Constructor, staticProps); return Constructor; }
+
+var ValidationPageManager = /*#__PURE__*/function () {
+  function ValidationPageManager(_ref) {
+    var formConfigurations = _ref.formConfigurations,
+        widgetConfig = _ref.widgetConfig;
+
+    validation_page_manager_classCallCheck(this, ValidationPageManager);
+
+    // Each formHelper is an instance of the ValidationFormManager class
+    this.formHelpers = [];
+    this.formConfigurations = formConfigurations;
+    this.widgetConfig = widgetConfig;
+    this.identifiedFormHelperConfigs = [];
+    this.reload = this.reload.bind(this);
+
+    this._loadFormHelpers();
+  }
+
+  validation_page_manager_createClass(ValidationPageManager, [{
+    key: "reload",
+    value: function reload(formConfigurations) {
+      if (!this._areAllElementsStillInTheDOM() || this._newFormsIdentified(formConfigurations)) {
+        this.identifiedFormHelperConfigs = [];
+        this.formConfigurations = formConfigurations;
+
+        this._loadFormHelpers();
+      }
+    }
+  }, {
+    key: "_loadFormHelpers",
+    value: function _loadFormHelpers() {
+      this.formHelpers.forEach(function (formHelper) {
+        return formHelper.destroy();
+      });
+      this.identifiedFormConfigurations = [];
+      this.formHelpers = [];
+
+      this._identifyForms();
+
+      this.identifiedFormConfigurations.forEach(this._initialiseFormHelper.bind(this));
+    }
+    /**
+     * We only want to reload AddressFinder widgets if a mutation has made a critical change to the DOM,
+     * for example if any of the elements have been removed. This function determines whether we have to reload.
+     * This improves performance for all our plugins, but it is critical for the Optimised One Page Checkout in BigCommerce,
+     * which triggers page mutations that would otherwise reload AddressFinder on every key press.
+     */
+
+  }, {
+    key: "_areAllElementsStillInTheDOM",
+    value: function _areAllElementsStillInTheDOM() {
+      var _this = this;
+
+      if (this.identifiedFormHelperConfigs.length === 0) {
+        // if we have no config there are no relevant elements in the dom and we must reload.
+        return false;
+      }
+
+      return this.identifiedFormHelperConfigs.every(function (config) {
+        if (!_this._identifyingElementsPresentAndVisible(config)) {
+          /**
+           * if the layout selectors are missing, or hidden we must reload.
+           * Sometimes form fields are hidden with css rather than removed from the dom. This check handles this scenario so we can reinitalise.
+           */
+          return false;
+        }
+
+        return true;
+      });
+    }
+  }, {
+    key: "_identifyingElementsPresentAndVisible",
+    value: function _identifyingElementsPresentAndVisible(formConfig) {
+      // layoutSelectors is an array of elements used to identify a form
+      return formConfig.layoutSelectors.every(function (selector) {
+        var element = document.querySelector(selector);
+        /**
+         * a selector must be present, and cannot be hidden.
+         * This allows us to only initialise AddressFinder for forms that are visible to the user.
+        */
+
+        return element !== null && element.style.display !== 'none';
+      });
+    } // Checks if each of our form configs are present on the page
+
+  }, {
+    key: "_identifyForms",
+    value: function _identifyForms() {
+      var _iterator = validation_page_manager_createForOfIteratorHelper(this.formConfigurations),
+          _step;
+
+      try {
+        for (_iterator.s(); !(_step = _iterator.n()).done;) {
+          var formConfig = _step.value;
+
+          if (this._identifyingElementsPresentAndVisible(formConfig)) {
+            this.log("Identified layout named: ".concat(formConfig.label));
+            this.identifiedFormConfigurations.push(formConfig);
+          }
+        }
+      } catch (err) {
+        _iterator.e(err);
+      } finally {
+        _iterator.f();
+      }
+    } // Checks if additional forms have been identified since last 'reload'.
+
+  }, {
+    key: "_newFormsIdentified",
+    value: function _newFormsIdentified(formConfigurations) {
+      var identifiedForms = [];
+
+      var _iterator2 = validation_page_manager_createForOfIteratorHelper(formConfigurations),
+          _step2;
+
+      try {
+        for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
+          var formConfig = _step2.value;
+
+          if (this._identifyingElementsPresentAndVisible(formConfig)) {
+            identifiedForms.push(formConfig);
+          }
+        } // returns true if additional forms have been identified.
+        // this will trigger a full reload of all the widgets for each form.
+
+      } catch (err) {
+        _iterator2.e(err);
+      } finally {
+        _iterator2.f();
+      }
+
+      if (identifiedForms.length > this.identifiedFormConfigurations.length) {
+        this.log("Identified additional validation forms");
+        return true;
+      }
+
+      return false;
+    } // 'Abstract' methods invoked which construct the specific validation form managers.
+
+  }, {
+    key: "_initialiseFormHelper",
+    value: function _initialiseFormHelper(formConfig) {
+      var element = document.querySelector(formConfig.inputIdentifier);
+
+      if (element && element instanceof HTMLInputElement) {
+        var formHelperConfig = this.formHelperConfig(formConfig);
+        this.identifiedFormHelperConfigs.push(formHelperConfig);
+        var helper = this.formHelper(this.widgetConfig, formHelperConfig);
+        this.formHelpers.push(helper);
+      }
+    } // Acts as an abstract method that the child class must implement
+
+  }, {
+    key: "formHelperConfig",
+    value: function formHelperConfig(formConfig) {
+      throw new Error('formHelperConfigCallback() must be implemented in the child class');
+    } // Acts as an abstract method that the child class must implement
+
+  }, {
+    key: "formHelper",
+    value: function formHelper(widgetConfig, formHelperConfig) {
+      throw new Error('formHelperCallback() must be implemented in the child class');
+    }
+  }, {
+    key: "log",
+    value: function log(message) {
+      if (this.widgetConfig.debug && window.console) {
+        window.console.log(message);
+      }
+    }
+  }]);
+
+  return ValidationPageManager;
+}();
+
+
+// CONCATENATED MODULE: ./src/validation_managers/validation_form_manager.js
+function validation_form_manager_typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { validation_form_manager_typeof = function _typeof(obj) { return typeof obj; }; } else { validation_form_manager_typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return validation_form_manager_typeof(obj); }
+
+function validation_form_manager_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function validation_form_manager_defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function validation_form_manager_createClass(Constructor, protoProps, staticProps) { if (protoProps) validation_form_manager_defineProperties(Constructor.prototype, protoProps); if (staticProps) validation_form_manager_defineProperties(Constructor, staticProps); return Constructor; }
+
+var ValidationFormManager = /*#__PURE__*/function () {
+  function ValidationFormManager(widgetConfig, formHelperConfig) {
+    validation_form_manager_classCallCheck(this, ValidationFormManager);
+
+    this.widgetConfig = widgetConfig; // Contains references to the DOM elements that make up this form
+
+    this.formHelperConfig = formHelperConfig;
+    this.setWidget(null);
+    this.bindToForm();
+  } // Acts as an abstract method that the child class must implement
+
+
+  validation_form_manager_createClass(ValidationFormManager, [{
+    key: "bindToForm",
+    value: function bindToForm() {
+      throw new Error('bindToForm() must be implemented in the child class');
+    }
+  }, {
+    key: "destroy",
+    value: function destroy() {
+      var widget = this.getWidget();
+
+      if (widget != null) {
+        widget.disable();
+        this.setWidget(null);
+      }
+    }
+  }, {
+    key: "setWidget",
+    value: function setWidget(widget) {
+      this.widget = widget;
+    }
+  }, {
+    key: "getWidget",
+    value: function getWidget() {
+      return this.widget;
+    }
+  }, {
+    key: "setElementValue",
+    value: function setElementValue(element, value, elementName) {
+      if (!element) {
+        var errorMessage = 'AddressFinder Error: ' + 'Attempted to update value for element that could not be found.\n' + '\nElement: ' + elementName + '\nValue: ' + value;
+
+        if (window.console) {
+          window.console.warn(errorMessage);
+        }
+
+        return;
+      }
+
+      element.value = value;
+      var tracker = element._valueTracker;
+
+      if (tracker) {
+        var previousValue = element.value;
+        tracker.setValue(previousValue);
+      }
+
+      this.dispatchEvent(element);
+    } // This tells the store the fields have been changed.
+
+  }, {
+    key: "dispatchEvent",
+    value: function dispatchEvent(element) {
+      var event;
+
+      switch (typeof Event === "undefined" ? "undefined" : validation_form_manager_typeof(Event)) {
+        case 'function':
+          event = new Event('change', {
+            "bubbles": true,
+            "cancelable": false
+          });
+          break;
+
+        default:
+          event = document.createEvent('Event');
+          event.initEvent('change', true, false);
+      }
+
+      element.dispatchEvent(event);
+    }
+  }, {
+    key: "log",
+    value: function log(message) {
+      if (this.widgetConfig.debug && window.console) {
+        window.console.log(message);
+      }
+    }
+  }]);
+
+  return ValidationFormManager;
+}();
+
+
+// CONCATENATED MODULE: ./src/email_validation_managers/email_form_manager.js
+function email_form_manager_typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { email_form_manager_typeof = function _typeof(obj) { return typeof obj; }; } else { email_form_manager_typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return email_form_manager_typeof(obj); }
+
+function email_form_manager_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function email_form_manager_defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function email_form_manager_createClass(Constructor, protoProps, staticProps) { if (protoProps) email_form_manager_defineProperties(Constructor.prototype, protoProps); if (staticProps) email_form_manager_defineProperties(Constructor, staticProps); return Constructor; }
+
+function _get(target, property, receiver) { if (typeof Reflect !== "undefined" && Reflect.get) { _get = Reflect.get; } else { _get = function _get(target, property, receiver) { var base = _superPropBase(target, property); if (!base) return; var desc = Object.getOwnPropertyDescriptor(base, property); if (desc.get) { return desc.get.call(receiver); } return desc.value; }; } return _get(target, property, receiver || target); }
+
+function _superPropBase(object, property) { while (!Object.prototype.hasOwnProperty.call(object, property)) { object = _getPrototypeOf(object); if (object === null) break; } return object; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (email_form_manager_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+
+
+var EmailFormManager = /*#__PURE__*/function (_ValidationFormManage) {
+  _inherits(EmailFormManager, _ValidationFormManage);
+
+  var _super = _createSuper(EmailFormManager);
+
+  function EmailFormManager(widgetConfig, formHelperConfig) {
+    email_form_manager_classCallCheck(this, EmailFormManager);
+
+    return _super.call(this, widgetConfig, formHelperConfig);
+  }
+
+  email_form_manager_createClass(EmailFormManager, [{
+    key: "destroy",
+    value: function destroy() {
+      this.log("Email widget destroyed");
+
+      _get(_getPrototypeOf(EmailFormManager.prototype), "destroy", this).call(this);
+    }
+  }, {
+    key: "bindToForm",
+    value: function bindToForm() {
+      this.log("Email widget created");
+      this.setWidget(new window.AddressfinderEmail.Email.Widget(this.formHelperConfig.emailIdentifier, this.widgetConfig.nzKey, this.widgetConfig.evWidgetOptions));
+    }
+  }]);
+
+  return EmailFormManager;
+}(ValidationFormManager);
+
+
+// CONCATENATED MODULE: ./src/email_validation_managers/email_page_manager.js
+function email_page_manager_typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { email_page_manager_typeof = function _typeof(obj) { return typeof obj; }; } else { email_page_manager_typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return email_page_manager_typeof(obj); }
+
+function email_page_manager_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function email_page_manager_defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function email_page_manager_createClass(Constructor, protoProps, staticProps) { if (protoProps) email_page_manager_defineProperties(Constructor.prototype, protoProps); if (staticProps) email_page_manager_defineProperties(Constructor, staticProps); return Constructor; }
+
+function email_page_manager_inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) email_page_manager_setPrototypeOf(subClass, superClass); }
+
+function email_page_manager_setPrototypeOf(o, p) { email_page_manager_setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return email_page_manager_setPrototypeOf(o, p); }
+
+function email_page_manager_createSuper(Derived) { var hasNativeReflectConstruct = email_page_manager_isNativeReflectConstruct(); return function _createSuperInternal() { var Super = email_page_manager_getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = email_page_manager_getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return email_page_manager_possibleConstructorReturn(this, result); }; }
+
+function email_page_manager_possibleConstructorReturn(self, call) { if (call && (email_page_manager_typeof(call) === "object" || typeof call === "function")) { return call; } return email_page_manager_assertThisInitialized(self); }
+
+function email_page_manager_assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function email_page_manager_isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+function email_page_manager_getPrototypeOf(o) { email_page_manager_getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return email_page_manager_getPrototypeOf(o); }
+
+
+
+
+var email_page_manager_EmailPageManager = /*#__PURE__*/function (_ValidationPageManage) {
+  email_page_manager_inherits(EmailPageManager, _ValidationPageManage);
+
+  var _super = email_page_manager_createSuper(EmailPageManager);
+
+  function EmailPageManager(_ref) {
+    var formConfigurations = _ref.formConfigurations,
+        widgetConfig = _ref.widgetConfig;
+
+    email_page_manager_classCallCheck(this, EmailPageManager);
+
+    return _super.call(this, {
+      formConfigurations: formConfigurations,
+      widgetConfig: widgetConfig
+    });
+  }
+
+  email_page_manager_createClass(EmailPageManager, [{
+    key: "formHelper",
+    value: function formHelper(widgetConfig, formHelperConfig) {
+      return new EmailFormManager(widgetConfig, formHelperConfig);
+    }
+  }, {
+    key: "formHelperConfig",
+    value: function formHelperConfig(formConfig) {
+      return {
+        layoutSelectors: formConfig.layoutSelectors,
+        emailIdentifier: formConfig.inputIdentifier,
+        elements: {
+          emailInput: document.querySelector(formConfig.inputIdentifier)
+        }
+      };
+    }
+  }]);
+
+  return EmailPageManager;
+}(ValidationPageManager);
+
+
+// CONCATENATED MODULE: ./src/phone_validation_managers/phone_form_manager.js
+function phone_form_manager_typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { phone_form_manager_typeof = function _typeof(obj) { return typeof obj; }; } else { phone_form_manager_typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return phone_form_manager_typeof(obj); }
+
+function phone_form_manager_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function phone_form_manager_defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function phone_form_manager_createClass(Constructor, protoProps, staticProps) { if (protoProps) phone_form_manager_defineProperties(Constructor.prototype, protoProps); if (staticProps) phone_form_manager_defineProperties(Constructor, staticProps); return Constructor; }
+
+function phone_form_manager_get(target, property, receiver) { if (typeof Reflect !== "undefined" && Reflect.get) { phone_form_manager_get = Reflect.get; } else { phone_form_manager_get = function _get(target, property, receiver) { var base = phone_form_manager_superPropBase(target, property); if (!base) return; var desc = Object.getOwnPropertyDescriptor(base, property); if (desc.get) { return desc.get.call(receiver); } return desc.value; }; } return phone_form_manager_get(target, property, receiver || target); }
+
+function phone_form_manager_superPropBase(object, property) { while (!Object.prototype.hasOwnProperty.call(object, property)) { object = phone_form_manager_getPrototypeOf(object); if (object === null) break; } return object; }
+
+function phone_form_manager_inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) phone_form_manager_setPrototypeOf(subClass, superClass); }
+
+function phone_form_manager_setPrototypeOf(o, p) { phone_form_manager_setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return phone_form_manager_setPrototypeOf(o, p); }
+
+function phone_form_manager_createSuper(Derived) { var hasNativeReflectConstruct = phone_form_manager_isNativeReflectConstruct(); return function _createSuperInternal() { var Super = phone_form_manager_getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = phone_form_manager_getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return phone_form_manager_possibleConstructorReturn(this, result); }; }
+
+function phone_form_manager_possibleConstructorReturn(self, call) { if (call && (phone_form_manager_typeof(call) === "object" || typeof call === "function")) { return call; } return phone_form_manager_assertThisInitialized(self); }
+
+function phone_form_manager_assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function phone_form_manager_isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+function phone_form_manager_getPrototypeOf(o) { phone_form_manager_getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return phone_form_manager_getPrototypeOf(o); }
+
+
+
+var PhoneFormManager = /*#__PURE__*/function (_ValidationFormManage) {
+  phone_form_manager_inherits(PhoneFormManager, _ValidationFormManage);
+
+  var _super = phone_form_manager_createSuper(PhoneFormManager);
+
+  function PhoneFormManager(widgetConfig, formHelperConfig) {
+    phone_form_manager_classCallCheck(this, PhoneFormManager);
+
+    // sets the widget country select to the country identifier found in the html form.
+    widgetConfig.pvWidgetOptions.countrySelect = formHelperConfig.countryIdentifier;
+    return _super.call(this, widgetConfig, formHelperConfig);
+  }
+
+  phone_form_manager_createClass(PhoneFormManager, [{
+    key: "destroy",
+    value: function destroy() {
+      this.log('Phone widget destroyed');
+
+      phone_form_manager_get(phone_form_manager_getPrototypeOf(PhoneFormManager.prototype), "destroy", this).call(this);
+    }
+  }, {
+    key: "bindToForm",
+    value: function bindToForm() {
+      this.log('Phone widget created');
+      this.setWidget(new window.AddressfinderPhone.Phone.Widget(this.formHelperConfig.phoneIdentifier, this.widgetConfig.nzKey, this.widgetConfig.pvWidgetOptions));
+      this.formatNumber();
+    } // This will format the phone number on verification, provided the client has requested it in the options.
+
+  }, {
+    key: "formatNumber",
+    value: function formatNumber() {
+      var _this = this;
+
+      var formatNumber = this.widgetConfig.pvWidgetOptions.formatNumber;
+
+      if (formatNumber) {
+        var element = this.formHelperConfig.elements.phoneInput;
+        var widget = this.getWidget();
+        widget.on("result:verified", function (metadata) {
+          switch (formatNumber) {
+            case "rawNational":
+              _this.setElementValue(element, metadata.raw_national, "phone_input");
+
+              break;
+
+            case "formattedNational":
+              _this.setElementValue(element, metadata.formatted_national, "phone_input");
+
+              break;
+
+            case "rawInternational":
+              _this.setElementValue(element, metadata.raw_international, "phone_input");
+
+              break;
+
+            case "formattedInternational":
+              _this.setElementValue(element, metadata.formatted_international, "phone_input");
+
+              break;
+          }
+        });
+      }
+    }
+  }]);
+
+  return PhoneFormManager;
+}(ValidationFormManager);
+
+
+// CONCATENATED MODULE: ./src/phone_validation_managers/phone_page_manager.js
+function phone_page_manager_typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { phone_page_manager_typeof = function _typeof(obj) { return typeof obj; }; } else { phone_page_manager_typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return phone_page_manager_typeof(obj); }
+
+function phone_page_manager_classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function phone_page_manager_defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function phone_page_manager_createClass(Constructor, protoProps, staticProps) { if (protoProps) phone_page_manager_defineProperties(Constructor.prototype, protoProps); if (staticProps) phone_page_manager_defineProperties(Constructor, staticProps); return Constructor; }
+
+function phone_page_manager_inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) phone_page_manager_setPrototypeOf(subClass, superClass); }
+
+function phone_page_manager_setPrototypeOf(o, p) { phone_page_manager_setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return phone_page_manager_setPrototypeOf(o, p); }
+
+function phone_page_manager_createSuper(Derived) { var hasNativeReflectConstruct = phone_page_manager_isNativeReflectConstruct(); return function _createSuperInternal() { var Super = phone_page_manager_getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = phone_page_manager_getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return phone_page_manager_possibleConstructorReturn(this, result); }; }
+
+function phone_page_manager_possibleConstructorReturn(self, call) { if (call && (phone_page_manager_typeof(call) === "object" || typeof call === "function")) { return call; } return phone_page_manager_assertThisInitialized(self); }
+
+function phone_page_manager_assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function phone_page_manager_isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+function phone_page_manager_getPrototypeOf(o) { phone_page_manager_getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return phone_page_manager_getPrototypeOf(o); }
+
+
+
+
+var phone_page_manager_PhonePageManager = /*#__PURE__*/function (_ValidationPageManage) {
+  phone_page_manager_inherits(PhonePageManager, _ValidationPageManage);
+
+  var _super = phone_page_manager_createSuper(PhonePageManager);
+
+  function PhonePageManager(_ref) {
+    var formConfigurations = _ref.formConfigurations,
+        widgetConfig = _ref.widgetConfig;
+
+    phone_page_manager_classCallCheck(this, PhonePageManager);
+
+    return _super.call(this, {
+      formConfigurations: formConfigurations,
+      widgetConfig: widgetConfig
+    });
+  }
+
+  phone_page_manager_createClass(PhonePageManager, [{
+    key: "formHelper",
+    value: function formHelper(widgetConfig, formHelperConfig) {
+      return new PhoneFormManager(widgetConfig, formHelperConfig);
+    }
+  }, {
+    key: "formHelperConfig",
+    value: function formHelperConfig(formConfig) {
+      return {
+        layoutSelectors: formConfig.layoutSelectors,
+        phoneIdentifier: formConfig.inputIdentifier,
+        countryIdentifier: formConfig.countryIdentifier,
+        elements: {
+          phoneInput: document.querySelector(formConfig.inputIdentifier),
+          countryInput: document.querySelector(formConfig.countryIdentifier)
+        }
+      };
+    }
+  }]);
+
+  return PhonePageManager;
+}(ValidationPageManager);
 
 
 // CONCATENATED MODULE: ./src/mutation_manager.js
@@ -2972,6 +3558,12 @@ var MutationManager = /*#__PURE__*/function () {
 
 // CONCATENATED MODULE: ./src/index.js
  // see https://github.com/zloirock/core-js
+
+
+
+
+
+
 
 
 
@@ -3159,6 +3751,65 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       'us': ['address_line_2']
     }
   }
+});
+// CONCATENATED MODULE: ./src/email_form_config/optimized_one_page_checkout_guest.js
+/* harmony default export */ var optimized_one_page_checkout_guest = ({
+  layoutSelectors: ["#checkout-customer-guest", "#email"],
+  inputIdentifier: "#email",
+  label: "Optimized one-page guest checkout (email)"
+});
+// CONCATENATED MODULE: ./src/email_form_config/optimized_one_page_checkout_create.js
+/* harmony default export */ var optimized_one_page_checkout_create = ({
+  layoutSelectors: [".create-account-form", "#email"],
+  inputIdentifier: "#email",
+  label: "Optimized one-page create checkout (email)"
+});
+// CONCATENATED MODULE: ./src/email_form_config/create_account.js
+/* harmony default export */ var create_account = ({
+  layoutSelectors: ["#FormField_1"],
+  inputIdentifier: "#FormField_1",
+  label: "Create account (email)"
+});
+// CONCATENATED MODULE: ./src/email_form_config/create_account_suffix.js
+/* harmony default export */ var create_account_suffix = ({
+  layoutSelectors: ["#FormField_1_input"],
+  inputIdentifier: "#FormField_1_input",
+  label: "Create account suffix (email)"
+});
+// CONCATENATED MODULE: ./src/phone_form_config/optimized_one_page_checkout_billing.js
+/* harmony default export */ var optimized_one_page_checkout_billing = ({
+  layoutSelectors: ["#checkoutBillingAddress", "#phoneInput"],
+  inputIdentifier: "#phoneInput",
+  countryIdentifier: "#countryCodeInput",
+  label: "Optimized one-page checkout billing (phone)"
+});
+// CONCATENATED MODULE: ./src/phone_form_config/optimized_one_page_checkout_shipping.js
+/* harmony default export */ var optimized_one_page_checkout_shipping = ({
+  layoutSelectors: ["checkoutShippingAddress, #phoneInput"],
+  inputIdentifier: "#phoneInput",
+  countryIdentifier: "#countryCodeInput",
+  label: "Optimized one-page checkout shipping (phone)"
+});
+// CONCATENATED MODULE: ./src/phone_form_config/create_account.js
+/* harmony default export */ var phone_form_config_create_account = ({
+  layoutSelectors: ["#FormField_7"],
+  inputIdentifier: "#FormField_7",
+  countryIdentifier: "#FormField_11",
+  label: "Create account (phone)"
+});
+// CONCATENATED MODULE: ./src/phone_form_config/create_account_suffix.js
+/* harmony default export */ var phone_form_config_create_account_suffix = ({
+  layoutSelectors: ["#FormField_7_input"],
+  inputIdentifier: "#FormField_7_input",
+  countryIdentifier: "#FormField_11_select",
+  label: "Create account suffix (phone)"
+});
+// CONCATENATED MODULE: ./src/phone_form_config/edit_account.js
+/* harmony default export */ var edit_account = ({
+  layoutSelectors: ["#account_phone"],
+  inputIdentifier: "#account_phone",
+  countryIdentifier: null,
+  label: "Edit account (phone)"
 });
 // CONCATENATED MODULE: ./src/address_form_config/default_region_mappings_to_names.js
 /* harmony default export */ var default_region_mappings_to_names = ({
@@ -3658,7 +4309,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 
 
-/* harmony default export */ var create_account = ([{
+/* harmony default export */ var address_form_config_create_account = ([{
   label: "Create account with Region/State input (Stencil)",
   layoutSelectors: ["#FormField_12"],
   countryIdentifier: "#FormField_11",
@@ -3908,6 +4559,15 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
 
 
+
+
+
+
+
+
+
+
+
 var config_manager_ConfigManager = /*#__PURE__*/function () {
   function ConfigManager() {
     _classCallCheck(this, ConfigManager);
@@ -3917,8 +4577,20 @@ var config_manager_ConfigManager = /*#__PURE__*/function () {
     key: "load",
     value: function load() {
       // This function is called when the page mutates and returns our form configurations
-      var addressFormConfigurations = [optimized_one_page_checkout].concat(_toConsumableArray(address_book), _toConsumableArray(address_book_suffixed), _toConsumableArray(create_account), _toConsumableArray(create_account_suffixed), _toConsumableArray(create_account_shipping));
+      var addressFormConfigurations = [optimized_one_page_checkout].concat(_toConsumableArray(address_book), _toConsumableArray(address_book_suffixed), _toConsumableArray(address_form_config_create_account), _toConsumableArray(create_account_suffixed), _toConsumableArray(create_account_shipping));
       return addressFormConfigurations;
+    }
+  }, {
+    key: "loadEmailConfigurations",
+    value: function loadEmailConfigurations() {
+      var emailFormConfigurations = [optimized_one_page_checkout_guest, optimized_one_page_checkout_create, create_account, create_account_suffix];
+      return emailFormConfigurations;
+    }
+  }, {
+    key: "loadPhoneConfigurations",
+    value: function loadPhoneConfigurations() {
+      var phoneFormConfigurations = [optimized_one_page_checkout_billing, optimized_one_page_checkout_shipping, phone_form_config_create_account, phone_form_config_create_account_suffix, edit_account];
+      return phoneFormConfigurations;
     }
   }]);
 
@@ -3941,9 +4613,13 @@ function bigcommerce_plugin_createClass(Constructor, protoProps, staticProps) { 
     function BigcommercePlugin() {
       bigcommerce_plugin_classCallCheck(this, BigcommercePlugin);
 
-      this.version = "2.2.0"; // Manages the mapping of the form configurations to the DOM.
+      this.version = "2.3.0"; // Manages the mapping of the form configurations to the DOM.
 
-      this.PageManager = null; // Manages the form configuraions, and creates any dynamic forms
+      this.PageManager = null; // Manages the email mapping of the form configurations to the DOM.
+
+      this.EmailPageManager = null; // Manages the phone mapping of the form configurations to the DOM.
+
+      this.PhonePageManager = null; // Manages the form configuraions, and creates any dynamic forms
 
       this.ConfigManager = null;
 
@@ -3956,11 +4632,17 @@ function bigcommerce_plugin_createClass(Constructor, protoProps, staticProps) { 
     bigcommerce_plugin_createClass(BigcommercePlugin, [{
       key: "mutationEventHandler",
       value: function mutationEventHandler() {
-        // When the form mutates, reload our form configurations, and reload the form helpers in the page manager.
-        var addressFormConfigurations = this.ConfigManager.load();
-
+        // When the form mutates, reload our form configurations.
         if (this.PageManager) {
-          this.PageManager.reload(addressFormConfigurations);
+          this.PageManager.reload(this.ConfigManager.load());
+        }
+
+        if (this.EmailPageManager) {
+          this.EmailPageManager.reload(this.ConfigManager.loadEmailConfigurations());
+        }
+
+        if (this.PhonePageManager) {
+          this.PhonePageManager.reload(this.ConfigManager.loadPhoneConfigurations());
         }
       }
     }, {
@@ -3969,8 +4651,10 @@ function bigcommerce_plugin_createClass(Constructor, protoProps, staticProps) { 
         var widgetConfig = {
           nzKey: window.AddressFinderConfig.key_nz || window.AddressFinderConfig.key || window.AddressFinderConfig.key_au,
           auKey: window.AddressFinderConfig.key_au || window.AddressFinderConfig.key || window.AddressFinderConfig.key_nz,
-          nzWidgetOptions: window.AddressFinderConfig.nzWidgetOptions || window.AddressFinderConfig.widgetOptions || {},
-          auWidgetOptions: window.AddressFinderConfig.auWidgetOptions || window.AddressFinderConfig.widgetOptions || {},
+          nzWidgetOptions: window.AddressFinderConfig.nzWidgetOptions || window.AddressFinderConfig.avWidgetOptions || window.AddressFinderConfig.widgetOptions || {},
+          auWidgetOptions: window.AddressFinderConfig.auWidgetOptions || window.AddressFinderConfig.avWidgetOptions || window.AddressFinderConfig.widgetOptions || {},
+          evWidgetOptions: window.AddressFinderConfig.evWidgetOptions || {},
+          pvWidgetOptions: window.AddressFinderConfig.pvWidgetOptions || {},
           debug: window.AddressFinderConfig.debug || false
         };
         this.ConfigManager = new config_manager_ConfigManager(); // Listens for mutations and calls the mutationEventHandler when the DOM mutates, for example, an input field being removed from the page.
@@ -3979,7 +4663,23 @@ function bigcommerce_plugin_createClass(Constructor, protoProps, staticProps) { 
           widgetConfig: widgetConfig,
           mutationEventHandler: this.mutationEventHandler.bind(this),
           ignoredClass: "af_list"
-        });
+        }); // Allows address widget to run if not explicitly enabled for backwards compatibility purposes.
+
+        if (window.AddressFinderConfig.addressWidgetEnabled === undefined || window.AddressFinderConfig.addressWidgetEnabled) {
+          this._initAddressWidget(widgetConfig);
+        }
+
+        if (window.AddressFinderConfig.emailWidgetEnabled) {
+          this._initEmailWidget(widgetConfig);
+        }
+
+        if (window.AddressFinderConfig.phoneWidgetEnabled) {
+          this._initPhoneWidget(widgetConfig);
+        }
+      }
+    }, {
+      key: "_initAddressWidget",
+      value: function _initAddressWidget(widgetConfig) {
         this.PageManager = new addressfinder_webpage_tools["PageManager"]({
           addressFormConfigurations: this.ConfigManager.load(),
           widgetConfig: widgetConfig,
@@ -3992,6 +4692,24 @@ function bigcommerce_plugin_createClass(Constructor, protoProps, staticProps) { 
         this._setVersionNumbers();
 
         window.AddressFinder._bigcommercePlugin = this.PageManager;
+      }
+    }, {
+      key: "_initEmailWidget",
+      value: function _initEmailWidget(widgetConfig) {
+        this.EmailPageManager = new addressfinder_webpage_tools["EmailPageManager"]({
+          formConfigurations: this.ConfigManager.loadEmailConfigurations(),
+          widgetConfig: widgetConfig
+        });
+        window.AddressFinder._bigcommerceEmailPlugin = this.EmailPageManager;
+      }
+    }, {
+      key: "_initPhoneWidget",
+      value: function _initPhoneWidget(widgetConfig) {
+        this.PhonePageManager = new addressfinder_webpage_tools["PhonePageManager"]({
+          formConfigurations: this.ConfigManager.loadPhoneConfigurations(),
+          widgetConfig: widgetConfig
+        });
+        window.AddressFinder._bigcommercePhonePlugin = this.PhonePageManager;
       }
     }, {
       key: "_setVersionNumbers",
@@ -4017,15 +4735,22 @@ function bigcommerce_plugin_createClass(Constructor, protoProps, staticProps) { 
     return BigcommercePlugin;
   }();
 
-  var s = document.createElement('script');
-  s.src = 'https://api.addressfinder.io/assets/v3/widget.js';
-  s.async = 1;
+  function loadAddressfinderScript(script, callback) {
+    var s = document.createElement('script');
+    s.src = script;
+    s.async = 1;
+    s.onload = callback;
+    document.body.appendChild(s);
+  } // Nested callbacks to load our scripts asynchronously and sequentially.
 
-  s.onload = function () {
-    new BigcommercePlugin();
-  };
 
-  document.body.appendChild(s);
+  loadAddressfinderScript('https://api.addressfinder.io/assets/v3/widget.js', function () {
+    loadAddressfinderScript('https://api.addressfinder.io/assets/email/v2/widget.js', function () {
+      loadAddressfinderScript('https://api.addressfinder.io/assets/phone/v2/widget.js', function () {
+        new BigcommercePlugin();
+      });
+    });
+  });
 })(document, window);
 
 /***/ })
