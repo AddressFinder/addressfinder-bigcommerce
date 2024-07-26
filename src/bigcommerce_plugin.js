@@ -45,8 +45,8 @@ import ConfigManager from './config_manager'
       const widgetConfig = {
         nzKey: window.AddressFinderConfig.key_nz || window.AddressFinderConfig.key || window.AddressFinderConfig.key_au,
         auKey: window.AddressFinderConfig.key_au || window.AddressFinderConfig.key || window.AddressFinderConfig.key_nz,
-        nzWidgetOptions: window.AddressFinderConfig.nzWidgetOptions || window.AddressFinderConfig.widgetOptions || {},
-        auWidgetOptions: window.AddressFinderConfig.auWidgetOptions || window.AddressFinderConfig.widgetOptions || {},
+        nzWidgetOptions: window.AddressFinderConfig.nzWidgetOptions || window.AddressFinderConfig.avWidgetOptions || window.AddressFinderConfig.widgetOptions || {},
+        auWidgetOptions: window.AddressFinderConfig.auWidgetOptions || window.AddressFinderConfig.avWidgetOptions || window.AddressFinderConfig.widgetOptions || {},
         evWidgetOptions: window.AddressFinderConfig.evWidgetOptions || {},
         pvWidgetOptions: window.AddressFinderConfig.pvWidgetOptions || {},
         debug: window.AddressFinderConfig.debug || false

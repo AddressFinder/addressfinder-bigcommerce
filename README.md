@@ -119,15 +119,17 @@ If you need to add different options for each country you can enter them in obje
 w.AddressFinderConfig = {
   key: "ADDRESSFINDER_DEMO_KEY",
 
-  // Options: (true/false) to toggle each widget on/off. 
+  // Toggle each widget on/off. Options: (true/false)  
   // The address widget is enabled by default
   addressWidgetEnabled: true,
   emailWidgetEnabled: true,
   phoneWidgetEnabled: true,
 
+  // Note: avWidgetOptions, evWidgetOptions and pvWidgetOptions objects are optional. You can optionally omit them if you prefer.
+
   // visit https://addressfinder.nz/docs/javascript_widget_reference_nz/ for a full list of NZ widget options
   // visit https://addressfinder.com/r/docs/javascript_widget_reference_au/ for a full list of AU widget options
-  widgetOptions: {
+  avWidgetOptions: {
     // address widget options go here
   },
 
