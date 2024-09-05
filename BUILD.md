@@ -11,6 +11,8 @@ This project uses npm scripts to lint, concat, and minify the JS used in this Bi
 
 ### Setting up your development environment
 
+Consider using a version manager like [asdf](https://asdf-vm.com/).
+
  1. `npm install -g uglifyjs eslint`
  2. `npm install`
 

@@ -5,7 +5,7 @@ import ConfigManager from './config_manager'
   class BigcommercePlugin {
     constructor() {
 
-      this.version = "2.3.0"
+      this.version = "2.4.0"
 
       // Manages the mapping of the form configurations to the DOM.
       this.PageManager = null
@@ -41,14 +41,20 @@ import ConfigManager from './config_manager'
     }
 
     _initPlugin(){
+      let nzWidgetOptions = window.AddressFinderConfig.nzWidgetOptions || window.AddressFinderConfig.avWidgetOptions || window.AddressFinderConfig.widgetOptions || {};
+      let auWidgetOptions = window.AddressFinderConfig.auWidgetOptions || window.AddressFinderConfig.avWidgetOptions || window.AddressFinderConfig.widgetOptions || {};
+      let evWidgetOptions = window.AddressFinderConfig.evWidgetOptions || {};
+      let pvWidgetOptions = window.AddressFinderConfig.pvWidgetOptions || {};
+      
+      let clientVersion = { ca: `BigCommerce/${this.version}` };
 
       const widgetConfig = {
         nzKey: window.AddressFinderConfig.key_nz || window.AddressFinderConfig.key || window.AddressFinderConfig.key_au,
-        auKey: window.AddressFinderConfig.key_au || window.AddressFinderConfig.key || window.AddressFinderConfig.key_nz,
-        nzWidgetOptions: window.AddressFinderConfig.nzWidgetOptions || window.AddressFinderConfig.avWidgetOptions || window.AddressFinderConfig.widgetOptions || {},
-        auWidgetOptions: window.AddressFinderConfig.auWidgetOptions || window.AddressFinderConfig.avWidgetOptions || window.AddressFinderConfig.widgetOptions || {},
-        evWidgetOptions: window.AddressFinderConfig.evWidgetOptions || {},
-        pvWidgetOptions: window.AddressFinderConfig.pvWidgetOptions || {},
+        auKey: window.AddressFinderConfig.key_au || window.AddressFinderConfig.key || window.AddressFinderConfig.key_nz,        
+        nzWidgetOptions: {...nzWidgetOptions, ...clientVersion},
+        auWidgetOptions: {...auWidgetOptions, ...clientVersion},
+        evWidgetOptions: {...evWidgetOptions, ...clientVersion},
+        pvWidgetOptions: {...pvWidgetOptions, ...clientVersion},
         debug: window.AddressFinderConfig.debug || false
       }
 
