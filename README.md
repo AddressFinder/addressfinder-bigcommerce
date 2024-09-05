@@ -44,7 +44,7 @@ Follow the instructions below, or watch the [installation video](https://vimeo.c
 #### Installation instructions
 These instructions are compatible with themes from BigCommerce's new Stencil theme platform. If you created your store within the last 6 months you will have a Stencil theme. If you are unsure check the [BigCommerce documentation](https://support.bigcommerce.com/articles/Public/Which-Theme-Platform-do-I-have) for a list of themes and their platforms.
 
-If you are using a Blueprint theme you can find the alternate setup instructions on the [AddressFinder website](https://addressfinder.nz/docs/bigcommerce_instructions_for_other_themes/)
+If you are using a Blueprint theme you can find the alternate setup instructions on the [AddressFinder website](https://addressfinder.com/r/plugins/bigcommerce/)
 
 1. Open the BigCommerce Admin Dashboard
 2. Click Settings in the sidebar

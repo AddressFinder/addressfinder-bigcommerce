@@ -1,3 +1,6 @@
+# AddressFinder 2.4.0 (September 5, 2024)
+* Add client agent reporting 
+
 # AddressFinder 2.3.0 (July 26, 2024)
 * Add support for email and phone validation 
 
