@@ -1,3 +1,6 @@
+# AddressFinder 2.5.0 (May 4, 2026)
+* Add missing layout detection
+
 # AddressFinder 2.4.0 (September 5, 2024)
 * Add client agent reporting 
 
